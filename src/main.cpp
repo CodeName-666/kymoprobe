@@ -1,26 +1,34 @@
 #include <Arduino.h>
 #include "math.h"
-#include "Stream.h"
+#include "plotter.h"
 
 
+using namespace Plotter;
 
-Stream* stream;
-uint32_t counter;
+Plotter::Plotter p;
 
-
+SwTimer loopTimer;
 void setup() {
-  Serial.begin(9600);
-  stream = &Serial;
-  counter = 0;
+    Serial.begin(9600);
+    p.init(Serial);
+    loopTimer.setTime(1000);
+    loopTimer.enable();
+    loopTimer.start();
 }
+
+
 
 void loop() {
 
 
-  double x = sin(counter);
-  counter++;
-  stream->printf(" t = %i | X = %f \n", millis(), x);
-  delayMicroseconds(500);
+    if(loopTimer.isExeeded())
+    {
+        Serial.println("... LOOP ...");
+        loopTimer.restart();
+    }
+
+    p.loop();
+
 
 
 }
