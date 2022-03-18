@@ -1,0 +1,3 @@
+[submodule "lib/Events"]
+	path = lib/Events
+	url = https://github.com/CodeName-666/Events.git
