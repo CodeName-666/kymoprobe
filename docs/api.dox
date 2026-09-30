@@ -1,0 +1,50 @@
+/**
+ * @mainpage PlotterLib embedded API
+ *
+ * @brief Portable C99 telemetry with caller-owned storage and configurable I/O.
+ *
+ * @section lifecycle Configuration and lifecycle
+ * Define persistent channel descriptors, mutable channel state and a PlotterConfig.
+ * Supply clock, sample and write callbacks; provide service and busy callbacks when
+ * required by the transport. Call Plotter_Init once and Plotter_Main cyclically
+ * from one task. Keep the configuration and referenced objects alive while the
+ * context is in use. The runtime never allocates heap storage.
+ *
+ * @code{.c}
+ * // Application configuration implements callbacks and owns persistent storage.
+ * static PlotterContext context;
+ * void application_init(void)
+ * {
+ *     PlotterStatus status = Plotter_Init(&context, &application_config);
+ *     // Handle status before enabling the periodic application task.
+ * }
+ * void application_cycle(void)
+ * {
+ *     PlotterStatus status = Plotter_Main(&context);
+ *     // Handle transport/configuration errors; continue cyclic calls on BUSY.
+ * }
+ * @endcode
+ *
+ * @section modules API areas
+ * - @ref plotter_runtime describes configuration, callbacks and runtime state.
+ * - See the module index for the wire codec, common byte/bit/CRC operations,
+ *   optional C++ wrapper and application-side hardware adapters.
+ * - Each header documents its macros, types, members and callable interfaces.
+ *   Function parameters include direction, valid inputs and ownership. Usage
+ *   sections describe how to apply constants, fields and functions.
+ *
+ * @section contracts Execution and transport contracts
+ * Calls are non-reentrant. Synchronize interrupt-shared data in the application.
+ * A successful write reports driver acceptance, not physical delivery. Short
+ * writes preserve remaining bytes for later cycles. For zero-copy asynchronous
+ * transfers, busy must remain true until the driver releases the buffer.
+ * Clock values and channel periods are in milliseconds. Read each callback's
+ * detailed contract before adapting UART, USB, TCP or another byte transport.
+ *
+ * @section portability Portability and scope
+ * PlotterLib has no Arduino or STM32 SDK dependencies. Hardware adapters belong
+ * to examples/application code. Headers under legacy and the independent Events
+ * dependency are outside this API. The binary v6 wire format remains compatible
+ * with PlotterApp; see lib/PlotterLib/PROTOCOL.md in the repository.
+ * Documentation and single-exit style do not constitute safety certification.
+ */

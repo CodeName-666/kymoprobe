@@ -1,5 +1,5 @@
-#include <Arduino.h>
-#include "plotter_config.h"
+#define PLOTTER_EXAMPLE_MULTIDIMENSIONAL 1
+#include "../../common/arduino_serial_config.h"
 
 static PlotterContext plotter;
 
@@ -8,12 +8,10 @@ static PlotterContext plotter;
  ******************************************************************************/
 void setup() {
     Serial.begin(115200);
-    (void)Plotter_Init(&plotter, &plotter_config);
+    (void)Plotter_Init(&plotter, &example_config);
 }
 
 /*******************************************************************************
  * loop
  ******************************************************************************/
-void loop() {
-    (void)Plotter_Main(&plotter);
-}
+void loop() { (void)Plotter_Main(&plotter); }

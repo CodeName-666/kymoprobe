@@ -1,0 +1,41 @@
+{
+  "name": "PlotterLib",
+  "version": "6.1.0",
+  "description": "Heap-free C99 Init/Main telemetry core and optional C++ sender for PlotterApp binary v6.",
+  "keywords": [
+    "plotter",
+    "sensor",
+    "data-logging",
+    "serial",
+    "binary-protocol",
+    "arduino",
+    "esp32",
+    "stm32"
+  ],
+  "authors": [
+    {
+      "name": "PlotterApp",
+      "maintainer": true
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CodeName-666/plotterecu.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/CodeName-666/plotterecu",
+  "frameworks": "*",
+  "platforms": "*",
+  "export": {
+    "include": [
+      "src",
+      "README.md",
+      "PROTOCOL.md",
+      "library.properties"
+    ]
+  },
+  "build": {
+    "srcDir": "src",
+    "includeDir": "src"
+  }
+}
