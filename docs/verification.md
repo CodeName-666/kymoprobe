@@ -4,13 +4,13 @@
 
 Die Library wurde als eigenständiges Paket validiert. Ergänzt sind Lizenztext,
 Changelog, Veröffentlichungshinweise, ein portables Beispiel, ausführliche
-README-Anleitung mit PlotterApp-Link und drei PNG-Diagramme. Der bisherige
+README-Anleitung mit KymoStudio-Link und drei PNG-Diagramme. Der bisherige
 Arbeitsstand einschließlich C++11-/Feature-Umstellung bleibt die Grundlage.
 Diese Paketvorbereitung verändert keine öffentliche API und kein Wire-Verhalten.
 
 Frisch erfolgreich ausgeführt:
 
-- `python tools/test_native.py --app ../PlotterApp`: sechs Checker-Tests,
+- `python tools/test_native.py --app ../KymoStudio`: sechs Checker-Tests,
   Single-Return-Prüfung über 40 Quelldateien, interne Headerkonfiguration,
   Featureprofile, beide CRC-Modi und App-Abgleich mit 256 Kanälen, acht Layouts
   und 42 Fragmentgrößen.
@@ -35,7 +35,7 @@ Frisch erfolgreich ausgeführt:
 | ESP32 MQTT / esp32dev | 44.432 B | 720.465 B |
 | STM32 UART C/HAL / nucleo_f401re | 160 B | 10.596 B |
 
-Das Paket liegt lokal unter `.pio/package/PlotterLib-6.1.0.tar.gz`, der
+Das Paket liegt lokal unter `.pio/package/KymoCore-6.1.0.tar.gz`, der
 zugehörige SHA256-Wert in der benachbarten `.sha256`-Datei. Jeder erneute
 Paketlauf aktualisiert das Archiv; vor Upload immer den letzten Stand verwenden.
 CI wurde um denselben Paketcheck ergänzt, aber nicht remote ausgeführt.
@@ -44,7 +44,7 @@ Nicht Bestandteil dieser Prüfung: Upload in die Registry, Registry-Rendering,
 Prüfung des verfügbaren Owner-/Versionsnamens, elektrische Boardtests oder die
 komplette App-Testsuite. Der App-Abgleich verwendet den lokalen Nachbarcheckout,
 nicht den öffentlich verfügbaren GitHub-Stand. Die Hinweise in
-`lib/PlotterLib/PUBLISHING.md` beschreiben die verbleibenden Release-Schritte.
+`lib/KymoCore/PUBLISHING.md` beschreiben die verbleibenden Release-Schritte.
 
 ## Historischer Prüfstand vom 30.09.2026
 
@@ -54,7 +54,7 @@ Paketvorbereitung gelten die oben neu ausgeführten Prüfungen.
 ## Plattformtrennung
 
 STM32-Adapter liegen jetzt unter `examples/stm32/adapters/`, der optionale
-Arduino-Print-Adapter unter `examples/common/`. PlotterLib enthält keine
+Arduino-Print-Adapter unter `examples/common/`. KymoCore enthält keine
 SDK-Header, Herstellertypen oder ARDUINO-/STM32-Abzweigungen mehr. C-API und
 Wire-Protokoll sind unverändert. Frühere Arduino-C++-Komfortüberladungen werden
 durch explizite anwendungsseitige Stream-Adapter ersetzt.
@@ -74,7 +74,7 @@ selbst. Es handelt sich um eine Prüfung des hier verwendeten Sprachumfangs,
 nicht um einen vollständigen C++-Parser oder eine Safety-Zertifizierung.
 
 Bitmasken/Bitsets, Little-Endian/binary32-Konvertierung und CRC sind im
-wiederverwendbaren Header-Modul `lib/PlotterLib/src/common/` gebündelt und
+wiederverwendbaren Header-Modul `lib/KymoCore/src/common/` gebündelt und
 werden separat als C99 und C++11 getestet. Dynamische Bitindizes werden vor
 Shifts begrenzt. Alle sechs Firmwareziele wurden nach dem Umbau neu gebaut.
 
@@ -106,7 +106,7 @@ Für die zwei AVR-Kanäle kommen 8 Bytes Laufzeit-Zeitstempel, 12 Bytes
 Kanalkonfiguration und 22 Bytes Callback-Konfiguration hinzu. AVR legt diese
 gewöhnlichen const-Tabellen in RAM ab; es wird kein PROGMEM-Zugriff behauptet.
 
-`python tools/test_native.py --app ../PlotterApp` ist erfolgreich:
+`python tools/test_native.py --app ../KymoStudio` ist erfolgreich:
 
 - Common-Helfer, Single-Return-Regel und deren Checker-Tests;
 - C99 und C++11, `-Wall -Wextra -Werror -pedantic`;
@@ -117,10 +117,10 @@ gewöhnlichen const-Tabellen in RAM ab; es wird kein PROGMEM-Zugriff behauptet.
 - voneinander unabhängige Instanzen und optionaler C++-Sender/CDC-Adapter;
 - 256 vom echten C-Init/Main-Sender erzeugte Kanäle, alle acht Feldlayouts;
 - bytegenauer Abgleich mit Python-Encoder und Verarbeitung durch echten
-  PlotterApp-Streamdecoder und Core-Parser bei 42 Fragmentgrößen;
+  KymoStudio-Streamdecoder und Core-Parser bei 42 Fragmentgrößen;
 - Wiederaufnahme nach beschädigtem CRC.
 
-Die Gesamtsuite im tatsächlichen PlotterApp-Verzeichnis ist erfolgreich:
+Die Gesamtsuite im tatsächlichen KymoStudio-Verzeichnis ist erfolgreich:
 **154 passed, 4 subtests passed** mit `.venv/Scripts/python.exe -m pytest -q`.
 Die App-Quellen wurden bei dieser ECU-Änderung nicht bearbeitet. Ihr vorhandenes
 v6-Protokoll erfüllt den Vertrag bereits. Zwischenzeitlich vorhandene
@@ -134,7 +134,7 @@ die Remote-CI wurde in dieser Sitzung nicht gestartet.
 ## Reproduktion
 
 ```sh
-python tools/test_native.py --app ../PlotterApp
+python tools/test_native.py --app ../KymoStudio
 pio run -e nodemcu-32s
 pio run -d examples/arduino/simple_analog_example -e uno
 pio run -d examples/arduino/multi_sensor_example -e uno

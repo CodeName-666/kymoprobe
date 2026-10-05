@@ -1,6 +1,6 @@
 """Compile the C++11 library and C99/C++11 clients; optionally verify against the sibling app.
 
-python tools/test_native.py --app ../PlotterApp
+python tools/test_native.py --app ../KymoStudio
 Requires gcc and g++; on Windows also discovers PlatformIO's gccmingw32.
 """
 from __future__ import annotations
@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-LIB = ROOT / "lib/PlotterLib/src"
+LIB = ROOT / "lib/KymoCore/src"
 BUILD = ROOT / ".pio/native"
 
 def run(*args: object, capture: bool = False) -> str:
@@ -66,17 +66,17 @@ def verify_features() -> None:
         selected = dict.fromkeys(("X", "Z", "TIMESTAMP", "CRC", "DECODER", "CPP"), 0)
         selected.update(RUNTIME=1)
         selected.update(options)
-        flags += [f"-DPLOTTER_ENABLE_{key}={value}" for key, value in selected.items()]
+        flags += [f"-DKYMO_ENABLE_{key}={value}" for key, value in selected.items()]
         objects = []
-        for source in ("plotter_protocol.cpp", "plotter_runtime.cpp", "plotter.cpp"):
+        for source in ("kymo_protocol.cpp", "kymo_runtime.cpp", "kymo.cpp"):
             obj = BUILD / f"{name}_{source}.o"
             run("g++", "-std=c++11", "-fno-exceptions", "-fno-rtti",
                 *flags, "-c", LIB / source, "-o", obj)
             objects.append(obj)
         symbols = run("nm", "--defined-only", *objects, capture=True)
-        assert ("plotter_decode_data" in symbols) == bool(options.get("DECODER", 0)), name
-        assert ("plotter_crc8" in symbols) == bool(options.get("CRC", 0) or options.get("DECODER", 0)), name
-        assert ("Plotter_Main" in symbols) == bool(options.get("RUNTIME", 1)), name
+        assert ("kymo_decode_data" in symbols) == bool(options.get("DECODER", 0)), name
+        assert ("kymo_crc8" in symbols) == bool(options.get("CRC", 0) or options.get("DECODER", 0)), name
+        assert ("Kymo_Main" in symbols) == bool(options.get("RUNTIME", 1)), name
         assert ("sendFrame" in symbols) == bool(options.get("CPP", 0)), name
         exe = BUILD / f"{name}.exe"
         client = BUILD / f"{name}_client.o"
@@ -89,8 +89,8 @@ def verify_features() -> None:
             run(exe)
     for name in ("RUNTIME", "X", "Z", "TIMESTAMP", "CRC", "DECODER", "CPP"):
         result = subprocess.run(
-            ["g++", "-std=c++11", "-I" + str(LIB), f"-DPLOTTER_ENABLE_{name}=2",
-             "-fsyntax-only", str(LIB / "plotter_protocol.cpp")],
+            ["g++", "-std=c++11", "-I" + str(LIB), f"-DKYMO_ENABLE_{name}=2",
+             "-fsyntax-only", str(LIB / "kymo_protocol.cpp")],
             cwd=ROOT, capture_output=True, text=True)
         assert result.returncode != 0 and "must be 0 or 1" in result.stderr, name
 
@@ -98,28 +98,28 @@ def verify_header_config() -> None:
     """Build real library copies with edited internal settings and explicit overrides."""
     copied = BUILD / "header_config" / "lib"
     shutil.copytree(LIB, copied, dirs_exist_ok=True)
-    config = copied / "plotter_build_config.h"
+    config = copied / "kymo_build_config.h"
     assert config.is_file(), "Internal editable build configuration header is missing"
     settings = config.read_text(encoding="utf-8")
     for name in ("X", "Z", "TIMESTAMP", "CRC", "DECODER", "CPP"):
-        settings = re.sub(rf"(?m)^#define PLOTTER_ENABLE_{name}\s+[^\n]+$",
-                          f"#define PLOTTER_ENABLE_{name} 1", settings)
-    settings = re.sub(r"(?m)^#define PLOTTER_ENABLE_RUNTIME\s+[^\n]+$",
-                      "#define PLOTTER_ENABLE_RUNTIME 0", settings)
+        settings = re.sub(rf"(?m)^#define KYMO_ENABLE_{name}\s+[^\n]+$",
+                          f"#define KYMO_ENABLE_{name} 1", settings)
+    settings = re.sub(r"(?m)^#define KYMO_ENABLE_RUNTIME\s+[^\n]+$",
+                      "#define KYMO_ENABLE_RUNTIME 0", settings)
     config.write_text(settings, encoding="utf-8")
     for override in (False, True):
         flags = ["-Wall", "-Wextra", "-Werror", "-pedantic", "-I" + str(copied)]
         if override:
-            flags += ["-DPLOTTER_ENABLE_X=0", "-DPLOTTER_ENABLE_CRC=0",
-                      "-DPLOTTER_ENABLE_CPP=0", "-DPLOTTER_ENABLE_RUNTIME=1"]
+            flags += ["-DKYMO_ENABLE_X=0", "-DKYMO_ENABLE_CRC=0",
+                      "-DKYMO_ENABLE_CPP=0", "-DKYMO_ENABLE_RUNTIME=1"]
         objects = []
-        for source in ("plotter_protocol.cpp", "plotter_runtime.cpp", "plotter.cpp"):
+        for source in ("kymo_protocol.cpp", "kymo_runtime.cpp", "kymo.cpp"):
             obj = copied.parent / (source + ".o")
             run("g++", "-std=c++11", "-fno-exceptions", "-fno-rtti",
                 *flags, "-c", copied / source, "-o", obj)
             objects.append(obj)
         symbols = run("nm", "--defined-only", *objects, capture=True)
-        assert ("Plotter_Main" in symbols) == override
+        assert ("Kymo_Main" in symbols) == override
         assert ("sendFrame" in symbols) != override
         obj = copied.parent / "features.o"
         run("gcc", "-std=c99", *flags, "-c", ROOT / "test/native/features_test.c", "-o", obj)
@@ -128,12 +128,12 @@ def verify_header_config() -> None:
         run(exe)
         if not override:
             run("g++", "-std=c++11", *flags,
-                ROOT / "lib/PlotterLib/test/protocol_golden_test.cpp", *objects, "-o", exe)
+                ROOT / "lib/KymoCore/test/protocol_golden_test.cpp", *objects, "-o", exe)
             run(exe)
-    config.write_text(settings.replace("#define PLOTTER_ENABLE_Z 1",
-                                       "#define PLOTTER_ENABLE_Z 2"), encoding="utf-8")
+    config.write_text(settings.replace("#define KYMO_ENABLE_Z 1",
+                                       "#define KYMO_ENABLE_Z 2"), encoding="utf-8")
     result = subprocess.run(["g++", "-std=c++11", "-I" + str(copied), "-fsyntax-only",
-                             str(copied / "plotter_protocol.cpp")],
+                             str(copied / "kymo_protocol.cpp")],
                             cwd=ROOT, capture_output=True, text=True)
     assert result.returncode != 0 and "must be 0 or 1" in result.stderr
     print("Internal header configuration and compiler overrides passed")
@@ -154,18 +154,18 @@ def main() -> None:
     BUILD.mkdir(parents=True, exist_ok=True)
     legacy = subprocess.run(
         ["g++", "-std=c++98", "-I" + str(LIB), "-fsyntax-only",
-         str(LIB / "plotter_protocol.cpp")], capture_output=True, text=True)
+         str(LIB / "kymo_protocol.cpp")], capture_output=True, text=True)
     assert legacy.returncode != 0 and "requires C++11" in legacy.stderr
     verify_header_config()
     verify_features()
     for crc_enabled in (False, True):
         print(f"Testing encoder CRC={crc_enabled}", flush=True)
         flags = ["-Wall", "-Wextra", "-Werror", "-pedantic", "-I" + str(LIB)]
-        flags += [f"-DPLOTTER_ENABLE_{name}=1" for name in
+        flags += [f"-DKYMO_ENABLE_{name}=1" for name in
                   ("RUNTIME", "X", "Z", "TIMESTAMP", "DECODER", "CPP")]
-        flags.append(f"-DPLOTTER_ENABLE_CRC={int(crc_enabled)}")
+        flags.append(f"-DKYMO_ENABLE_CRC={int(crc_enabled)}")
         objects = []
-        for name in ("plotter_protocol", "plotter_runtime"):
+        for name in ("kymo_protocol", "kymo_runtime"):
             obj = BUILD / (name + ".o")
             run("g++", "-std=c++11", "-fno-exceptions", "-fno-rtti",
                 *flags, "-c", LIB / (name + ".cpp"), "-o", obj)
@@ -179,16 +179,16 @@ def main() -> None:
             if name != "emit_frames": run(exe)
         for source in (ROOT / "test/native/common_test.c",
                        ROOT / "test/native/push_test.cpp",
-                       ROOT / "lib/PlotterLib/test/protocol_golden_test.cpp"):
+                       ROOT / "lib/KymoCore/test/protocol_golden_test.cpp"):
             exe = BUILD / (source.stem + "_cpp.exe")
-            run("g++", "-std=c++11", *flags, source, LIB / "plotter.cpp",
+            run("g++", "-std=c++11", *flags, source, LIB / "kymo.cpp",
                 *objects, "-o", exe)
             run(exe)
         # Defining target macros must not introduce SDK headers or change the API.
         portable = BUILD / "portable_cpp.exe"
         run("g++", "-std=c++11", *flags, "-DARDUINO=10819", "-DSTM32",
-            "-DESP_PLATFORM", ROOT / "lib/PlotterLib/test/protocol_golden_test.cpp",
-            LIB / "plotter.cpp", *objects, "-o", portable)
+            "-DESP_PLATFORM", ROOT / "lib/KymoCore/test/protocol_golden_test.cpp",
+            LIB / "kymo.cpp", *objects, "-o", portable)
         run(portable)
         if args.app: verify_app(BUILD / "emit_frames.exe", args.app, crc_enabled)
     print("All native checks passed")

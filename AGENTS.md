@@ -10,26 +10,26 @@ Applies to active first-party C/C++ code, including examples and native tests.
   Keep separator rules at 80 columns including indentation; preserve Doxygen.
 - Use explicit initialized result/status variables and small helper functions
   for error paths. Do not replace early returns with goto or exit macros.
-- Reuse `lib/PlotterLib/src/common/` for bit masks, bitsets, wire byte conversion
+- Reuse `lib/KymoCore/src/common/` for bit masks, bitsets, wire byte conversion
   and CRC. Keep protocol constants/semantics in the protocol layer.
 - Use unsigned fixed-width operands for bit operations. Check runtime shift
   counts. Macros must parenthesize operands and evaluate each argument once;
   use typed static inline functions for operations requiring validation.
 - Preserve bounded execution, no heap in the core, and explicit transport
   buffer ownership. Do not claim safety-standard compliance from style checks.
-- Keep optional PlotterLib features behind documented platform-independent
-  build switches in plotter_build_config.h, disabled by default. Load and validate
-  them through plotter_features.h; explicit compiler definitions may override
+- Keep optional KymoCore features behind documented platform-independent
+  build switches in kymo_build_config.h, disabled by default. Load and validate
+  them through kymo_features.h; explicit compiler definitions may override
   the internal settings. The default core
   is scalar C++11 encoding with a C-compatible API plus Init/Main scheduling and bounded transport handling.
   Compile disabled implementations out, reject unsupported requests explicitly,
   and test minimal and enabled builds. Examples opt into required features.
   Keep buffer bounds and transport-ownership checks mandatory.
-- Keep the entire PlotterLib package platform-independent, including optional
+- Keep the entire KymoCore package platform-independent, including optional
   C++ wrappers. No SDK headers, vendor types or target-dependent API branches.
   Hardware adapters live in application/example code and use callbacks or
-  PlotterStream. Target macros must not alter the library's public API/layout.
-- Run `python tools/test_native.py --app ../PlotterApp` and affected PlatformIO
+  KymoStream. Target macros must not alter the library's public API/layout.
+- Run `python tools/test_native.py --app ../KymoStudio` and affected PlatformIO
   targets after changes. This runs the single-return structural check too.
 - Document active headers with Doxygen: brief, detailed contracts and Usage for
   macros, types, fields and functions; parameter directions and return semantics
@@ -37,4 +37,4 @@ Applies to active first-party C/C++ code, including examples and native tests.
   header documentation changes. Generated output belongs under `docs/api/`.
 - `legacy/` is archived, excluded from builds, and not production code.
   `lib/Events` is an independent third-party submodule; do not rewrite it as
-  part of PlotterLib style changes.
+  part of KymoCore style changes.

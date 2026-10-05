@@ -1,10 +1,10 @@
-# Embedded Plotter: Analyse und Zielarchitektur
+# Embedded Kymotrace: Analyse und Zielarchitektur
 
-> Nachtrag 2026-10-01: PlotterLib wird inzwischen vollst�ndig als C++11
+> Nachtrag 2026-10-01: KymoCore wird inzwischen vollst�ndig als C++11
 > kompiliert. Die C-kompatible API bleibt f�r C99-Aufrufer erhalten.
 > Die folgenden C99-Kern-Angaben beschreiben den urspr�nglichen Plan.
 
-Stand: 2026-09-30. Geprüft: PlotterEcu und das benachbarte PlotterApp.
+Stand: 2026-09-30. Geprüft: KymoProbe und das benachbarte KymoStudio.
 
 ## Befund
 
@@ -12,7 +12,7 @@ Stand: 2026-09-30. Geprüft: PlotterEcu und das benachbarte PlotterApp.
   übertragenem Enum-/Struct-Layout und Debugtext auf dem Datenkanal. Es passt
   nicht zum A55A-Binärprotokoll der App. Zusätzlich: leeres DATA-Handling,
   fehlender Rückgabewert und ein Semikolon hinter einer Erfolgsprüfung.
-- PlotterLib hat bereits einen brauchbaren C-Codec: explizites Little Endian,
+- KymoCore hat bereits einen brauchbaren C-Codec: explizites Little Endian,
   CRC8, endliche float32-Werte, 9–21 Bytes pro Messung, kein Heap.
 - Der C++-Sender ignoriert kurze Writes; der CDC-Adapter gibt einen Puffer
   wieder frei, bevor USB die asynchrone Übertragung abgeschlossen hat.
@@ -23,14 +23,14 @@ Stand: 2026-09-30. Geprüft: PlotterEcu und das benachbarte PlotterApp.
   Frameworks/Plattformen unnötig ein und setzt einen C++-Flag auch für C.
 - Events ist ein eigenständiges, derzeit ungenutztes Submodul. Es ist keine
   notwendige Abhängigkeit des Protokolls und bleibt unverändert.
-- PlotterApp empfängt v6 über Serial, TCP, MQTT und CAN-FD. Classic CAN hat
+- KymoStudio empfängt v6 über Serial, TCP, MQTT und CAN-FD. Classic CAN hat
   eine separate native Wertzuordnung; ein v6-Frame passt nicht in acht Bytes.
   Der Python-Codec und Core/parsing.py sind die Integrationsgrenze zum Backend.
 
 ## Entscheidung
 
-Ein C99-Kern mit `Plotter_Init(context, config)` und `Plotter_Main(context)`.
-Eine statische `plotter_config.c/.cpp` liefert die Konfiguration; eine ECU
+Ein C99-Kern mit `Kymo_Init(context, config)` und `Kymo_Main(context)`.
+Eine statische `kymo_config.c/.cpp` liefert die Konfiguration; eine ECU
 benötigt weder Dateisystem noch JSON-Parser. Kein neues Wire-Format.
 Ein reiner C++-Umbau würde C/HAL-Verbraucher ausschließen; rohe gepackte
 Structs würden Alignment, Endianness und Pointergrößen an den Draht koppeln.
@@ -72,7 +72,7 @@ Frames vermischen. Für neue Anwendungen wird die C-API empfohlen.
 - Gemeinsame Tests für alle acht Flagkombinationen, CRC, Fragmentierung,
   Teilschreiben, Busy, Fairness, fehlerhafte Konfiguration, ungültige Messwerte,
   Rollover und voneinander unabhängige Instanzen.
-- Ein nativer C-Sender erzeugt Bytes, die der echte PlotterApp-Decoder und
+- Ein nativer C-Sender erzeugt Bytes, die der echte KymoStudio-Decoder und
   Parser lesen. PlatformIO kompiliert repräsentativ AVR, ESP32 und STM32.
 - Builds beweisen keine elektrische Hardwarefunktion; Flashen und Messungen
   auf angeschlossenen Boards bleiben gesonderte Hardwareprüfungen.
@@ -87,7 +87,7 @@ Quelltextcheck sichert die Regel für diesen Sprachumfang ab.
 Wiederverwendbare Bitmasken-/Bitset-Helfer, uint32/float32-Little-Endian-Zugriffe
 und CRC8 liegen in `src/common` innerhalb des Library-Pakets. Makros dienen
 konstanten Maskenkombinationen; Laufzeitoperationen sind typisierte Inline-
-Funktionen. Die Common-Header hängen nicht vom Plotter-Protokoll ab.
+Funktionen. Die Common-Header hängen nicht vom Kymotrace-Protokoll ab.
 Decoder-Ergebnisse werden nur nach vollständiger Validierung übernommen.
 Das Wire-Format und die Init/Main-Schnittstelle bleiben unverändert.
 
@@ -97,4 +97,4 @@ Die gesamte Library einschließlich C++-Wrapper ist frei von Hersteller- und
 Framework-Abhängigkeiten. STM32-/Arduino-Adapter liegen ausschließlich bei den
 Beispielen. Zielplattform-Defines ändern weder API noch Speicherlayout der
 Library. Hardwarezugriffe erfolgen ausschließlich über konfigurierte Callbacks
-oder das abstrakte PlotterStream-Interface.
+oder das abstrakte KymoStream-Interface.

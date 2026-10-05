@@ -1,35 +1,35 @@
 /**
- * @mainpage PlotterLib embedded API
+ * @mainpage KymoCore embedded API
  *
  * @brief Portable C++11 telemetry with caller-owned storage and configurable I/O.
  *
  * @section lifecycle Configuration and lifecycle
- * Define persistent channel descriptors, mutable channel state and a PlotterConfig.
+ * Define persistent channel descriptors, mutable channel state and a KymoConfig.
  * Supply clock, sample and write callbacks; provide service and busy callbacks when
- * required by the transport. Call Plotter_Init once and Plotter_Main cyclically
+ * required by the transport. Call Kymo_Init once and Kymo_Main cyclically
  * from one task. Keep the configuration and referenced objects alive while the
  * context is in use. The runtime never allocates heap storage.
  *
  * @code{.c}
  * // Application configuration implements callbacks and owns persistent storage.
- * static PlotterContext context;
+ * static KymoContext context;
  * void application_init(void)
  * {
- *     PlotterStatus status = Plotter_Init(&context, &application_config);
+ *     KymoStatus status = Kymo_Init(&context, &application_config);
  *     // Handle status before enabling the periodic application task.
  * }
  * void application_cycle(void)
  * {
- *     PlotterStatus status = Plotter_Main(&context);
+ *     KymoStatus status = Kymo_Main(&context);
  *     // Handle transport/configuration errors; continue cyclic calls on BUSY.
  * }
  * @endcode
  *
  * @section modules API areas
- * - Edit plotter_build_config.h to set features to 0/1; plotter_features.h validates
+ * - Edit kymo_build_config.h to set features to 0/1; kymo_features.h validates
  *   them. Compiler definitions override the header. Defaults enable scalar encoding
  *   and Init/Main only; X/Z/time, CRC, MCU decoding and C++ are opt-in.
- * - @ref plotter_runtime describes configuration, callbacks and runtime state.
+ * - @ref kymo_runtime describes configuration, callbacks and runtime state.
  * - See the module index for the wire codec, common byte/bit/CRC operations,
  *   optional C++ wrapper and application-side hardware adapters.
  * - Each header documents its macros, types, members and callable interfaces.
@@ -45,9 +45,9 @@
  * detailed contract before adapting UART, USB, TCP or another byte transport.
  *
  * @section portability Portability and scope
- * PlotterLib has no Arduino or STM32 SDK dependencies. Hardware adapters belong
+ * KymoCore has no Arduino or STM32 SDK dependencies. Hardware adapters belong
  * to examples/application code. Headers under legacy and the independent Events
  * dependency are outside this API. The binary v6 wire format remains compatible
- * with PlotterApp; see lib/PlotterLib/PROTOCOL.md in the repository.
+ * with KymoStudio; see lib/KymoCore/PROTOCOL.md in the repository.
  * Documentation and single-exit style do not constitute safety certification.
  */

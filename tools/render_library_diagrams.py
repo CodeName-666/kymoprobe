@@ -2,7 +2,7 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
-OUT = Path(__file__).resolve().parents[1] / "lib/PlotterLib/docs/images"
+OUT = Path(__file__).resolve().parents[1] / "lib/KymoCore/docs/images"
 INK = "#183044"
 MUTED = "#526778"
 BLUE = "#dcecff"
@@ -25,7 +25,7 @@ def font(size, bold=False):
 def canvas(title, subtitle, height):
     picture = Image.new("RGB", (1600, height), "#f5f8fb")
     draw = ImageDraw.Draw(picture)
-    draw.text((64, 38), "PLOTTERLIB / TECHNISCHE DOKUMENTATION", font=font(20, True), fill=MUTED)
+    draw.text((64, 38), "KYMOCORE / TECHNISCHE DOKUMENTATION", font=font(20, True), fill=MUTED)
     draw.text((64, 84), title, font=font(43, True), fill=INK)
     draw.text((64, 149), subtitle, font=font(24), fill=MUTED)
     return picture, draw
@@ -55,21 +55,21 @@ def save(picture, name):
 
 
 def architecture():
-    picture, draw = canvas("Vom Messwert zum Diagramm", "Hardware bleibt in der Anwendung; PlotterLib kennt nur Daten und Callbacks.", 880)
+    picture, draw = canvas("Vom Messwert zum Diagramm", "Hardware bleibt in der Anwendung; KymoCore kennt nur Daten und Callbacks.", 880)
     box(draw, (64, 225, 510, 465), "1  Anwendung", ["Sensor / Parameter", "clock_ms() und sample()", "Statische Kanalkonfiguration"], TEAL)
-    box(draw, (575, 225, 1020, 465), "2  PlotterLib", ["Init/Main + Round-Robin", "Codec: Little Endian", "Ein TX-Puffer: maximal 21 Bytes"])
+    box(draw, (575, 225, 1020, 465), "2  KymoCore", ["Init/Main + Round-Robin", "Codec: Little Endian", "Ein TX-Puffer: maximal 21 Bytes"])
     box(draw, (1085, 225, 1536, 465), "3  Anwendungstreiber", ["write() / busy() / service()", "UART, USB, TCP, MQTT ...", "Kopieren oder Puffer ausleihen"], TEAL)
     arrow(draw, (510, 340), (575, 340))
     arrow(draw, (1020, 340), (1085, 340))
     arrow(draw, (1310, 465), (1310, 555))
-    box(draw, (1085, 555, 1536, 785), "4  PlotterApp", ["Stream zusammensetzen", "Frame prüfen / Kanal zuordnen", "Messwerte visualisieren"], AMBER)
+    box(draw, (1085, 555, 1536, 785), "4  KymoStudio", ["Stream zusammensetzen", "Frame prüfen / Kanal zuordnen", "Messwerte visualisieren"], AMBER)
     box(draw, (64, 555, 1020, 785), "Vertrag zwischen den Ebenen", ["Keine SDK-Abhängigkeit und kein Heap im Library-Kern.", "Anwendung besitzt Uhr, Konfiguration, Zustände und Treiber.", "Wire-Format: A5 5A + Descriptor + ID + Payload + Trailer."], "#ffffff")
     save(picture, "architecture.png")
 
 
 def transmission():
     picture, draw = canvas("Ein Frame über mehrere Main-Aufrufe", "Beispiel: 9 Bytes; zuerst 4 Bytes angenommen, danach die restlichen 5.", 1040)
-    headings = [(64, "Zyklus"), (285, "PlotterLib / Kontext"), (860, "Transport / Pufferbesitz")]
+    headings = [(64, "Zyklus"), (285, "KymoCore / Kontext"), (860, "Transport / Pufferbesitz")]
     for x, title in headings:
         draw.text((x, 215), title, font=font(26, True), fill=INK)
     rows = [

@@ -1,19 +1,19 @@
 #include <Arduino.h>
-#include "plotter_config.h"
+#include "kymo_config.h"
 
-static PlotterContext plotter;
+static KymoContext kymo;
 
 /*******************************************************************************
  * setup
  ******************************************************************************/
 void setup() {
     Serial.begin(115200);
-    (void)Plotter_Init(&plotter, &plotter_config);
+    (void)Kymo_Init(&kymo, &kymo_config);
 }
 
 /*******************************************************************************
  * loop
  ******************************************************************************/
 void loop() {
-    (void)Plotter_Main(&plotter);
+    (void)Kymo_Main(&kymo);
 }

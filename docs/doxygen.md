@@ -32,5 +32,5 @@ Sie verändern weder Firmware-Builds noch das Protokoll.
 Dokumentation ersetzt keine Compiler- oder Funktionstests. Zur Prüfung:
 
 ```sh
-python tools/test_native.py --app ../PlotterApp
+python tools/test_native.py --app ../KymoStudio
 ```

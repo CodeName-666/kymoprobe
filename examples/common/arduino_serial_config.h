@@ -2,14 +2,14 @@
  * @brief Application-side Serial configuration shared by Arduino examples.
  *
  * @details Uses static linkage: include from exactly one application translation unit per device.
- * Define PLOTTER_EXAMPLE_MULTIDIMENSIONAL before inclusion to select Y/XY/XYZ channels;
+ * Define KYMO_EXAMPLE_MULTIDIMENSIONAL before inclusion to select Y/XY/XYZ channels;
  * otherwise the table contains two timestamped scalar waveforms. This header is not
- * part of PlotterLib and deliberately depends on the Arduino framework.
+ * part of KymoCore and deliberately depends on the Arduino framework.
  * @file arduino_serial_config.h
  * @defgroup example_arduino_config Arduino example configuration
  * @{
  * @par Usage
- * Initialize Serial at 115200 baud; pass example_config to Plotter_Init and run Plotter_Main.
+ * Initialize Serial at 115200 baud; pass example_config to Kymo_Init and run Kymo_Main.
  */
 #ifndef EXAMPLE_ARDUINO_SERIAL_CONFIG_H
 /**
@@ -23,13 +23,13 @@
 
 #include <Arduino.h>
 #include <math.h>
-#include <plotter_runtime.h>
+#include <kymo_runtime.h>
 
-#if !PLOTTER_ENABLE_RUNTIME || !PLOTTER_ENABLE_TIMESTAMP
-#error "This example requires PLOTTER_ENABLE_RUNTIME=1 and PLOTTER_ENABLE_TIMESTAMP=1"
+#if !KYMO_ENABLE_RUNTIME || !KYMO_ENABLE_TIMESTAMP
+#error "This example requires KYMO_ENABLE_RUNTIME=1 and KYMO_ENABLE_TIMESTAMP=1"
 #endif
-#if defined(PLOTTER_EXAMPLE_MULTIDIMENSIONAL) && (!PLOTTER_ENABLE_X || !PLOTTER_ENABLE_Z)
-#error "The multidimensional example requires PLOTTER_ENABLE_X=1 and PLOTTER_ENABLE_Z=1"
+#if defined(KYMO_EXAMPLE_MULTIDIMENSIONAL) && (!KYMO_ENABLE_X || !KYMO_ENABLE_Z)
+#error "The multidimensional example requires KYMO_ENABLE_X=1 and KYMO_ENABLE_Z=1"
 #endif
 
 /**
@@ -80,14 +80,14 @@ static uint8_t example_write(void *user, const uint8_t *bytes, uint8_t length) {
  * @par Usage
  * Use the waveform source to validate app framing before integrating sensors.
  */
-static uint8_t example_sample(void *user, uint8_t id, PlotterSample *out) {
+static uint8_t example_sample(void *user, uint8_t id, KymoSample *out) {
     (void)user;
     const float phase = (millis() % 2000u) / 2000.0f;
-#if PLOTTER_ENABLE_X
+#if KYMO_ENABLE_X
     out->x = phase;
 #endif
     out->value = id == 0 ? sinf(phase * 6.283185307f) : 2.0f * phase - 1.0f;
-#if PLOTTER_ENABLE_Z
+#if KYMO_ENABLE_Z
     out->z = cosf(phase * 6.283185307f);
 #endif
     return 1;
@@ -95,18 +95,18 @@ static uint8_t example_sample(void *user, uint8_t id, PlotterSample *out) {
 /**
  * @brief Immutable demo channel table.
  *
- * @details Default: IDs 0/1 at 20 ms, Y plus timestamp. With PLOTTER_EXAMPLE_MULTIDIMENSIONAL:
+ * @details Default: IDs 0/1 at 20 ms, Y plus timestamp. With KYMO_EXAMPLE_MULTIDIMENSIONAL:
  * ID 0 is Y/time at 20 ms, ID 1 XY/time at 50 ms, ID 2 XYZ/time at 100 ms.
  * @par Usage
  * Adjust table periods/flags before compiling; do not change it during runtime.
  */
-static const PlotterChannel example_channels[] = {
-    {20, 0, PLOTTER_FLAG_TIMESTAMP},
-#ifdef PLOTTER_EXAMPLE_MULTIDIMENSIONAL
-    {50, 1, EMB_U8_OR(PLOTTER_FLAG_X, PLOTTER_FLAG_TIMESTAMP)},
-    {100, 2, PLOTTER_ALLOWED_FLAGS},
+static const KymoChannel example_channels[] = {
+    {20, 0, KYMO_FLAG_TIMESTAMP},
+#ifdef KYMO_EXAMPLE_MULTIDIMENSIONAL
+    {50, 1, EMB_U8_OR(KYMO_FLAG_X, KYMO_FLAG_TIMESTAMP)},
+    {100, 2, KYMO_ALLOWED_FLAGS},
 #else
-    {20, 1, PLOTTER_FLAG_TIMESTAMP},
+    {20, 1, KYMO_FLAG_TIMESTAMP},
 #endif
 };
 /**
@@ -124,9 +124,9 @@ static uint32_t example_last[sizeof(example_channels) / sizeof(example_channels[
  * @details Input to Init; hardware is initialized separately. No busy callback is needed because
  * Serial writes copy data. No service callback or opaque context is used.
  * @par Usage
- * Plotter_Init(&plotter, &example_config);
+ * Kymo_Init(&kymo, &example_config);
  */
-static const PlotterConfig example_config = {
+static const KymoConfig example_config = {
     example_channels, example_last, example_clock, nullptr, example_sample,
     nullptr, example_write, nullptr, nullptr, nullptr,
     sizeof(example_channels) / sizeof(example_channels[0])

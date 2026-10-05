@@ -1,4 +1,4 @@
-"""Validate, pack and build consumers from the exported PlotterLib archive.
+"""Validate, pack and build consumers from the exported KymoCore archive.
 
 Requires PlatformIO and g++; --skip-firmware runs just package/host checks.
 No publishing, credentials or hardware access. Outputs stay under .pio/.
@@ -17,7 +17,7 @@ import tarfile
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-LIB = ROOT / "lib/PlotterLib"
+LIB = ROOT / "lib/KymoCore"
 
 
 def run(*command, cwd=ROOT):
@@ -52,7 +52,7 @@ def check_archive(archive, destination):
     properties = dict(line.split("=", 1) for line in
                       (destination / "library.properties").read_text(encoding="utf-8").splitlines()
                       if "=" in line)
-    assert manifest["name"] == properties["name"] == "PlotterLib"
+    assert manifest["name"] == properties["name"] == "KymoCore"
     assert manifest["version"] == properties["version"]
     assert len(manifest["description"]) <= 255
     required = ["LICENSE", "CHANGELOG.md", "PUBLISHING.md", "README.md", "PROTOCOL.md",
@@ -88,7 +88,7 @@ def main():
     version = json.loads((LIB / "library.json").read_text(encoding="utf-8"))["version"]
     output = ROOT / ".pio/package"
     output.mkdir(parents=True, exist_ok=True)
-    archive = output / f"PlotterLib-{version}.tar.gz"
+    archive = output / f"KymoCore-{version}.tar.gz"
     run(pio, "pkg", "pack", LIB, "-o", archive)
     workspace = Path(tempfile.mkdtemp(prefix="consumer-", dir=output))
     unpacked = workspace / "unpacked"

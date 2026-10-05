@@ -1,7 +1,7 @@
 #include "board.h"
 
 UART_HandleTypeDef huart2;
-static PlotterContext plotter;
+static KymoContext kymo;
 
 /*******************************************************************************
  * SysTick_Handler
@@ -47,6 +47,6 @@ int main(void) {
     // Reset-default HSI clock: no external oscillator/CubeMX files required.
     HAL_Init();
     uart_init();
-    if (Plotter_Init(&plotter, &example_config) != PLOTTER_OK) while (1) {}
-    while (1) { (void)Plotter_Main(&plotter); }
+    if (Kymo_Init(&kymo, &example_config) != KYMO_OK) while (1) {}
+    while (1) { (void)Kymo_Main(&kymo); }
 }

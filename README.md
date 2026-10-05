@@ -1,7 +1,7 @@
-# PlotterEcu
+# KymoProbe
 
-Universelle Embedded-Telemetrie für PlotterApp: C++11-Kern, statische Konfiguration,
-einmal `Plotter_Init()` und zyklisch `Plotter_Main()`. Das Hauptprojekt ist ein
+Universelle Embedded-Telemetrie für KymoStudio: C++11-Kern, statische Konfiguration,
+einmal `Kymo_Init()` und zyklisch `Kymo_Main()`. Das Hauptprojekt ist ein
 ESP32-PlatformIO-Projekt. Der Kern benötigt weder Arduino noch RTOS oder Heap.
 
 ## Start mit ESP32
@@ -12,11 +12,11 @@ pio run -e nodemcu-32s -t upload
 ```
 
 `src/main.cpp` initialisiert Serial mit **115200 Baud** und ruft Init/Main auf.
-`src/plotter_config.cpp` enthält Kanäle, Abtastintervalle, Messwertfunktion und
+`src/kymo_config.cpp` enthält Kanäle, Abtastintervalle, Messwertfunktion und
 Transport. Im Beispiel senden Kanal 0 und 1 Sinus/Sägezahn mit je 50 Hz und
 Zeitstempeln. Eigene Messwerte werden im `sample`-Callback übernommen.
 
-In PlotterApp eine serielle Verbindung zum Board mit **115200, 8N1** öffnen.
+In KymoStudio eine serielle Verbindung zum Board mit **115200, 8N1** öffnen.
 Die App erkennt die Binärframes automatisch. Die Datenbytes sind kein Text;
 den Port nicht gleichzeitig mit dem PlatformIO-Serial-Monitor öffnen.
 Kanalnamen/Einheiten werden in der App eingestellt, nicht über v6 übertragen.
@@ -40,24 +40,24 @@ und ESP32-Projekte nutzen denselben C++11-Kern.
 Die vollständige Header-API lässt sich mit `doxygen Doxyfile` erzeugen.
 [Doxygen-Anleitung](docs/doxygen.md) beschreibt Ausgabe und Dokumentationsregeln.
 
-[PlotterLib](lib/PlotterLib/README.md) dokumentiert die Konfiguration, Speicher-
-und Callback-Verträge. [PROTOCOL.md](lib/PlotterLib/PROTOCOL.md) definiert das
-mit PlotterApp identische Wire-Format. Es sind 9–21 Bytes pro Messung:
+[KymoCore](lib/KymoCore/README.md) dokumentiert die Konfiguration, Speicher-
+und Callback-Verträge. [PROTOCOL.md](lib/KymoCore/PROTOCOL.md) definiert das
+mit KymoStudio identische Wire-Format. Es sind 9–21 Bytes pro Messung:
 bytebasierte IDs/Flags, explizites Little Endian, float32, optionale uint32-
 Millisekunden und ein Abschlussbyte. CRC8 ist standardmäßig deaktiviert;
 `NO_CRC` im Descriptor kennzeichnet Frames mit Null-Platzhalter statt CRC.
-Mit `build_flags = -DPLOTTER_ENABLE_CRC=1` lässt sich CRC für den Bibliotheksbuild
-einschalten. Für den Standardmodus ist die aktualisierte PlotterApp erforderlich.
+Mit `build_flags = -DKYMO_ENABLE_CRC=1` lässt sich CRC für den Bibliotheksbuild
+einschalten. Für den Standardmodus ist die aktualisierte KymoStudio erforderlich.
 Keine Pointer oder C-Strukturen werden direkt gesendet.
 
 Der Standardbuild enthält nur den skalaren C-Sender und die Init/Main-Runtime.
 X, Z, Zeitstempel, CRC, MCU-Decoder und C++-Wrapper werden über die
-`PLOTTER_ENABLE_*`-Schalter in
-[`plotter_build_config.h`](lib/PlotterLib/src/plotter_build_config.h) zugeschaltet:
+`KYMO_ENABLE_*`-Schalter in
+[`kymo_build_config.h`](lib/KymoCore/src/kymo_build_config.h) zugeschaltet:
 direkt im Header `0` für aus oder `1` für ein setzen und vollständig neu bauen.
 Vorhandene Build-Flags haben Vorrang vor den Headerwerten. Auch die Runtime
 lässt sich für reine Codec-Nutzung abschalten. Die vollständige Schaltertabelle
-steht in [PlotterLib/README.md](lib/PlotterLib/README.md#minimal-build-and-optional-features).
+steht in [KymoCore/README.md](lib/KymoCore/README.md#minimal-build-and-optional-features).
 Die Beispielprojekte aktivieren ihre benötigten Extras ausdrücklich.
 
 Für andere ECUs werden ausschließlich Zeit-, Mess- und Transport-Callbacks
@@ -71,21 +71,21 @@ sein natives Mapping; ein v6-Frame passt erst in CAN-FD.
 Die folgenden Mermaid-Diagramme werden auf GitHub und in Markdown-Viewern mit
 Mermaid-Unterstützung dargestellt. Der bevorzugte Einstieg ist die C-Runtime:
 Die Anwendung stellt eine statische Konfiguration bereit, initialisiert einmal
-und ruft danach zyklisch `Plotter_Main()` auf. Die optionale C++-API ist ein
+und ruft danach zyklisch `Kymo_Main()` auf. Die optionale C++-API ist ein
 separater Sender für Anwendungen, die Messungen selbst zeitlich steuern.
 
-### Datenweg: Anwendung bis PlotterApp
+### Datenweg: Anwendung bis KymoStudio
 
 ```mermaid
 flowchart LR
     subgraph ECU["ECU / Firmware"]
         direction TB
         Values["Sensoren und Anwendungsparameter"]
-        Config["plotter_config.c / .cpp<br/>Kanäle, Perioden, Flags, Callbacks"]
-        Task["setup / Systemstart: Plotter_Init<br/>loop / zyklischer Task: Plotter_Main"]
+        Config["kymo_config.c / .cpp<br/>Kanäle, Perioden, Flags, Callbacks"]
+        Task["setup / Systemstart: Kymo_Init<br/>loop / zyklischer Task: Kymo_Main"]
         Runtime["C++11-Runtime<br/>Zeitplanung und Teilübertragungen"]
         Codec["v6-Codec<br/>Little Endian, float32, optionale CRC8"]
-        Buffer["PlotterContext.tx<br/>maximal 21 Bytes"]
+        Buffer["KymoContext.tx<br/>maximal 21 Bytes"]
         Driver["Anwendungsadapter / Treiber<br/>UART, USB, TCP oder MQTT"]
         Config --> Task
         Task --> Runtime
@@ -95,11 +95,11 @@ flowchart LR
         Buffer -->|write| Driver
         Driver -->|akzeptierte Bytes / busy| Runtime
     end
-    subgraph PC["PC: PlotterApp"]
+    subgraph PC["PC: KymoStudio"]
         Receive["Verbindung empfängt Bytes"]
         Decode["Frames erkennen und prüfen<br/>Länge, Descriptor, optionale CRC"]
         Route["Messwerte nach Kanal-ID zuordnen<br/>Y, optional X / Z / Zeit"]
-        View["Darstellung im Plotter"]
+        View["Darstellung im Kymo"]
         Receive --> Decode --> Route --> View
     end
     Driver -->|"binäres v6: 9 bis 21 Bytes"| Receive
@@ -114,12 +114,12 @@ serialisiert einzelne Werte; er überträgt keine Speicherabbilder von Strukture
 ```mermaid
 flowchart TB
     App["Anwendung besitzt alle Objekte<br/>Lebensdauer mindestens bis zum Nutzungsende"]
-    Context["PlotterContext<br/>config, start_ms, next_channel<br/>tx, tx_length, tx_offset, fault"]
-    Config["const PlotterConfig<br/>Kanalanzahl, Referenzen und Funktionszeiger"]
-    Channels["const PlotterChannel channels[N]<br/>period_ms, id, flags"]
+    Context["KymoContext<br/>config, start_ms, next_channel<br/>tx, tx_length, tx_offset, fault"]
+    Config["const KymoConfig<br/>Kanalanzahl, Referenzen und Funktionszeiger"]
+    Channels["const KymoChannel channels[N]<br/>period_ms, id, flags"]
     Times["uint32_t last_sample_ms[N]<br/>veränderlicher Zustand pro Kanal"]
     Clock["clock_ms(clock_user)<br/>liefert uint32 Millisekunden"]
-    Sample["sample(sample_user, id, out)<br/>füllt PlotterSample: value, x, z<br/>0 = überspringen; ungleich 0 = Messung"]
+    Sample["sample(sample_user, id, out)<br/>füllt KymoSample: value, x, z<br/>0 = überspringen; ungleich 0 = Messung"]
     Write["write(transport_user, bytes, length)<br/>liefert akzeptierte Byteanzahl"]
     Busy["busy(transport_user), optional<br/>ungleich 0 = Treiber belegt / Puffer geliehen"]
     Service["service(transport_user), optional<br/>Verbindung / Treiber zyklisch bedienen"]
@@ -138,7 +138,7 @@ flowchart TB
 `clock_user`, `sample_user` und `transport_user` transportieren eigene
 Anwendungszustände oder Treiber-Handles als `void *`. So benötigt die Library
 keine CPU-spezifischen Typen. Die C-Strukturen verwenden **keine Vererbung**.
-Jede Runtime-Instanz benötigt einen eigenen `PlotterContext` und ein eigenes
+Jede Runtime-Instanz benötigt einen eigenen `KymoContext` und ein eigenes
 `last_sample_ms`-Array. Konfiguration und Kanaltabelle bleiben nach Init konstant.
 
 | Schnittstelle | Aufgabe der Anwendung | Aufgabe der Library |
@@ -153,35 +153,35 @@ Jede Runtime-Instanz benötigt einen eigenen `PlotterContext` und ein eigenes
 
 ```mermaid
 flowchart TD
-    Start["Hardware initialisieren"] --> Init["Plotter_Init mit Kontext und Konfiguration"]
+    Start["Hardware initialisieren"] --> Init["Kymo_Init mit Kontext und Konfiguration"]
     Init --> Valid{"Konfiguration gültig?"}
-    Valid -->|Nein| Fix["PLOTTER_BAD_CONFIG<br/>Konfiguration korrigieren"]
+    Valid -->|Nein| Fix["KYMO_BAD_CONFIG<br/>Konfiguration korrigieren"]
     Fix --> Init
-    Valid -->|Ja| Ready["PLOTTER_OK<br/>Kanäle sind sofort erstmals fällig"]
-    Ready --> Main["Nächster zyklischer Aufruf: Plotter_Main"]
+    Valid -->|Ja| Ready["KYMO_OK<br/>Kanäle sind sofort erstmals fällig"]
+    Ready --> Main["Nächster zyklischer Aufruf: Kymo_Main"]
     Main --> ContextOK{"Kontext und config vorhanden?"}
-    ContextOK -->|Nein| BadConfig["PLOTTER_BAD_CONFIG"]
+    ContextOK -->|Nein| BadConfig["KYMO_BAD_CONFIG"]
     ContextOK -->|Ja| Service["Optional service aufrufen"]
     Service --> Fault{"IO-Fehler gespeichert?"}
-    Fault -->|Ja| IOError["PLOTTER_IO_ERROR"]
+    Fault -->|Ja| IOError["KYMO_IO_ERROR"]
     Fault -->|Nein| Busy{"Optional busy meldet belegt?"}
-    Busy -->|Ja| Wait["PLOTTER_BUSY"]
+    Busy -->|Ja| Wait["KYMO_BUSY"]
     Busy -->|Nein| Pending{"Restbytes vorhanden?"}
     Pending -->|Ja| Write["write mit verbleibenden Bytes"]
     Pending -->|Nein| Due{"Fälligen Kanal per Round-Robin gefunden?"}
-    Due -->|Nein| Idle["PLOTTER_IDLE"]
+    Due -->|Nein| Idle["KYMO_IDLE"]
     Due -->|Ja| Sample["sample aufrufen<br/>Abtastzeit aktualisieren"]
     Sample --> Available{"Messung verfügbar?"}
-    Available -->|Nein| Skip["PLOTTER_SKIPPED"]
+    Available -->|Nein| Skip["KYMO_SKIPPED"]
     Available -->|Ja| Encode["Werte prüfen und v6-Frame codieren"]
     Encode --> Finite{"Erforderliche Werte endlich?"}
-    Finite -->|Nein| BadSample["PLOTTER_BAD_SAMPLE"]
+    Finite -->|Nein| BadSample["KYMO_BAD_SAMPLE"]
     Finite -->|Ja| Write
     Write --> Count{"Gemeldete Byteanzahl?"}
     Count -->|Mehr als angefordert| Latch["IO-Fehler speichern"]
     Latch --> IOError
     Count -->|Rest bleibt, auch bei 0 Bytes| Wait
-    Count -->|Alles angenommen| OK["PLOTTER_OK"]
+    Count -->|Alles angenommen| OK["KYMO_OK"]
     BadConfig --> End["Status an Anwendung zurückgeben"]
     IOError --> End
     Wait --> End
@@ -192,36 +192,36 @@ flowchart TD
     End -->|"später erneut, keine Warteschleife in Main"| Main
 ```
 
-`PLOTTER_OK` bedeutet, dass der Treiber den vollständigen Frame angenommen hat;
-es ist keine Empfangsbestätigung der PlotterApp. Bei DMA oder USB muss `busy`
+`KYMO_OK` bedeutet, dass der Treiber den vollständigen Frame angenommen hat;
+es ist keine Empfangsbestätigung der KymoStudio. Bei DMA oder USB muss `busy`
 so lange gesetzt bleiben, wie der Treiber den Puffer benutzt. Ein gespeicherter
 IO-Fehler erfordert eine Treiberkorrektur und sichere Neuinitialisierung.
 Verpasste Abtastungen werden nicht als nachträglicher Messwertstapel aufgeholt.
 
 ### Usage: vorhandene ESP32-Konfiguration verwenden
 
-Dieses Beispiel verwendet die bereits definierte `plotter_config` aus
-[src/plotter_config.cpp](src/plotter_config.cpp). Dort werden eigene Kanäle,
+Dieses Beispiel verwendet die bereits definierte `kymo_config` aus
+[src/kymo_config.cpp](src/kymo_config.cpp). Dort werden eigene Kanäle,
 Messwertzugriffe und Transport-Callbacks angepasst.
 
 ```cpp
 #include <Arduino.h>
-#include "plotter_config.h"
+#include "kymo_config.h"
 
-static PlotterContext context;
-static PlotterStatus init_status = PLOTTER_BAD_CONFIG;
-static PlotterStatus last_status = PLOTTER_IDLE;
+static KymoContext context;
+static KymoStatus init_status = KYMO_BAD_CONFIG;
+static KymoStatus last_status = KYMO_IDLE;
 
 void setup()
 {
     Serial.begin(115200);
-    init_status = Plotter_Init(&context, &plotter_config);
+    init_status = Kymo_Init(&context, &kymo_config);
 }
 
 void loop()
 {
-    if (init_status == PLOTTER_OK) {
-        last_status = Plotter_Main(&context);
+    if (init_status == KYMO_OK) {
+        last_status = Kymo_Main(&context);
         // last_status bei Bedarf in der Anwendungsdiagnose auswerten.
     }
     // Weitere begrenzte Anwendungsarbeit erledigen.
@@ -237,8 +237,8 @@ Task und nicht gleichzeitig aus Interrupts oder mehreren Threads.
 
 ```mermaid
 classDiagram
-    class Plotter {
-        -PlotterStream* stream
+    class Kymo {
+        -KymoStream* stream
         -uint8_t buffer[21]
         +begin(outputStream, enableTimestamp)
         +setMillisecondCallback(callback)
@@ -247,7 +247,7 @@ classDiagram
         +send3D(channelId, xValue, yValue, zValue, includeTimestamp) bool
         +flush() bool
     }
-    class PlotterStream {
+    class KymoStream {
         <<abstract>>
         +write(data, length) size_t
         +busy() bool
@@ -273,30 +273,30 @@ classDiagram
         +write(data, length) size_t
         +busy() bool
     }
-    Plotter --> PlotterStream : verwendet, besitzt nicht
-    PlotterStream <|-- PrintStream
-    PlotterStream <|-- UARTStream
-    PlotterStream <|-- CDCStream
-    PlotterStream <|-- ApplicationStream
+    Kymo --> KymoStream : verwendet, besitzt nicht
+    KymoStream <|-- PrintStream
+    KymoStream <|-- UARTStream
+    KymoStream <|-- CDCStream
+    KymoStream <|-- ApplicationStream
 ```
 
-Die Pfeile mit leerer Dreiecksspitze zeigen Vererbung. `Plotter` hält einen
-Zeiger auf `PlotterStream`; er erbt nicht davon und löscht den Stream nicht.
+Die Pfeile mit leerer Dreiecksspitze zeigen Vererbung. `Kymo` hält einen
+Zeiger auf `KymoStream`; er erbt nicht davon und löscht den Stream nicht.
 `ApplicationStream` ist eine mögliche eigene Implementierung, keine vorhandene
 Projektklasse. Die Methodenliste zeigt die wesentlichen Schnittstellen; die
 Header dokumentieren alle Überladungen.
 
-`PlotterStream::write()` ist rein virtuell. `busy()` hat eine Standardimplementierung
+`KymoStream::write()` ist rein virtuell. `busy()` hat eine Standardimplementierung
 mit `false`; asynchrone Adapter müssen sie passend überschreiben. `PrintStream`
-liegt in `examples/common/plotter_arduino.h`, die STM32-Beispieladapter liegen in
-`examples/stm32/adapters/plotter_stm32.h`. Nur Anwendung und Adapter binden SDKs
-ein; `Plotter` und `PlotterStream` bleiben plattformunabhängig.
+liegt in `examples/common/kymo_arduino.h`, die STM32-Beispieladapter liegen in
+`examples/stm32/adapters/kymo_stm32.h`. Nur Anwendung und Adapter binden SDKs
+ein; `Kymo` und `KymoStream` bleiben plattformunabhängig.
 
 ```mermaid
 sequenceDiagram
     participant A as Anwendung
-    participant P as Plotter
-    participant S as PlotterStream-Adapter
+    participant P as Kymo
+    participant S as KymoStream-Adapter
     A->>P: send / send2D / send3D
     P->>S: busy()
     alt Puffer frei, Transport bereit und Messung gültig
@@ -324,12 +324,12 @@ spätere `flush()`-Aufrufe abgeschlossen. Die Überladungen ohne
 `includeTimestamp` senden ohne Zeitstempel. Für Zeitstempel muss zusätzlich
 zur aktivierten Zeitstempeloption ein Millisekunden-Callback gesetzt sein.
 Die C++-API verwendet denselben Codec wie die C-Runtime, ruft aber weder
-`Plotter_Init` noch `Plotter_Main` auf.
+`Kymo_Init` noch `Kymo_Main` auf.
 
 ## Prüfung
 
 ```sh
-python tools/test_native.py --app ../PlotterApp
+python tools/test_native.py --app ../KymoStudio
 # Alternativ: nur C/C++-Tests ohne App
 python tools/test_native.py
 ```
@@ -345,13 +345,13 @@ Analyse/Entscheidungen: [docs/embedded-design.md](docs/embedded-design.md).
 Prüfergebnisse: [docs/verification.md](docs/verification.md).
 
 Der frühere A5A5-Prototyp wurde nach `legacy/` verschoben. Er wird nicht mehr
-gebaut und ist nicht mit PlotterApp v6 kompatibel. Das unabhängige Events-
+gebaut und ist nicht mit KymoStudio v6 kompatibel. Das unabhängige Events-
 Submodul bleibt unverändert und ist keine Library-Abhängigkeit.
 
 ## Embedded-Coderegeln
 
 Aktive C/C++-Funktionen verwenden höchstens ein `return` am Funktionsende.
 Bitoperationen, Bytekonvertierung und CRC sind in einer unabhängigen
-[Common-Komponente](lib/PlotterLib/src/common/README.md) gebündelt.
+[Common-Komponente](lib/KymoCore/src/common/README.md) gebündelt.
 `python tools/test_native.py` prüft die Coderegel und die Hilfsfunktionen mit.
 Die dauerhaften Vorgaben stehen in [AGENTS.md](AGENTS.md).

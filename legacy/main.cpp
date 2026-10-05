@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include "math.h"
-#include "plotter.h"
+#include "kymo.h"
 
 
-using namespace Plotter;
+using namespace Kymo;
 
-Plotter::Plotter p;
+Kymo::Kymo p;
 
 SwTimer loopTimer;
 void setup() {

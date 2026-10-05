@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <string.h>
-#include "plotter.h"
-#include "../../examples/stm32/adapters/plotter_stm32.h"
+#include "kymo.h"
+#include "../../examples/stm32/adapters/kymo_stm32.h"
 
 static bool cdcBusy;
 static const uint8_t *cdcBuffer;
@@ -20,7 +20,7 @@ static uint8_t cdcTransmit(uint8_t *data, uint16_t) {
  ******************************************************************************/
 static bool cdcIsBusy() { return cdcBusy; }
 
-class ShortStream : public PlotterStream {
+class ShortStream : public KymoStream {
 public:
     uint8_t bytes[128] = {};
     size_t length = 0;
@@ -48,7 +48,7 @@ public:
  ******************************************************************************/
 int main() {
     ShortStream stream;
-    Plotter p(stream);
+    Kymo p(stream);
     assert(p.send(7, 1.0f)); /* accepted; partial write remains pending */
     stream.blocked = true;
     assert(!p.send(9, 2.0f));
@@ -57,15 +57,15 @@ int main() {
     assert(!p.flush());
     assert(p.flush());
     assert(stream.length == 9);
-    static const uint8_t golden[] = {0xa5,0x5a,PLOTTER_ENABLE_CRC ? 0x40 : 0x41,7,0,0,0x80,0x3f,
-        PLOTTER_ENABLE_CRC ? 0x54 : 0};
+    static const uint8_t golden[] = {0xa5,0x5a,KYMO_ENABLE_CRC ? 0x40 : 0x41,7,0,0,0x80,0x3f,
+        KYMO_ENABLE_CRC ? 0x54 : 0};
     assert(memcmp(stream.bytes, golden, 9) == 0);
     stream.limit = 21;
     assert(p.send(9, 2.0f));
     assert(stream.length == 18);
 
     CDCStream cdc(cdcTransmit, cdcIsBusy);
-    Plotter usb(cdc);
+    Kymo usb(cdc);
     assert(usb.send(7, 1.0f));
     assert(!usb.send(9, 2.0f));
     assert(!usb.flush());

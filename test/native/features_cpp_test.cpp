@@ -1,7 +1,7 @@
 #include <assert.h>
-#include "plotter.h"
+#include "kymo.h"
 
-class FeatureStream : public PlotterStream {
+class FeatureStream : public KymoStream {
 public:
     unsigned writes = 0;
     uint8_t descriptor = 0;
@@ -23,7 +23,7 @@ public:
 int main()
 {
     FeatureStream stream;
-    Plotter sender(stream);
+    Kymo sender(stream);
     assert(!sender.isTimestampEnabled());
     sender.setTimestampEnabled(true);
     assert(!sender.isTimestampEnabled());

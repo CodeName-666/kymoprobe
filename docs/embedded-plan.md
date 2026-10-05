@@ -1,6 +1,6 @@
-# Embedded Plotter Implementation Plan
+# Embedded Kymotrace Implementation Plan
 
-> Nachtrag 2026-10-01: PlotterLib wird inzwischen vollst�ndig als C++11
+> Nachtrag 2026-10-01: KymoCore wird inzwischen vollst�ndig als C++11
 > kompiliert. Die C-kompatible API bleibt f�r C99-Aufrufer erhalten.
 > Die folgenden C99-Kern-Angaben beschreiben den urspr�nglichen Plan.
 
@@ -20,7 +20,7 @@ oder gezielt migriert; keine Commits fremder Ã„nderungen.
 - [x] C-Verhaltenstests in `test/native/runtime_test.c`: Init-Validierung,
   feste Golden Bytes, kurze Writes/Busy, Fairness, ZeitÃ¼berlauf, Samplefehler,
   unabhÃ¤ngige Instanzen; zuerst gegen fehlende Runtime ausfÃ¼hren.
-- [x] `lib/PlotterLib/src/plotter_runtime.h/.c`: Konfiguration und Main-State.
+- [x] `lib/KymoCore/src/kymo_runtime.h/.c`: Konfiguration und Main-State.
   C99 mit Warnungen als Fehler kompilieren; Verhaltenstests ausfÃ¼hren.
 - [x] C++-Push-API und STM32-Adapter auf RÃ¼ckstau/Pufferlebensdauer prÃ¼fen,
   Regressionstests ergÃ¤nzen und Golden-Test weiter bestehen lassen.
