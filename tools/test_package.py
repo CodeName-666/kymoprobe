@@ -55,7 +55,7 @@ def check_archive(archive, destination):
     assert manifest["name"] == properties["name"] == "KymoCore"
     assert manifest["version"] == properties["version"]
     assert len(manifest["description"]) <= 255
-    required = ["LICENSE", "COMMERCIAL.md", "CONTRIBUTING.md", "CHANGELOG.md", "PUBLISHING.md", "README.md", "PROTOCOL.md",
+    required = ["LICENSE", "COMMERCIAL.md", "COMMERCIAL.de.md", "CONTRIBUTING.md", "CONTRIBUTING.de.md", "CHANGELOG.md", "PUBLISHING.md", "README.md", "README.de.md", "PROTOCOL.md", "docs/GUIDE.md", "docs/GUIDE.de.md",
                 "examples/basic/main.cpp", "examples/basic/README.md",
                 "docs/images/architecture.png", "docs/images/transmission.png",
                 "docs/images/protocol.png"]

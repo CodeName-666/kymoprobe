@@ -21,8 +21,8 @@ submodule in this repository to the new tag:
 
 ```sh
 git -C lib/KymoCore fetch --tags
-git -C lib/KymoCore checkout v6.2.1   # desired version
-git add lib/KymoCore && git commit -m "Update KymoCore to v6.2.1"
+git -C lib/KymoCore checkout v6.2.2   # desired version
+git add lib/KymoCore && git commit -m "Update KymoCore to v6.2.2"
 ```
 
 ## Getting started with ESP32
