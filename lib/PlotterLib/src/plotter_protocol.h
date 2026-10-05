@@ -2,7 +2,8 @@
  * @brief Portable codec for Plotter binary protocol v6.
  *
  * @details Frames contain sync, descriptor, channel, optional X, mandatory Y, optional Z,
- * optional timestamp and CRC. Multi-byte payloads are little-endian. The codec
+ * optional timestamp and a CRC/trailer byte. CRC is disabled by default.
+ * Multi-byte payloads are little-endian. The codec
  * allocates no memory and never transmits the native structure layout.
  * @file plotter_protocol.h
  * @defgroup plotter_protocol Wire protocol and codec
@@ -29,6 +30,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "common/embedded_bits.h"
+#include "plotter_features.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,6 +55,17 @@ extern "C" {
  * Compare supported protocol versions without changing wire constants.
  */
 #define PLOTTER_WIRE_VERSION 1
+
+/**
+ * @brief Descriptor bit indicating that CRC was not calculated.
+ *
+ * @details Set by the encoder when PLOTTER_ENABLE_CRC is zero. Frame length is
+ * unchanged; the sender writes a zero trailer and receivers ignore that byte.
+ * This wire bit is not a payload flag in PlotterDataPoint or PlotterChannel.
+ * @par Usage
+ * Inspect descriptor & PLOTTER_DESCRIPTOR_NO_CRC to identify unprotected frames.
+ */
+#define PLOTTER_DESCRIPTOR_NO_CRC 0x01u
 
 /**
  * @brief First synchronization byte at frame offset zero.
@@ -111,11 +124,25 @@ extern "C" {
 /**
  * @brief Mask of every supported optional payload field.
  *
- * @details Only X, Z and timestamp flags are permitted. Every combination of those bits is valid.
+ * @details Only X, Z and timestamp flags are permitted on the wire. Build-time
+ * feature switches further restrict usable combinations through PLOTTER_SUPPORTED_FLAGS.
  * @par Usage
  * Use for XYZ with timestamps or to validate a supplied flag byte.
  */
 #define PLOTTER_ALLOWED_FLAGS EMB_U8_OR(PLOTTER_FLAG_X, EMB_U8_OR(PLOTTER_FLAG_Z, PLOTTER_FLAG_TIMESTAMP))
+
+/**
+ * @brief Payload flags compiled into this library build.
+ * @details Wire constants remain unchanged; requests outside this mask fail.
+ * Zero selects the default scalar-only build. No fields are silently removed.
+ * @par Usage
+ * Validate application channel flags against PLOTTER_SUPPORTED_FLAGS.
+ */
+#define PLOTTER_SUPPORTED_FLAGS EMB_U8_OR( \
+    (PLOTTER_ENABLE_X ? PLOTTER_FLAG_X : 0u), EMB_U8_OR( \
+    (PLOTTER_ENABLE_Z ? PLOTTER_FLAG_Z : 0u), \
+    (PLOTTER_ENABLE_TIMESTAMP ? PLOTTER_FLAG_TIMESTAMP : 0u)))
+
 
 /**
  * @brief Mask selecting the two wire-version bits.
@@ -127,18 +154,18 @@ extern "C" {
 #define PLOTTER_DESCRIPTOR_VERSION_MASK 0xC0u
 
 /**
- * @brief Mask selecting unsupported message-type and reserved bits.
+ * @brief Mask selecting unsupported message-type bits.
  *
- * @details Combines bits 5, 4 and 0. Any set bit makes the descriptor invalid in this revision.
+ * @details Combines bits 5 and 4. Bit 0 selects NO_CRC and is supported.
  * @par Usage
  * Validate descriptor bytes with emb_u8_has_any.
  */
-#define PLOTTER_DESCRIPTOR_RESERVED_MASK 0x31u
+#define PLOTTER_DESCRIPTOR_RESERVED_MASK 0x30u
 
 /**
  * @brief Size in bytes of a Y-only frame.
  *
- * @details Two sync bytes, descriptor, channel, binary32 Y and CRC. No optional fields.
+ * @details Two sync bytes, descriptor, channel, binary32 Y and CRC/zero trailer.
  * @par Usage
  * Minimum complete-frame bound for decoding.
  */
@@ -177,7 +204,8 @@ typedef struct
     /**
      * @brief Presence flags for X, Z and timestamp.
      *
-     * @details Input/output; only PLOTTER_ALLOWED_FLAGS bits are accepted. Zero selects Y only.
+     * @details Input/output; only PLOTTER_SUPPORTED_FLAGS bits are accepted by this build.
+     * Zero selects Y only. Wire flags remain defined even when their features are disabled.
      * @par Usage
      * point.flags = PLOTTER_ALLOWED_FLAGS;
      */
@@ -218,11 +246,13 @@ typedef struct
 
 /** @name Codec operations
  * @{ */
+#if PLOTTER_ENABLE_CRC || PLOTTER_ENABLE_DECODER || defined(DOXYGEN)
 /**
  * @brief Calculate CRC-8/ATM over a byte range.
  *
  * @details Polynomial 0x07, initial zero, no reflection and no final XOR. There are eight
  * bit iterations per input byte. Null data is treated as empty and produces zero.
+ * Compiled only when encoder CRC or the decoder is enabled.
  * @param[in] data Readable byte range; may be NULL for the defined empty-input behavior.
  * @param[in] length Number of bytes to read; must fit the actual data allocation when data is non-null.
  * @return CRC byte in 0..255.
@@ -230,12 +260,15 @@ typedef struct
  * plotter_crc8(frame + 2, frame_length - 3) covers descriptor through payload.
  */
 uint8_t plotter_crc8(const uint8_t *data, size_t length);
+#endif
 
 /**
  * @brief Encode a validated point into a caller-owned byte buffer.
  *
  * @details No allocation, text conversion or struct casting. Validation failures leave the output
- * buffer unchanged. The result depends only on the selected optional fields.
+ * buffer unchanged. Disabled payload flags are rejected via PLOTTER_SUPPORTED_FLAGS.
+ * Length depends only on the selected optional fields.
+ * PLOTTER_ENABLE_CRC selects protected frames (1) or NO_CRC with zero trailer (0).
  * @param[in] point Measurement to encode; NULL is rejected. Selected coordinates must be finite.
  * @param[out] output Writable frame buffer; NULL is rejected. Must not overlap point.
  * @param[in] output_capacity Actual writable capacity in bytes; 21 bytes handles every point.
@@ -248,10 +281,14 @@ size_t plotter_encode_data(const PlotterDataPoint *point,
                            uint8_t *output,
                            size_t output_capacity);
 
+#if PLOTTER_ENABLE_DECODER || defined(DOXYGEN)
 /**
  * @brief Validate and decode exactly one complete binary frame.
  *
- * @details Checks synchronization, descriptor, exact length, CRC and finite selected coordinates.
+ * @details Checks synchronization, descriptor, exact length and finite coordinates.
+ * CRC is checked unless the wire descriptor sets NO_CRC; its trailer is ignored.
+ * Available with PLOTTER_ENABLE_DECODER=1. Both CRC modes are accepted regardless
+ * of encoder CRC setting; disabled X/Z/timestamp layouts are rejected.
  * Only a fully valid result is committed; failure leaves output unchanged. The caller
  * performs stream reassembly before calling this function.
  * @param[in] frame Readable frame bytes; NULL is rejected.
@@ -264,11 +301,13 @@ size_t plotter_encode_data(const PlotterDataPoint *point,
 int plotter_decode_data(const uint8_t *frame,
                         size_t frame_length,
                         PlotterDataPoint *output);
+#endif
 
 /**
  * @brief Derive complete-frame length from a supported descriptor.
  *
- * @details Unsupported versions, message types or reserved bits yield zero. No payload access is performed.
+ * @details Unsupported versions, message types or disabled payload fields yield zero.
+ * No payload access is performed; the NO_CRC bit does not change frame length.
  * @param[in] descriptor Descriptor byte from offset two of a candidate frame.
  * @return 9, 13, 17 or 21 bytes for supported layouts; zero otherwise.
  * @par Usage

@@ -1,5 +1,9 @@
 # Embedded Plotter: Analyse und Zielarchitektur
 
+> Nachtrag 2026-10-01: PlotterLib wird inzwischen vollständig als C++11
+> kompiliert. Die C-kompatible API bleibt für C99-Aufrufer erhalten.
+> Die folgenden C99-Kern-Angaben beschreiben den ursprünglichen Plan.
+
 Stand: 2026-09-30. GeprÃ¼ft: PlotterEcu und das benachbarte PlotterApp.
 
 ## Befund

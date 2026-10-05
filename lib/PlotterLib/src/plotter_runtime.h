@@ -135,7 +135,8 @@ typedef struct {
     /**
      * @brief Optional wire fields for this channel.
      *
-     * @details Input; only PLOTTER_FLAG_X, PLOTTER_FLAG_Z and PLOTTER_FLAG_TIMESTAMP may be set.
+     * @details Input; only PLOTTER_SUPPORTED_FLAGS bits may be set in this build.
+     * Disabled fields produce PLOTTER_BAD_CONFIG at Init.
      * @par Usage
      * Use zero for scalar Y, or PLOTTER_ALLOWED_FLAGS for full XYZ/time.
      */
@@ -373,7 +374,8 @@ typedef struct {
     /**
      * @brief Clock epoch captured by Init.
      *
-     * @details Read by Main to derive relative unsigned wire timestamps.
+     * @details Initialized/read only when PLOTTER_ENABLE_TIMESTAMP is enabled.
+     * Otherwise remains zero after Init; retained to keep the public layout stable.
      * @par Usage
      * Inspect for diagnostics; change the epoch only by reinitializing safely.
      */
@@ -422,12 +424,14 @@ typedef struct {
 
 /** @} */
 
+#if PLOTTER_ENABLE_RUNTIME || defined(DOXYGEN)
 /** @name Lifecycle
  * @{ */
 /**
  * @brief Validate static configuration and enable a runtime instance.
  *
- * @details Checks required callbacks/storage, channel count, unique IDs, allowed flags and periods.
+ * @details Available with PLOTTER_ENABLE_RUNTIME=1. Checks required callbacks/storage,
+ * channel count, unique IDs, build-supported flags and periods.
  * Valid channels become immediately due. A non-null context is cleared before validation;
  * failure therefore disables it. No heap allocation or peripheral setup occurs.
  * @param[out] context Writable, persistent runtime storage; NULL is rejected.
@@ -456,6 +460,7 @@ PlotterStatus Plotter_Init(PlotterContext *context, const PlotterConfig *config)
  * Call from a single cyclic task faster than the sum of channel rates; allow extra calls for short writes.
  */
 PlotterStatus Plotter_Main(PlotterContext *context);
+#endif
 /** @} */
 
 #ifdef __cplusplus

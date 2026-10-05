@@ -1,7 +1,7 @@
 /**
  * @mainpage PlotterLib embedded API
  *
- * @brief Portable C99 telemetry with caller-owned storage and configurable I/O.
+ * @brief Portable C++11 telemetry with caller-owned storage and configurable I/O.
  *
  * @section lifecycle Configuration and lifecycle
  * Define persistent channel descriptors, mutable channel state and a PlotterConfig.
@@ -26,6 +26,9 @@
  * @endcode
  *
  * @section modules API areas
+ * - Edit plotter_build_config.h to set features to 0/1; plotter_features.h validates
+ *   them. Compiler definitions override the header. Defaults enable scalar encoding
+ *   and Init/Main only; X/Z/time, CRC, MCU decoding and C++ are opt-in.
  * - @ref plotter_runtime describes configuration, callbacks and runtime state.
  * - See the module index for the wire codec, common byte/bit/CRC operations,
  *   optional C++ wrapper and application-side hardware adapters.

@@ -33,8 +33,8 @@ static uint8_t sample(void *, uint8_t id, PlotterSample *out)
     return 1;
 }
 static const PlotterChannel channels[] = {
-    {20, 0, PLOTTER_FLAG_TIMESTAMP},
-    {20, 1, PLOTTER_FLAG_TIMESTAMP}
+    {20, 0, 0},
+    {20, 1, 0}
 };
 static uint32_t last_sample_ms[2];
 

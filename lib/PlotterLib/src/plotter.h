@@ -1,7 +1,8 @@
 /**
  * @brief Optional platform-independent C++ push sender.
  *
- * @details Use plotter_runtime.h for automatic cyclic sampling. This API accepts individual
+ * @details Enable PLOTTER_ENABLE_CPP=1 to compile this API.
+ * Use plotter_runtime.h for automatic cyclic sampling. This API accepts individual
  * measurements and retains one frame across short writes. No hardware ownership,
  * allocation or target-specific overloads are provided.
  * @file plotter.h
@@ -20,6 +21,9 @@
  */
 #define PLOTTER_H
 
+#include "plotter_features.h"
+
+#if PLOTTER_ENABLE_CPP || defined(DOXYGEN)
 #include <stdint.h>
 #include "plotter_protocol.h"
 #include "plotter_stream.h"
@@ -42,6 +46,7 @@ typedef uint32_t (*GetMillisecondCallback)();
  * Accepted points are serialized into a 21-byte member buffer; partial writes preserve
  * the frame. A pending frame or busy transport rejects new submissions.
  * No method blocks by design, but driver callbacks may block if implemented that way.
+ * Requests for fields disabled by build switches fail without submitting a frame.
  * @par Usage
  * @code{.cpp}
  * Plotter sender(outputStream);
@@ -148,7 +153,8 @@ public:
     /**
      * @brief Construct a sender without an attached transport.
      *
-     * @details Timestamp permission defaults to enabled, but no clock is installed and the epoch is zero.
+     * @details Timestamp permission follows PLOTTER_ENABLE_TIMESTAMP; no clock is installed.
+     * The epoch is zero. Timestamp requests fail when compiled without timestamp support.
      * @par Usage
      * Plotter sender; sender.begin(outputStream);
      */
@@ -348,6 +354,7 @@ public:
      * @brief Enable or disable future requested timestamps.
      *
      * @details Does not change already encoded frames or install a clock callback.
+     * Permission remains false if PLOTTER_ENABLE_TIMESTAMP is zero.
      * @param[in] enable True permits requested timestamps; false suppresses them.
      * @par Usage
      * sender.setTimestampEnabled(false);
@@ -367,4 +374,5 @@ public:
 };
 
 /** @} */
+#endif /* PLOTTER_ENABLE_CPP */
 #endif /* PLOTTER_H */

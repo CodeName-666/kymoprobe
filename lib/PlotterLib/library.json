@@ -1,7 +1,8 @@
 {
+  "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
   "name": "PlotterLib",
   "version": "6.1.0",
-  "description": "Heap-free C99 Init/Main telemetry core and optional C++ sender for PlotterApp binary v6.",
+  "description": "Portable C++11 telemetry for PlotterApp on Arduino, ESP32 and STM32: heap-free Init/Main scheduling, 9-21 byte binary frames, 256 channels, optional XYZ, timestamps and CRC, with callback-based transport and backpressure handling.",
   "keywords": [
     "plotter",
     "sensor",
@@ -26,9 +27,22 @@
   "homepage": "https://github.com/CodeName-666/plotterecu",
   "frameworks": "*",
   "platforms": "*",
+  "headers": ["plotter_runtime.h", "plotter_protocol.h", "plotter.h"],
+  "examples": [
+    {
+      "name": "Portable Init/Main",
+      "base": "examples/basic",
+      "files": ["main.cpp", "README.md"]
+    }
+  ],
   "export": {
     "include": [
       "src",
+      "examples",
+      "docs/images",
+      "LICENSE",
+      "CHANGELOG.md",
+      "PUBLISHING.md",
       "README.md",
       "PROTOCOL.md",
       "library.properties"
@@ -36,6 +50,11 @@
   },
   "build": {
     "srcDir": "src",
-    "includeDir": "src"
+    "includeDir": "src",
+    "flags": [
+      "-std=c++11",
+      "-fno-exceptions",
+      "-fno-rtti"
+    ]
   }
 }

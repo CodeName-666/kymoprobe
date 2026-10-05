@@ -17,6 +17,14 @@ Applies to active first-party C/C++ code, including examples and native tests.
   use typed static inline functions for operations requiring validation.
 - Preserve bounded execution, no heap in the core, and explicit transport
   buffer ownership. Do not claim safety-standard compliance from style checks.
+- Keep optional PlotterLib features behind documented platform-independent
+  build switches in plotter_build_config.h, disabled by default. Load and validate
+  them through plotter_features.h; explicit compiler definitions may override
+  the internal settings. The default core
+  is scalar C++11 encoding with a C-compatible API plus Init/Main scheduling and bounded transport handling.
+  Compile disabled implementations out, reject unsupported requests explicitly,
+  and test minimal and enabled builds. Examples opt into required features.
+  Keep buffer bounds and transport-ownership checks mandatory.
 - Keep the entire PlotterLib package platform-independent, including optional
   C++ wrappers. No SDK headers, vendor types or target-dependent API branches.
   Hardware adapters live in application/example code and use callbacks or

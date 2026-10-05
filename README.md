@@ -1,6 +1,6 @@
 # PlotterEcu
 
-Universelle Embedded-Telemetrie für PlotterApp: C99-Kern, statische Konfiguration,
+Universelle Embedded-Telemetrie für PlotterApp: C++11-Kern, statische Konfiguration,
 einmal `Plotter_Init()` und zyklisch `Plotter_Main()`. Das Hauptprojekt ist ein
 ESP32-PlatformIO-Projekt. Der Kern benötigt weder Arduino noch RTOS oder Heap.
 
@@ -33,7 +33,7 @@ Die Beispiele erzeugen reproduzierbare Testsignale. Im gemeinsamen
 `examples/common/arduino_serial_config.h` kann `example_sample` durch
 `analogRead()` oder eigene Sensorwerte ersetzt werden. Das zweite Beispiel
 zeigt Y, X/Y und X/Y/Z mit unabhängigen Abtastraten. Arduino Uno/Nano/Mega
-und ESP32-Projekte nutzen denselben C-Kern.
+und ESP32-Projekte nutzen denselben C++11-Kern.
 
 ## Library und Schnittstellen
 
@@ -44,7 +44,21 @@ Die vollständige Header-API lässt sich mit `doxygen Doxyfile` erzeugen.
 und Callback-Verträge. [PROTOCOL.md](lib/PlotterLib/PROTOCOL.md) definiert das
 mit PlotterApp identische Wire-Format. Es sind 9–21 Bytes pro Messung:
 bytebasierte IDs/Flags, explizites Little Endian, float32, optionale uint32-
-Millisekunden und CRC8. Keine Pointer oder C-Strukturen werden direkt gesendet.
+Millisekunden und ein Abschlussbyte. CRC8 ist standardmäßig deaktiviert;
+`NO_CRC` im Descriptor kennzeichnet Frames mit Null-Platzhalter statt CRC.
+Mit `build_flags = -DPLOTTER_ENABLE_CRC=1` lässt sich CRC für den Bibliotheksbuild
+einschalten. Für den Standardmodus ist die aktualisierte PlotterApp erforderlich.
+Keine Pointer oder C-Strukturen werden direkt gesendet.
+
+Der Standardbuild enthält nur den skalaren C-Sender und die Init/Main-Runtime.
+X, Z, Zeitstempel, CRC, MCU-Decoder und C++-Wrapper werden über die
+`PLOTTER_ENABLE_*`-Schalter in
+[`plotter_build_config.h`](lib/PlotterLib/src/plotter_build_config.h) zugeschaltet:
+direkt im Header `0` für aus oder `1` für ein setzen und vollständig neu bauen.
+Vorhandene Build-Flags haben Vorrang vor den Headerwerten. Auch die Runtime
+lässt sich für reine Codec-Nutzung abschalten. Die vollständige Schaltertabelle
+steht in [PlotterLib/README.md](lib/PlotterLib/README.md#minimal-build-and-optional-features).
+Die Beispielprojekte aktivieren ihre benötigten Extras ausdrücklich.
 
 Für andere ECUs werden ausschließlich Zeit-, Mess- und Transport-Callbacks
 angepasst. UART, USB CDC, TCP oder MQTT brauchen keinen anderen Codec.
@@ -69,8 +83,8 @@ flowchart LR
         Values["Sensoren und Anwendungsparameter"]
         Config["plotter_config.c / .cpp<br/>Kanäle, Perioden, Flags, Callbacks"]
         Task["setup / Systemstart: Plotter_Init<br/>loop / zyklischer Task: Plotter_Main"]
-        Runtime["C99-Runtime<br/>Zeitplanung und Teilübertragungen"]
-        Codec["v6-Codec<br/>Little Endian, float32, CRC8"]
+        Runtime["C++11-Runtime<br/>Zeitplanung und Teilübertragungen"]
+        Codec["v6-Codec<br/>Little Endian, float32, optionale CRC8"]
         Buffer["PlotterContext.tx<br/>maximal 21 Bytes"]
         Driver["Anwendungsadapter / Treiber<br/>UART, USB, TCP oder MQTT"]
         Config --> Task
@@ -83,7 +97,7 @@ flowchart LR
     end
     subgraph PC["PC: PlotterApp"]
         Receive["Verbindung empfängt Bytes"]
-        Decode["Frames erkennen und prüfen<br/>Länge, Descriptor, CRC"]
+        Decode["Frames erkennen und prüfen<br/>Länge, Descriptor, optionale CRC"]
         Route["Messwerte nach Kanal-ID zuordnen<br/>Y, optional X / Z / Zeit"]
         View["Darstellung im Plotter"]
         Receive --> Decode --> Route --> View

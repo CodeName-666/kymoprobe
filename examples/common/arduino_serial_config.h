@@ -25,6 +25,13 @@
 #include <math.h>
 #include <plotter_runtime.h>
 
+#if !PLOTTER_ENABLE_RUNTIME || !PLOTTER_ENABLE_TIMESTAMP
+#error "This example requires PLOTTER_ENABLE_RUNTIME=1 and PLOTTER_ENABLE_TIMESTAMP=1"
+#endif
+#if defined(PLOTTER_EXAMPLE_MULTIDIMENSIONAL) && (!PLOTTER_ENABLE_X || !PLOTTER_ENABLE_Z)
+#error "The multidimensional example requires PLOTTER_ENABLE_X=1 and PLOTTER_ENABLE_Z=1"
+#endif
+
 /**
  * @brief Read the Arduino millisecond counter as a portable uint32 value.
  *
@@ -76,9 +83,13 @@ static uint8_t example_write(void *user, const uint8_t *bytes, uint8_t length) {
 static uint8_t example_sample(void *user, uint8_t id, PlotterSample *out) {
     (void)user;
     const float phase = (millis() % 2000u) / 2000.0f;
+#if PLOTTER_ENABLE_X
     out->x = phase;
+#endif
     out->value = id == 0 ? sinf(phase * 6.283185307f) : 2.0f * phase - 1.0f;
+#if PLOTTER_ENABLE_Z
     out->z = cosf(phase * 6.283185307f);
+#endif
     return 1;
 }
 /**

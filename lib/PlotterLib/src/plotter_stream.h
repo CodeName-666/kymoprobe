@@ -1,7 +1,8 @@
 /**
  * @brief Platform-neutral C++ transport abstraction.
  *
- * @details Applications implement transport policy outside the library. The interface
+ * @details Available with PLOTTER_ENABLE_CPP=1. Applications implement transport
+ * policy outside the library. The interface
  * owns no driver, allocates no storage and contains no platform-dependent types.
  * @file plotter_stream.h
  * @defgroup plotter_stream C++ transport contract
@@ -19,6 +20,9 @@
  */
 #define PLOTTER_STREAM_H
 
+#include "plotter_features.h"
+
+#if PLOTTER_ENABLE_CPP || defined(DOXYGEN)
 #include <stdint.h>
 #include <stddef.h>
 
@@ -76,4 +80,5 @@ public:
 };
 
 /** @} */
+#endif /* PLOTTER_ENABLE_CPP */
 #endif /* PLOTTER_STREAM_H */

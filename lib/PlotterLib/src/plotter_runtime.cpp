@@ -1,4 +1,5 @@
 #include "plotter_runtime.h"
+#if PLOTTER_ENABLE_RUNTIME
 #include <string.h>
 
 /*******************************************************************************
@@ -7,18 +8,18 @@
 static uint8_t config_valid(const PlotterConfig *config)
 {
     uint8_t valid = 0;
-    if (config != NULL) {
-        valid = (uint8_t)((config->channels != NULL) &&
-            (config->last_sample_ms != NULL) && (config->clock_ms != NULL) &&
-            (config->sample != NULL) && (config->write != NULL) &&
+    if (config != nullptr) {
+        valid = (uint8_t)((config->channels != nullptr) &&
+            (config->last_sample_ms != nullptr) && (config->clock_ms != nullptr) &&
+            (config->sample != nullptr) && (config->write != nullptr) &&
             (config->channel_count > 0u) && (config->channel_count <= 256u));
         if (valid != 0u) {
             uint16_t i;
-            uint8_t seen[32] = {0};
+            uint8_t seen[32] = {};
             for (i = 0; (i < config->channel_count) && (valid != 0u); ++i) {
                 const PlotterChannel *ch = &config->channels[i];
                 valid = (uint8_t)((ch->period_ms <= INT32_MAX) &&
-                    emb_u8_only_bits(ch->flags, PLOTTER_ALLOWED_FLAGS) &&
+                    emb_u8_only_bits(ch->flags, PLOTTER_SUPPORTED_FLAGS) &&
                     !emb_bitset_test(seen, sizeof(seen), ch->id));
                 if (valid != 0u) {
                     (void)emb_bitset_set(seen, sizeof(seen), ch->id);
@@ -35,7 +36,7 @@ static uint8_t config_valid(const PlotterConfig *config)
 PlotterStatus Plotter_Init(PlotterContext *context, const PlotterConfig *config)
 {
     PlotterStatus status = PLOTTER_BAD_CONFIG;
-    if (context != NULL) {
+    if (context != nullptr) {
         memset(context, 0, sizeof(*context));
         if (config_valid(config)) {
             uint16_t i;
@@ -43,7 +44,9 @@ PlotterStatus Plotter_Init(PlotterContext *context, const PlotterConfig *config)
             for (i = 0; i < config->channel_count; ++i) {
                 config->last_sample_ms[i] = now - config->channels[i].period_ms;
             }
+#if PLOTTER_ENABLE_TIMESTAMP
             context->start_ms = now;
+#endif
             context->config = config;
             status = PLOTTER_OK;
         }
@@ -79,16 +82,22 @@ static PlotterStatus sample_channel(PlotterContext *context, uint16_t index,
     PlotterStatus status = PLOTTER_SKIPPED;
     const PlotterConfig *config = context->config;
     const PlotterChannel *ch = &config->channels[index];
-    PlotterSample sample = {0};
+    PlotterSample sample = {};
     config->last_sample_ms[index] = now;
     if (config->sample(config->sample_user, ch->id, &sample)) {
-        PlotterDataPoint point = {0};
+        PlotterDataPoint point = {};
         point.id = ch->id;
         point.flags = ch->flags;
+#if PLOTTER_ENABLE_X
         point.x = sample.x;
+#endif
         point.value = sample.value;
+#if PLOTTER_ENABLE_Z
         point.z = sample.z;
+#endif
+#if PLOTTER_ENABLE_TIMESTAMP
         point.timestamp_ms = now - context->start_ms;
+#endif
         context->tx_offset = 0;
         context->tx_length = (uint8_t)plotter_encode_data(&point, context->tx,
                                                         sizeof(context->tx));
@@ -132,14 +141,14 @@ static PlotterStatus sample_next_due(PlotterContext *context)
 PlotterStatus Plotter_Main(PlotterContext *context)
 {
     PlotterStatus status = PLOTTER_BAD_CONFIG;
-    if ((context != NULL) && (context->config != NULL)) {
+    if ((context != nullptr) && (context->config != nullptr)) {
         const PlotterConfig *config = context->config;
-        if (config->service != NULL) {
+        if (config->service != nullptr) {
             config->service(config->transport_user);
         }
         if (context->fault) {
             status = PLOTTER_IO_ERROR;
-        } else if ((config->busy != NULL) && config->busy(config->transport_user)) {
+        } else if ((config->busy != nullptr) && config->busy(config->transport_user)) {
             status = PLOTTER_BUSY;
         } else if (context->tx_offset < context->tx_length) {
             status = transmit(context);
@@ -149,3 +158,5 @@ PlotterStatus Plotter_Main(PlotterContext *context)
     }
     return status;
 }
+
+#endif /* PLOTTER_ENABLE_RUNTIME */

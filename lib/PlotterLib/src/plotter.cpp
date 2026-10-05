@@ -1,10 +1,12 @@
 #include "plotter.h"
 
+#if PLOTTER_ENABLE_CPP
+
 /*******************************************************************************
  * Plotter::Plotter
  ******************************************************************************/
 Plotter::Plotter()
-    : stream(nullptr), startTimeMs(0), useTimestamp(true), getMillisecond(nullptr)
+    : stream(nullptr), startTimeMs(0), useTimestamp(PLOTTER_ENABLE_TIMESTAMP != 0), getMillisecond(nullptr)
 {
 }
 
@@ -13,7 +15,7 @@ Plotter::Plotter()
  * Plotter::Plotter
  ******************************************************************************/
 Plotter::Plotter(PlotterStream &outputStream, bool enableTimestamp)
-    : stream(&outputStream), startTimeMs(0), useTimestamp(enableTimestamp),
+    : stream(&outputStream), startTimeMs(0), useTimestamp((PLOTTER_ENABLE_TIMESTAMP != 0) && enableTimestamp),
       getMillisecond(nullptr)
 {
 }
@@ -31,7 +33,7 @@ Plotter::~Plotter()
 void Plotter::begin(PlotterStream &outputStream, bool enableTimestamp)
 {
     stream = &outputStream;
-    useTimestamp = enableTimestamp;
+    useTimestamp = (PLOTTER_ENABLE_TIMESTAMP != 0) && enableTimestamp;
     startTimeMs = 0;
     txLength = txOffset = 0;
     txFault = false;
@@ -65,17 +67,29 @@ bool Plotter::sendFrame(uint8_t channelId,
                         bool includeTimestamp)
 {
     bool accepted = false;
-    if (stream && !txFault && (txOffset == txLength) && !stream->busy()) {
+    if (stream && !txFault && (txOffset == txLength) &&
+        emb_u8_only_bits(flags, PLOTTER_SUPPORTED_FLAGS) &&
+        (PLOTTER_ENABLE_TIMESTAMP || !includeTimestamp) && !stream->busy()) {
         PlotterDataPoint point = {};
         point.id = channelId;
         point.flags = flags;
+#if PLOTTER_ENABLE_X
         point.x = xValue;
+#else
+        (void)xValue;
+#endif
         point.value = yValue;
+#if PLOTTER_ENABLE_Z
         point.z = zValue;
+#else
+        (void)zValue;
+#endif
+#if PLOTTER_ENABLE_TIMESTAMP
         if (includeTimestamp && useTimestamp && getMillisecond) {
             point.flags = EMB_U8_OR(point.flags, PLOTTER_FLAG_TIMESTAMP);
             point.timestamp_ms = (uint32_t)getMillisecond() - startTimeMs;
         }
+#endif
         const size_t length = plotter_encode_data(&point, buffer, sizeof(buffer));
         if (length > 0u) {
             txLength = static_cast<uint8_t>(length);
@@ -149,7 +163,7 @@ bool Plotter::send3D(uint8_t channelId, float xValue, float yValue, float zValue
  ******************************************************************************/
 void Plotter::setTimestampEnabled(bool enable)
 {
-    useTimestamp = enable;
+    useTimestamp = (PLOTTER_ENABLE_TIMESTAMP != 0) && enable;
 }
 
 /*******************************************************************************
@@ -182,3 +196,5 @@ bool Plotter::flush()
     }
     return complete;
 }
+
+#endif /* PLOTTER_ENABLE_CPP */

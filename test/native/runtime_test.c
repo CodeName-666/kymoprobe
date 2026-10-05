@@ -91,8 +91,8 @@ static PlotterConfig config(Fixture *f, const PlotterChannel *channels,
  ******************************************************************************/
 static void golden_and_period(void) {
     static const uint8_t golden[] = {
-        0xa5,0x5a,0x4e,3,0,0,0xa0,0x3f,0,0,0x20,0xc0,
-        0,0,0x10,0x41,0xd2,4,0,0,0x89};
+        0xa5,0x5a,PLOTTER_ENABLE_CRC ? 0x4e : 0x4f,3,0,0,0xa0,0x3f,0,0,0x20,0xc0,
+        0,0,0x10,0x41,0xd2,4,0,0,PLOTTER_ENABLE_CRC ? 0x89 : 0};
     Fixture f = {0};
     PlotterChannel channel = {50, 3, PLOTTER_ALLOWED_FLAGS};
     uint32_t last[1];

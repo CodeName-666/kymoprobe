@@ -1,5 +1,9 @@
 # Embedded Plotter Implementation Plan
 
+> Nachtrag 2026-10-01: PlotterLib wird inzwischen vollständig als C++11
+> kompiliert. Die C-kompatible API bleibt für C99-Aufrufer erhalten.
+> Die folgenden C99-Kern-Angaben beschreiben den ursprünglichen Plan.
+
 Goal: Universelle, statische Init/Main-Telemetrie mit unverÃƒÂ¤ndertem App-Protokoll.
 Spec: [embedded-design.md](embedded-design.md).
 Tech Stack: C99, C++11, PlatformIO, Python/pytest.

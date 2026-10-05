@@ -2,6 +2,14 @@ name: Embedded library
 on: [push, pull_request]
 
 jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install platformio==6.1.19
+      - name: Validate archive and build its documented consumers
+        run: python3 tools/test_package.py
+
   native:
     runs-on: ubuntu-latest
     steps:

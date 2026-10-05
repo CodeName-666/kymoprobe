@@ -1,9 +1,14 @@
-# Plotter Compact Binary Protocol v6.0
+# Plotter Compact Binary Protocol v6.1
 
 This document is the authoritative wire-format contract between embedded
 senders and PlotterApp. The primary format is compact binary. PlotterApp still
 accepts the v5 JSON format so existing firmware does not need to be upgraded
 immediately.
+
+Receiver project: [PlotterApp](https://github.com/CodeName-666/plotterapp).
+See the [illustrated integration guide](README.md) for setup and transport ownership.
+
+![Binary frame and descriptor layout](docs/images/protocol.png)
 
 ## Design goals
 
@@ -13,10 +18,10 @@ immediately.
 - no allocation, `snprintf`, JSON library, or float-to-text conversion on MCU
 - deterministic little-endian representation
 - recovery after dropped or corrupt stream bytes
-- CRC protection per measurement
+- optional CRC protection per measurement, disabled by default
 
 The protocol transports telemetry from a device to PlotterApp. A command or
-configuration protocol in the opposite direction is not part of v6.0.
+configuration protocol in the opposite direction is not part of v6.1.
 
 ## Binary data frame
 
@@ -30,7 +35,7 @@ Offset  Size  Field
 4/8     4     Y/value, IEEE-754 float32 little-endian
 ...     0/4   Z, IEEE-754 float32 little-endian
 ...     0/4   Relative timestamp in milliseconds, uint32 little-endian
-last    1     CRC-8/ATM
+last    1     CRC-8/ATM or zero trailer when NO_CRC is set
 ```
 
 Payload order is always `X?`, `Y`, `Z?`, `timestamp_ms?`. Y is the only
@@ -45,12 +50,12 @@ Bit 5..4  Message type: 00 (data point)
 Bit 3     X present
 Bit 2     Z present
 Bit 1     Timestamp present
-Bit 0     Reserved, must be 0
+Bit 0     NO_CRC: 1 = CRC disabled, 0 = CRC-8/ATM present
 ```
 
-Valid data descriptors are `0x40`, `0x42`, `0x44`, `0x46`, `0x48`, `0x4A`,
-`0x4C`, and `0x4E`. Unsupported versions, message types, or reserved bits are
-rejected.
+Valid data descriptors are `0x40` through `0x4F`. Even descriptors retain
+the v6.0 CRC-protected layout; odd descriptors disable CRC. Unsupported
+versions and message types are rejected. Frame sizes are identical in both modes.
 
 ### Frame sizes
 
@@ -73,6 +78,20 @@ rejected.
 
 ### CRC
 
+CRC is disabled by default. A sender sets descriptor bit 0 (`NO_CRC`) and
+writes a zero trailer without calculating CRC. Receivers ignore the trailer
+for these frames, including a nonzero trailer received after corruption.
+Sync, descriptor, exact length and finite coordinate checks still apply.
+
+For PlotterLib, compile the library with `-DPLOTTER_ENABLE_CRC=1` to enable CRC;
+the default is `0`. This applies to the C codec, cyclic runtime and C++ sender.
+Define the flag for the library compilation, not only in a consuming sketch.
+In PlatformIO use `build_flags = -DPLOTTER_ENABLE_CRC=1` in the selected environment.
+Python encoding uses `encode_data_point(point, crc_enabled=True)` to opt in.
+Both decoders accept mixed protected/unprotected frames regardless of encoder mode.
+Older v6.0 receivers reject NO_CRC descriptors: update PlotterApp before using
+default-mode firmware, or enable CRC for compatibility with those receivers.
+
 CRC-8/ATM parameters:
 
 - polynomial: `0x07`
@@ -81,12 +100,27 @@ CRC-8/ATM parameters:
 - xor-out: `0x00`
 - covered bytes: descriptor, channel, and payload; sync bytes are excluded
 
-A receiver must discard a frame with a bad CRC and search for the next
-`A5 5A` sync marker.
+A receiver must discard a protected frame with a bad CRC and search for the
+next `A5 5A` sync marker. Unprotected frames have no checksum validation;
+corrupt finite values may be delivered and stream resynchronization is weaker.
 
 ## Golden vectors
 
 These vectors are shared by the Python and Embedded implementations.
+
+Default mode (CRC disabled):
+
+```text
+Point: id=7, y=1.0
+Bytes: A5 5A 41 07 00 00 80 3F 00
+Size:  9
+
+Point: id=3, x=1.25, y=-2.5, z=9.0, timestamp=1234 ms
+Bytes: A5 5A 4F 03 00 00 A0 3F 00 00 20 C0 00 00 10 41 D2 04 00 00 00
+Size:  21
+```
+
+CRC enabled (unchanged v6.0 vectors):
 
 ```text
 Point: id=7, y=1.0
@@ -100,8 +134,17 @@ Size:  21
 
 ## Embedded sender interface
 
-PlotterLib 6.1 adds a portable C99 cyclic API without changing this v6 wire
-contract. `Plotter_Init(context, config)` binds a static configuration;
+The default firmware build supports scalar Y only. Enable `PLOTTER_ENABLE_X`,
+`PLOTTER_ENABLE_Z` and/or `PLOTTER_ENABLE_TIMESTAMP` for optional fields, and
+`PLOTTER_ENABLE_CPP` for the C++ sender. The default C Init/Main runtime can
+be removed with `PLOTTER_ENABLE_RUNTIME=0`. MCU decoding is opt-in through
+`PLOTTER_ENABLE_DECODER=1`; it rejects layouts disabled in that firmware build.
+The wire layout and the desktop receiver's supported formats are unchanged.
+Edit `src/plotter_build_config.h` for internal feature configuration;
+`src/plotter_features.h` validates it. Compiler definitions may override the header.
+
+PlotterLib provides a portable C++11 cyclic API. The v6.1 NO_CRC extension keeps
+wire version 1 and all frame sizes. `Plotter_Init(context, config)` binds a static configuration;
 `Plotter_Main(context)` schedules samples, encodes frames and resumes short
 writes. See [README.md](README.md) for configuration and transport ownership.
 
@@ -136,7 +179,7 @@ JSON example. The full golden vector is 21 bytes versus 74 bytes as JSON.
 ### Serial, USB CDC, and Telnet/TCP
 
 Frames may be fragmented or concatenated arbitrarily. Receivers must use sync,
-descriptor-derived length, and CRC; packet boundaries from individual reads
+descriptor-derived length, and CRC when present; packet boundaries from individual reads
 have no meaning. JSON compatibility messages remain newline-delimited.
 
 ### MQTT
@@ -185,18 +228,22 @@ format. New embedded firmware should emit binary v6.
 
 - Python codec: `PlotterApp/python/Receiver/binary_protocol.py`
 - Backend parser: `PlotterApp/python/Backend/backend.py::_parse_data_point`
-- Embedded codec: `src/plotter_protocol.h/.c`
-- Embedded cyclic runtime: `src/plotter_runtime.h/.c`
+- Embedded codec: `src/plotter_protocol.h/.cpp`
+- Embedded cyclic runtime: `src/plotter_runtime.h/.cpp`
 - Optional C++ sender: `src/plotter.h/.cpp`
 - Embedded golden-vector test: `test/protocol_golden_test.cpp`
 - Desktop golden-vector tests: `PlotterApp/tests/test_binary_protocol.py`
 
 ## Versioning
 
+- Protocol v6.1 / wire version 1: NO_CRC descriptor bit, disabled CRC by default;
+  unchanged field order and sizes, continued acceptance of protected v6.0 frames
 - Protocol v6.0 / wire version 1: compact binary frames; JSON v5 receive fallback
 - Protocol v5.0: JSON X/Y/Z format
 - Protocol v4.0: JSON timestamp format
 
-Any future incompatible binary layout must use a new wire-version value. New
-message semantics that fit the current layout may use a reserved message type,
-but v6 receivers must reject types they do not understand.
+Any future incompatible field order or size must use a new wire-version value.
+The NO_CRC extension uses the formerly reserved bit without changing the layout;
+old receivers reject that bit rather than silently interpreting the new mode.
+New message semantics that fit the current layout may use a reserved message
+type, but v6 receivers must reject types they do not understand.

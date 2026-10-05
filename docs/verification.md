@@ -1,4 +1,55 @@
-# Prüfstand — 2026-09-30
+# Prüfstand — 2026-10-05
+
+## PlatformIO-Paketvorbereitung vom 05.10.2026
+
+Die Library wurde als eigenständiges Paket validiert. Ergänzt sind Lizenztext,
+Changelog, Veröffentlichungshinweise, ein portables Beispiel, ausführliche
+README-Anleitung mit PlotterApp-Link und drei PNG-Diagramme. Der bisherige
+Arbeitsstand einschließlich C++11-/Feature-Umstellung bleibt die Grundlage.
+Diese Paketvorbereitung verändert keine öffentliche API und kein Wire-Verhalten.
+
+Frisch erfolgreich ausgeführt:
+
+- `python tools/test_native.py --app ../PlotterApp`: sechs Checker-Tests,
+  Single-Return-Prüfung über 40 Quelldateien, interne Headerkonfiguration,
+  Featureprofile, beide CRC-Modi und App-Abgleich mit 256 Kanälen, acht Layouts
+  und 42 Fragmentgrößen.
+- `python tools/test_package.py`: Manifest durch PlatformIO gepackt,
+  Archivinhalt/Versionsgleichheit/lokale Dokumentationslinks geprüft,
+  portables Beispiel aus dem entpackten Archiv kompiliert und ausgeführt.
+  README-Sketch in getrennten Projekten ausschließlich gegen das installierte
+  Paketarchiv für Uno und ESP32 gebaut.
+- Nach Bereinigung einer Python-Tar-Deprecation-Warnung den Paket-/Hostteil mit
+  `python tools/test_package.py --skip-firmware` erneut erfolgreich ausgeführt.
+- Die sechs bestehenden Firmwareziele erneut gebaut; Details unten.
+- Drei erzeugte Diagramme visuell geprüft; `git diff --check` ohne Inhaltsfehler.
+
+| Aktueller Build | RAM der Demo | Flash der Demo |
+|---|---:|---:|
+| README aus Archiv / uno | 250 B | 2.884 B |
+| README aus Archiv / esp32dev | 21.504 B | 268.109 B |
+| Hauptprojekt / nodemcu-32s | 21.504 B | 272.029 B |
+| Arduino simple / uno | 258 B | 3.804 B |
+| Arduino multidimensional / uno | 268 B | 4.148 B |
+| ESP32 serial / esp32dev | 21.504 B | 272.077 B |
+| ESP32 MQTT / esp32dev | 44.432 B | 720.465 B |
+| STM32 UART C/HAL / nucleo_f401re | 160 B | 10.596 B |
+
+Das Paket liegt lokal unter `.pio/package/PlotterLib-6.1.0.tar.gz`, der
+zugehörige SHA256-Wert in der benachbarten `.sha256`-Datei. Jeder erneute
+Paketlauf aktualisiert das Archiv; vor Upload immer den letzten Stand verwenden.
+CI wurde um denselben Paketcheck ergänzt, aber nicht remote ausgeführt.
+
+Nicht Bestandteil dieser Prüfung: Upload in die Registry, Registry-Rendering,
+Prüfung des verfügbaren Owner-/Versionsnamens, elektrische Boardtests oder die
+komplette App-Testsuite. Der App-Abgleich verwendet den lokalen Nachbarcheckout,
+nicht den öffentlich verfügbaren GitHub-Stand. Die Hinweise in
+`lib/PlotterLib/PUBLISHING.md` beschreiben die verbleibenden Release-Schritte.
+
+## Historischer Prüfstand vom 30.09.2026
+
+Die folgenden Ergebnisse dokumentieren den damaligen Stand. Für die aktuelle
+Paketvorbereitung gelten die oben neu ausgeführten Prüfungen.
 
 ## Plattformtrennung
 

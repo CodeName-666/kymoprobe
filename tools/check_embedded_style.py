@@ -10,7 +10,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SCOPE = ("src", "include", "lib/PlotterLib/src", "lib/PlotterLib/test",
+SCOPE = ("src", "include", "lib/PlotterLib/src", "lib/PlotterLib/test", "lib/PlotterLib/examples",
          "examples", "test/native")
 EXTENSIONS = {".c", ".h", ".cpp", ".ino", ".hpp"}
 LEXEME = re.compile(

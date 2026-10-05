@@ -17,6 +17,17 @@ three independently scheduled channels. The `.ino` is the single entrypoint
 source; PlatformIO's `src/main.cpp` includes it to avoid duplicate code.
 Keep `examples/common` with the sketches when using the Arduino IDE.
 
+PlotterLib defaults to scalar Y plus the C runtime. These example PlatformIO
+files explicitly enable timestamps; the multidimensional example additionally
+enables X and Z. The repository-root application uses the minimal defaults.
+For Arduino IDE/other build systems, set the required `PLOTTER_ENABLE_*` values
+directly in `../lib/PlotterLib/src/plotter_build_config.h` (path from this directory).
+Alternatively pass matching compiler definitions to the sketch and library;
+a sketch-local define is not sufficient. PlatformIO example build flags override
+the internal header values; remove matching flags to use the header settings.
+C++ push users must additionally enable `PLOTTER_ENABLE_CPP=1`.
+See the feature table in `../lib/PlotterLib/README.md`.
+
 Serial examples: 115200 baud, 8N1, binary v6. Connect PlotterApp to the board's
 serial port. Do not share that port with a text monitor. MQTT: edit WiFi/broker
 settings, subscribe PlotterApp to `sensor/data`; one whole frame per payload.

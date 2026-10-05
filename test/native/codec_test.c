@@ -15,7 +15,7 @@ int main(void) {
     for (descriptor = 0; descriptor < 256; ++descriptor) {
         size_t expected = 0;
         for (flags = 0; flags < 8; ++flags)
-            if (descriptor == 0x40u + 2u * flags) expected = sizes[flags];
+            if ((descriptor & 0xfeu) == 0x40u + 2u * flags) expected = sizes[flags];
         assert(plotter_frame_length((uint8_t)descriptor) == expected);
     }
     for (flags = 0; flags < 8; ++flags) {
@@ -38,7 +38,22 @@ int main(void) {
         assert(decoded.timestamp_ms == ((flags & 1) ? UINT32_MAX : 0));
         assert(!plotter_decode_data(frame + 1, length - 1, &decoded));
         frame[length] ^= 1;
+#if PLOTTER_ENABLE_CRC
         assert(!plotter_decode_data(frame + 1, length, &decoded));
+#else
+        assert(frame[3] == (uint8_t)(0x41u | point.flags));
+        assert(frame[length] == 1u);
+        assert(plotter_decode_data(frame + 1, length, &decoded));
+#endif
+        /* A decoder must validate legacy CRC frames in either build mode. */
+        frame[3] &= 0xfeu;
+        frame[length] = plotter_crc8(frame + 3, length - 3u);
+        assert(plotter_decode_data(frame + 1, length, &decoded));
+        frame[length] ^= 1u;
+        assert(!plotter_decode_data(frame + 1, length, &decoded));
+        /* NO_CRC ignores the trailer in either build mode. */
+        frame[3] |= 1u;
+        assert(plotter_decode_data(frame + 1, length, &decoded));
     }
     point.flags = 1;
     assert(!plotter_encode_data(&point, frame, sizeof(frame)));

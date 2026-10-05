@@ -2,6 +2,8 @@ PROJECT_NAME           = PlotterLib
 PROJECT_BRIEF          = "Portable embedded telemetry: configuration, Init and cyclic Main"
 OUTPUT_DIRECTORY       = docs/api
 INPUT                  = docs/api.dox \
+                         lib/PlotterLib/src/plotter_build_config.h \
+                         lib/PlotterLib/src/plotter_features.h \
                          lib/PlotterLib/src/plotter_runtime.h \
                          lib/PlotterLib/src/plotter_protocol.h \
                          lib/PlotterLib/src/plotter.h \
@@ -30,7 +32,7 @@ GENERATE_LATEX         = NO
 GENERATE_XML           = YES
 HAVE_DOT               = NO
 ENABLE_PREPROCESSING  = YES
-PREDEFINED            = __cplusplus HAL_UART_MODULE_ENABLED PLOTTER_EXAMPLE_MULTIDIMENSIONAL
+PREDEFINED            = __cplusplus DOXYGEN HAL_UART_MODULE_ENABLED PLOTTER_EXAMPLE_MULTIDIMENSIONAL
 QUIET                 = YES
 WARNINGS              = YES
 WARN_IF_UNDOCUMENTED   = YES

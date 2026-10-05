@@ -57,7 +57,8 @@ int main() {
     assert(!p.flush());
     assert(p.flush());
     assert(stream.length == 9);
-    static const uint8_t golden[] = {0xa5,0x5a,0x40,7,0,0,0x80,0x3f,0x54};
+    static const uint8_t golden[] = {0xa5,0x5a,PLOTTER_ENABLE_CRC ? 0x40 : 0x41,7,0,0,0x80,0x3f,
+        PLOTTER_ENABLE_CRC ? 0x54 : 0};
     assert(memcmp(stream.bytes, golden, 9) == 0);
     stream.limit = 21;
     assert(p.send(9, 2.0f));
