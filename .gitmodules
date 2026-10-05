@@ -1,3 +1,6 @@
 [submodule "lib/Events"]
 	path = lib/Events
 	url = https://github.com/CodeName-666/Events.git
+[submodule "lib/KymoCore"]
+	path = lib/KymoCore
+	url = https://github.com/CodeName-666/kymocore.git
