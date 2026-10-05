@@ -1,6 +1,6 @@
 # KymoProbe – Handbuch
 
-[← Zurück zur Übersicht](../README.md)
+[← Zurück zur Übersicht](../README.de.md) · [English](MANUAL.md) · **Deutsch**
 
 Einrichtung, Beispiele, Architektur, C-/C++-API und Prüfung der Firmware im Detail.
 
@@ -60,7 +60,7 @@ und ESP32-Projekte nutzen denselben C++11-Kern.
 Die vollständige Header-API lässt sich mit `doxygen Doxyfile` erzeugen.
 [Doxygen-Anleitung](doxygen.md) beschreibt Ausgabe und Dokumentationsregeln.
 
-[KymoCore](https://github.com/CodeName-666/kymocore/blob/main/docs/ANLEITUNG.md) (eigenes Repository, Submodul) dokumentiert die Konfiguration, Speicher-
+[KymoCore](https://github.com/CodeName-666/kymocore/blob/main/docs/GUIDE.de.md) (eigenes Repository, Submodul) dokumentiert die Konfiguration, Speicher-
 und Callback-Verträge. [PROTOCOL.md](https://github.com/CodeName-666/kymocore/blob/main/PROTOCOL.md) definiert das
 mit KymoStudio identische Wire-Format. Es sind 9–21 Bytes pro Messung:
 bytebasierte IDs/Flags, explizites Little Endian, float32, optionale uint32-
@@ -77,7 +77,7 @@ X, Z, Zeitstempel, CRC, MCU-Decoder und C++-Wrapper werden über die
 direkt im Header `0` für aus oder `1` für ein setzen und vollständig neu bauen.
 Vorhandene Build-Flags haben Vorrang vor den Headerwerten. Auch die Runtime
 lässt sich für reine Codec-Nutzung abschalten. Die vollständige Schaltertabelle
-steht in [KymoCore/README.md](https://github.com/CodeName-666/kymocore/blob/main/docs/ANLEITUNG.md#minimal-build-and-optional-features).
+steht in [KymoCore/README.md](https://github.com/CodeName-666/kymocore/blob/main/docs/GUIDE.de.md#minimal-build-and-optional-features).
 Die Beispielprojekte aktivieren ihre benötigten Extras ausdrücklich.
 
 Für andere ECUs werden ausschließlich Zeit-, Mess- und Transport-Callbacks
@@ -119,7 +119,7 @@ flowchart LR
         Receive["Verbindung empfängt Bytes"]
         Decode["Frames erkennen und prüfen<br/>Länge, Descriptor, optionale CRC"]
         Route["Messwerte nach Kanal-ID zuordnen<br/>Y, optional X / Z / Zeit"]
-        View["Darstellung im Kymo"]
+        View["Darstellung in KymoStudio"]
         Receive --> Decode --> Route --> View
     end
     Driver -->|"binäres v6: 9 bis 21 Bytes"| Receive

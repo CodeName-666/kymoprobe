@@ -1,127 +1,130 @@
 <p align="center">
+  <a href="README.md"><img alt="English" src="https://img.shields.io/badge/%F0%9F%8C%90-English-15123A"></a>
+  <a href="README.de.md"><img alt="Deutsch" src="https://img.shields.io/badge/%F0%9F%8C%90-Deutsch-A78BFA"></a>
+</p>
+
+<p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/kymotrace-logo-dark.svg">
     <img src="docs/images/kymotrace-logo-light.svg" alt="Kymotrace – Embedded Telemetry" width="480">
   </picture>
 </p>
 
-<h3 align="center">KymoProbe · Die Firmware-Seite von Kymotrace</h3>
+<h3 align="center">KymoProbe · The firmware side of Kymotrace</h3>
 
 <p align="center">
-  Fertige Firmware und Beispiele, die Messwerte von ESP32, Arduino und STM32 live an KymoStudio senden.
+  Ready-made firmware and examples that stream measurements from ESP32, Arduino and STM32 live to KymoStudio.
 </p>
 
 <p align="center">
-  <img alt="Lizenz GPLv3 oder kommerziell" src="https://img.shields.io/badge/Lizenz-GPLv3%20%7C%20kommerziell-15123A">
+  <img alt="License GPLv3 or commercial" src="https://img.shields.io/badge/License-GPLv3%20%7C%20commercial-15123A">
   <img alt="KymoCore 6.2.1" src="https://img.shields.io/badge/KymoCore-6.2.1-7C5CFF">
   <img alt="PlatformIO" src="https://img.shields.io/badge/PlatformIO-ESP32%20%C2%B7%20AVR%20%C2%B7%20STM32-FDE047">
 </p>
 
 ---
 
-## Worum geht es?
+## What is it about?
 
-KymoProbe ist der schnellste Weg von einem Mikrocontroller zu **live
-sichtbaren Messkurven**. Board flashen, in
-[KymoStudio](https://github.com/CodeName-666/kymostudio) verbinden, und nach
-wenigen Minuten laufen die Daten über den Bildschirm. Danach ersetzt du die
-Testsignale durch deine eigenen Sensoren, Regelgrößen oder Zustände.
+KymoProbe is the fastest way from a microcontroller to **live measurement
+curves**. Flash the board, connect in
+[KymoStudio](https://github.com/CodeName-666/kymostudio), and within minutes the
+data scrolls across your screen. Then replace the test signals with your own
+sensors, control variables or states.
 
-Unter der Haube arbeitet [KymoCore](https://github.com/CodeName-666/kymocore),
-eine schlanke Library ohne Heap und ohne RTOS. Sie plant die Messungen, kodiert
-sie in 9 bis 21 Bytes und schickt sie über die Schnittstelle deiner Wahl.
-KymoProbe zeigt, wie das auf echter Hardware aussieht: per UART, USB, WLAN
-oder MQTT.
+Under the hood runs [KymoCore](https://github.com/CodeName-666/kymocore), a lean
+library without heap and without RTOS. It schedules the measurements, encodes
+them into 9 to 21 bytes and sends them over the interface of your choice.
+KymoProbe shows what this looks like on real hardware: via UART, USB, Wi-Fi or
+MQTT.
 
 <p align="center">
-  <img src="docs/images/kymostudio-workbench.png" alt="Messwerte eines Mikrocontrollers live in KymoStudio" width="900">
-  <br><sub>So kommen die Daten an: Zeitverlauf und XY-Bahn in KymoStudio.</sub>
+  <img src="docs/images/kymostudio-workbench.png" alt="Microcontroller measurements live in KymoStudio" width="900">
+  <br><sub>This is how the data arrives: time series and XY trace in KymoStudio.</sub>
 </p>
 
-## In drei Schritten zu Live-Daten
+## Live data in three steps
 
 ```sh
-# 1. Mit Submodulen klonen (KymoCore liegt in lib/KymoCore)
+# 1. Clone with submodules (KymoCore lives in lib/KymoCore)
 git clone --recurse-submodules https://github.com/CodeName-666/kymoprobe.git
 
-# 2. ESP32 bauen und flashen
+# 2. Build and flash the ESP32
 pio run -e nodemcu-32s -t upload
 
-# 3. In KymoStudio eine serielle Verbindung öffnen: 115200 Baud, 8N1
+# 3. Open a serial connection in KymoStudio: 115200 baud, 8N1
 ```
 
-Das Board sendet zwei Testsignale (Sinus und Sägezahn, je 50 Hz). KymoStudio
-erkennt die Binärframes automatisch. Wichtig: Den seriellen Monitor von
-PlatformIO vorher schließen.
+The board sends two test signals (sine and sawtooth, 50 Hz each). KymoStudio
+detects the binary frames automatically. Important: close the PlatformIO serial
+monitor first.
 
-## Eigene Messwerte senden
+## Sending your own measurements
 
-Alles, was du anpassen musst, steht in einer Datei:
-[`src/kymo_config.cpp`](src/kymo_config.cpp). Dort legst du Kanäle und
-Abtastintervalle fest und lieferst den Messwert:
+Everything you need to adapt is in one file:
+[`src/kymo_config.cpp`](src/kymo_config.cpp). There you define channels and
+sampling intervals and provide the measured value:
 
 ```cpp
 static uint8_t sample(void *, uint8_t id, KymoSample *out)
 {
-    out->value = id == 0 ? readTemperature() : readPressure();  // deine Sensoren
+    out->value = id == 0 ? readTemperature() : readPressure();  // your sensors
     return 1;
 }
 
 static const KymoChannel channels[] = {
-    {20, 0, 0},   // Kanal 0 alle 20 ms
-    {100, 1, 0}   // Kanal 1 alle 100 ms
+    {20, 0, 0},   // channel 0 every 20 ms
+    {100, 1, 0}   // channel 1 every 100 ms
 };
 ```
 
-Die Hauptschleife bleibt dabei winzig: Einmal `Kymo_Init()`, danach in jedem
-Durchlauf `Kymo_Main()`. KymoCore entscheidet, welcher Kanal fällig ist, und
-wartet nie auf die Schnittstelle.
+The main loop stays tiny: call `Kymo_Init()` once, then `Kymo_Main()` on every
+pass. KymoCore decides which channel is due and never waits for the interface.
 
-## Was enthalten ist
+## What is included
 
-| Beispiel | Hardware | Zeigt |
+| Example | Hardware | Shows |
 |---|---|---|
-| [Hauptprojekt](src/) | ESP32 (NodeMCU-32S) | minimale Konfiguration über UART |
-| [simple_analog_example](examples/arduino/simple_analog_example/) | Arduino Uno, Nano, Mega | ein Analogwert, so einfach wie möglich |
-| [multi_sensor_example](examples/arduino/multi_sensor_example/) | Arduino Uno, Nano, Mega | Y, XY und XYZ mit unterschiedlichen Raten |
-| [serial_example](examples/esp32/serial_example/) | ESP32, ESP32-S3, ESP32-C3 | serielle Übertragung mit Zeitstempel |
-| [wifi_mqtt_example](examples/esp32/wifi_mqtt_example/) | ESP32, ESP32-S3 | kabellos per WLAN und MQTT-Broker |
-| [stm32/uart_example](examples/stm32/uart_example/) | Nucleo F401RE, F411RE, Blue Pill | UART mit STM32-HAL |
-| [stm32/usb_cdc_example](examples/stm32/usb_cdc_example/) | Blue Pill F103C8 | virtueller COM-Port über USB-CDC |
-| [native](examples/native/) | PC | Frames ohne Hardware erzeugen |
+| [Main project](src/) | ESP32 (NodeMCU-32S) | minimal configuration over UART |
+| [simple_analog_example](examples/arduino/simple_analog_example/) | Arduino Uno, Nano, Mega | one analog value, as simple as possible |
+| [multi_sensor_example](examples/arduino/multi_sensor_example/) | Arduino Uno, Nano, Mega | Y, XY and XYZ at different rates |
+| [serial_example](examples/esp32/serial_example/) | ESP32, ESP32-S3, ESP32-C3 | serial transmission with timestamps |
+| [wifi_mqtt_example](examples/esp32/wifi_mqtt_example/) | ESP32, ESP32-S3 | wireless via Wi-Fi and an MQTT broker |
+| [stm32/uart_example](examples/stm32/uart_example/) | Nucleo F401RE, F411RE, Blue Pill | UART with the STM32 HAL |
+| [stm32/usb_cdc_example](examples/stm32/usb_cdc_example/) | Blue Pill F103C8 | virtual COM port over USB CDC |
+| [native](examples/native/) | PC | generate frames without hardware |
 
-Alle Beispiele sind gebaut und geprüft; die wichtigsten baut die CI bei jedem Push automatisch.
+All examples have been built and checked; CI builds the most important ones automatically on every push.
 
-## Wofür man es einsetzt
+## What it is used for
 
-- **Regler einstellen:** Soll- und Istwert eines PID-Reglers live vergleichen.
-- **Sensoren testen:** Rauschen, Drift und Ansprechverhalten direkt sehen.
-- **Antriebe und Leistungselektronik:** Strom, Drehzahl und Position mit Zeitstempel verfolgen.
-- **Kabellos messen:** Mit dem MQTT-Beispiel Daten von bewegten oder entfernten Geräten empfangen.
-- **Lernen und Basteln:** Messdaten anschaulich machen, statt Zahlenkolonnen im Terminal zu lesen.
+- **Tuning controllers:** compare setpoint and actual value of a PID loop live.
+- **Testing sensors:** see noise, drift and response directly.
+- **Drives and power electronics:** follow current, speed and position with timestamps.
+- **Measuring wirelessly:** receive data from moving or remote devices with the MQTT example.
+- **Learning and tinkering:** make measurement data tangible instead of reading columns of numbers in a terminal.
 
-## So hängt alles zusammen
+## How it all fits together
 
-![Vom Messwert zum Diagramm](docs/images/architecture.png)
+![From measurement to chart](docs/images/architecture.png)
 
-| Projekt | Rolle |
+| Project | Role |
 |---|---|
-| [KymoCore](https://github.com/CodeName-666/kymocore) | Library: Messwerte planen, kodieren, senden (hier als Submodul `lib/KymoCore`) |
-| **[KymoProbe](https://github.com/CodeName-666/kymoprobe)** | dieses Repository: Firmware und Hardwarebeispiele |
-| [KymoStudio](https://github.com/CodeName-666/kymostudio) | Desktop-App: empfangen, darstellen, analysieren, exportieren |
+| [KymoCore](https://github.com/CodeName-666/kymocore) | library: schedules, encodes and sends measurements (here as submodule `lib/KymoCore`) |
+| **[KymoProbe](https://github.com/CodeName-666/kymoprobe)** | this repository: firmware and hardware examples |
+| [KymoStudio](https://github.com/CodeName-666/kymostudio) | desktop app: receive, display, analyse, export |
 
-## Dokumentation
+## Documentation
 
-- **[Handbuch](docs/HANDBUCH.md):** Einrichtung, Beispiele, Architektur, C-/C++-API und Prüfung
-- **[KymoCore-Anleitung](https://github.com/CodeName-666/kymocore/blob/main/docs/ANLEITUNG.md):** Konfiguration, Features, Transporte
-- **[Protokoll](https://github.com/CodeName-666/kymocore/blob/main/PROTOCOL.md):** Byte-Aufbau der Frames
-- **[Beispiele im Detail](examples/README.md)** · **[Prüfergebnisse](docs/verification.md)** · **[Mitmachen](CONTRIBUTING.md)**
+- **[Manual](docs/MANUAL.md):** setup, examples, architecture, C/C++ API and checks
+- **[KymoCore guide](https://github.com/CodeName-666/kymocore/blob/main/docs/GUIDE.md):** configuration, features, transports
+- **[Protocol](https://github.com/CodeName-666/kymocore/blob/main/PROTOCOL.md):** byte layout of the frames
+- **[Examples in detail](examples/README.md)** · **[Verification results](docs/verification.md)** (German) · **[Contributing](CONTRIBUTING.md)**
 
-## Lizenz
+## License
 
-Copyright (c) 2026 Christof Seidel. KymoProbe und die Library KymoCore sind
-doppelt lizenziert: **GPLv3** ([LICENSE](LICENSE)), kostenlos für Hobby,
-Basteln, Lernen und Open Source, oder eine **kommerzielle Lizenz** für
-Unternehmen, die Firmware oder Geräte weitergeben, ohne ihren Quellcode
-offenzulegen. Details stehen in [COMMERCIAL.md](COMMERCIAL.md). `lib/Events`
-steht unter der MIT-Lizenz.
+Copyright (c) 2026 Christof Seidel. KymoProbe and the KymoCore library are
+dual-licensed: **GPLv3** ([LICENSE](LICENSE)), free of charge for hobby,
+tinkering, learning and open source, or a **commercial license** for companies
+that distribute firmware or devices without disclosing their source code.
+Details are in [COMMERCIAL.md](COMMERCIAL.md). `lib/Events` is MIT-licensed.
