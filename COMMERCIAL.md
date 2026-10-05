@@ -1,27 +1,31 @@
-# Lizenzierung von KymoProbe
+# Licensing KymoProbe
+
+**English** · [Deutsch](COMMERCIAL.de.md)
 
 Copyright (c) 2026 Christof Seidel
 
-KymoProbe (Firmware, Beispiele und Werkzeuge in diesem Repository) wird
-**doppelt lizenziert**, genau wie die enthaltene Library
-[KymoCore](https://github.com/CodeName-666/kymocore):
+KymoProbe (firmware, examples and tools in this repository) is
+**dual-licensed**, just like the included
+[KymoCore](https://github.com/CodeName-666/kymocore) library:
 
-1. **GNU General Public License v3.0** ([LICENSE](LICENSE)): kostenlos, etwa für
-   Hobby, Basteln, Lernen und Open-Source-Projekte.
-2. **Kommerzielle Lizenz**: kostenpflichtig. Nötig, wenn Firmware oder Geräte
-   auf Basis von KymoProbe beziehungsweise KymoCore weitergegeben oder verkauft
-   werden, ohne den eigenen Quellcode unter der GPLv3 offenzulegen.
+1. **GNU General Public License v3.0** ([LICENSE](LICENSE)): free of charge,
+   for example for hobby, tinkering, learning and open-source projects.
+2. **Commercial license**: paid. Required when firmware or devices based on
+   KymoProbe or KymoCore are distributed or sold without disclosing your own
+   source code under the GPLv3.
 
-SPDX-Kennung: `GPL-3.0-only OR LicenseRef-KymoCore-Commercial`
+SPDX identifier: `GPL-3.0-only OR LicenseRef-KymoCore-Commercial`
 
-Welche Lizenz für welchen Einsatz nötig ist und wie eine kommerzielle Lizenz
-angefragt wird, steht ausführlich in der
-[COMMERCIAL.md von KymoCore](https://github.com/CodeName-666/kymocore/blob/main/COMMERCIAL.md).
-Eine kommerzielle Lizenz für KymoCore umfasst auf Wunsch auch die Beispiele und
-Adapter aus diesem Repository.
+Which license is needed for which use, and how to request a commercial
+license, is explained in detail in
+[KymoCore's COMMERCIAL.md](https://github.com/CodeName-666/kymocore/blob/main/COMMERCIAL.md).
+On request, a commercial KymoCore license also covers the examples and adapters
+from this repository.
 
-## Ausgenommen
+## Excluded
 
-- `lib/Events` ist eine eigenständige Library unter der MIT-Lizenz (eigene
-  LICENSE im Submodul).
-- `legacy/` ist archivierter Altcode ohne Weiterentwicklung.
+- `lib/Events` is an independent library under the MIT license (own LICENSE in
+  the submodule).
+- `legacy/` is archived old code without further development.
+
+If the English and German versions differ, the German version prevails.
