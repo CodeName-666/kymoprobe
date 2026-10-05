@@ -90,7 +90,7 @@ wartet nie auf die Schnittstelle.
 | [stm32/usb_cdc_example](examples/stm32/usb_cdc_example/) | Blue Pill F103C8 | virtueller COM-Port über USB-CDC |
 | [native](examples/native/) | PC | Frames ohne Hardware erzeugen |
 
-Alle Beispiele werden bei jedem Push automatisch gebaut.
+Alle Beispiele sind gebaut und geprüft; die wichtigsten baut die CI bei jedem Push automatisch.
 
 ## Wofür man es einsetzt
 
