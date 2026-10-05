@@ -20,8 +20,8 @@ in diesem Repository den Submodul-Stand auf den neuen Tag setzen:
 
 ```sh
 git -C lib/KymoCore fetch --tags
-git -C lib/KymoCore checkout v6.2.0   # gewünschte Version
-git add lib/KymoCore && git commit -m "KymoCore auf v6.2.0 aktualisieren"
+git -C lib/KymoCore checkout v6.2.1   # gewünschte Version
+git add lib/KymoCore && git commit -m "KymoCore auf v6.2.1 aktualisieren"
 ```
 
 ## Start mit ESP32
