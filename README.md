@@ -20,8 +20,8 @@ in diesem Repository den Submodul-Stand auf den neuen Tag setzen:
 
 ```sh
 git -C lib/KymoCore fetch --tags
-git -C lib/KymoCore checkout v6.1.0   # gewünschte Version
-git add lib/KymoCore && git commit -m "KymoCore auf v6.1.0 aktualisieren"
+git -C lib/KymoCore checkout v6.2.0   # gewünschte Version
+git add lib/KymoCore && git commit -m "KymoCore auf v6.2.0 aktualisieren"
 ```
 
 ## Start mit ESP32
@@ -375,3 +375,13 @@ Bitoperationen, Bytekonvertierung und CRC sind in einer unabhängigen
 [Common-Komponente](lib/KymoCore/src/common/README.md) gebündelt.
 `python tools/test_native.py` prüft die Coderegel und die Hilfsfunktionen mit.
 Die dauerhaften Vorgaben stehen in [AGENTS.md](AGENTS.md).
+
+## Lizenz
+
+Copyright (c) 2026 Christof Seidel. KymoProbe und die Library KymoCore sind
+doppelt lizenziert: **GPLv3** ([LICENSE](LICENSE)), kostenlos für Hobby,
+Basteln, Lernen und Open Source, oder eine **kommerzielle Lizenz** für
+Unternehmen, die Firmware oder Geräte weitergeben, ohne ihren Quellcode
+offenzulegen. Details stehen in [COMMERCIAL.md](COMMERCIAL.md), Beiträge sind
+in [CONTRIBUTING.md](CONTRIBUTING.md) geregelt. `lib/Events` steht unter der
+MIT-Lizenz.

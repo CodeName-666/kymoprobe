@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+ * Copyright (c) 2026 Christof Seidel */
 #define KYMO_EXAMPLE_MULTIDIMENSIONAL 1
 #include "../../common/arduino_serial_config.h"
 
