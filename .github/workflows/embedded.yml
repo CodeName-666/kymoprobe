@@ -6,6 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
       - run: pip install platformio==6.1.19
       - name: Validate archive and build its documented consumers
         run: python3 tools/test_package.py
@@ -14,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
       - name: C99 and C++11 behavior tests
         run: python3 tools/test_native.py
 
@@ -36,5 +40,7 @@ jobs:
             environment: nucleo_f401re
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
       - run: pip install platformio==6.1.19
       - run: pio run -d ${{ matrix.project }} -e ${{ matrix.environment }}

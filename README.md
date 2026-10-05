@@ -4,6 +4,26 @@ Universelle Embedded-Telemetrie für KymoStudio: C++11-Kern, statische Konfigura
 einmal `Kymo_Init()` und zyklisch `Kymo_Main()`. Das Hauptprojekt ist ein
 ESP32-PlatformIO-Projekt. Der Kern benötigt weder Arduino noch RTOS oder Heap.
 
+## Klonen
+
+Die Library KymoCore ist ein eigenes Repository
+([CodeName-666/kymocore](https://github.com/CodeName-666/kymocore)) und hier als
+Git-Submodul unter `lib/KymoCore` eingebunden. Deshalb mit Submodulen klonen:
+
+```sh
+git clone --recurse-submodules https://github.com/CodeName-666/kymoprobe.git
+```
+
+In einem bestehenden Checkout reicht `git submodule update --init`.
+Library-Änderungen werden in kymocore committet, getaggt und gepusht. Danach
+in diesem Repository den Submodul-Stand auf den neuen Tag setzen:
+
+```sh
+git -C lib/KymoCore fetch --tags
+git -C lib/KymoCore checkout v6.1.0   # gewünschte Version
+git add lib/KymoCore && git commit -m "KymoCore auf v6.1.0 aktualisieren"
+```
+
 ## Start mit ESP32
 
 ```sh
@@ -40,7 +60,7 @@ und ESP32-Projekte nutzen denselben C++11-Kern.
 Die vollständige Header-API lässt sich mit `doxygen Doxyfile` erzeugen.
 [Doxygen-Anleitung](docs/doxygen.md) beschreibt Ausgabe und Dokumentationsregeln.
 
-[KymoCore](lib/KymoCore/README.md) dokumentiert die Konfiguration, Speicher-
+[KymoCore](lib/KymoCore/README.md) (eigenes Repository, Submodul) dokumentiert die Konfiguration, Speicher-
 und Callback-Verträge. [PROTOCOL.md](lib/KymoCore/PROTOCOL.md) definiert das
 mit KymoStudio identische Wire-Format. Es sind 9–21 Bytes pro Messung:
 bytebasierte IDs/Flags, explizites Little Endian, float32, optionale uint32-
