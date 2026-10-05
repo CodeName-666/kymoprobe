@@ -1,20 +1,20 @@
-#include "plotter.h"
+#include "kymo.h"
 
 
-namespace Plotter {
+namespace Kymo {
      
-Plotter::Plotter(void)
+Kymo::Kymo(void)
 {
 
 }
    
-void Plotter::init(Stream& stream)
+void Kymo::init(Stream& stream)
 {
     m_stream = &stream;
     m_current_state = HEADER_STATE;
 }
 
-void Plotter::loop(void)
+void Kymo::loop(void)
 { 
     State_e next_state;
     switch(m_current_state)
@@ -36,7 +36,7 @@ void Plotter::loop(void)
     m_current_state = next_state;
 }
 
-bool Plotter::valid_cmd(Commands_e cmd)
+bool Kymo::valid_cmd(Commands_e cmd)
 {
     if(cmd == PING || cmd == PONG ||
        cmd == DATA)
@@ -46,7 +46,7 @@ bool Plotter::valid_cmd(Commands_e cmd)
     return false;   
 }
 
-State_e Plotter::header_state(State_e cState) 
+State_e Kymo::header_state(State_e cState) 
 {   
     State_e ret = HEADER_STATE;
     uint8_t* ptr = (uint8_t*)(&m_receive_header);
@@ -65,7 +65,7 @@ State_e Plotter::header_state(State_e cState)
 }
 
 
-State_e Plotter::command_state(State_e cState)
+State_e Kymo::command_state(State_e cState)
 {
     State_e next_state = HEADER_STATE;
     Serial.println("... Enter Command State ...");
@@ -94,12 +94,12 @@ State_e Plotter::command_state(State_e cState)
     return next_state;
 }
 
-State_e Plotter::data_state(State_e cState) 
+State_e Kymo::data_state(State_e cState) 
 {
     return HEADER_STATE; 
 }
 
-bool Plotter::write_message(void)
+bool Kymo::write_message(void)
 {
 
     size_t size = 0;
@@ -123,7 +123,7 @@ bool Plotter::write_message(void)
     return ret;
 }
 
-bool Plotter::set_message_to_write(Commands_e cmd, uint32_t length, uint8_t* data)
+bool Kymo::set_message_to_write(Commands_e cmd, uint32_t length, uint8_t* data)
 {
     bool ret = false;
     if(valid_cmd(cmd))
@@ -137,7 +137,7 @@ bool Plotter::set_message_to_write(Commands_e cmd, uint32_t length, uint8_t* dat
     return ret;
 }
 
-State_e Plotter::response(State_e cState)
+State_e Kymo::response(State_e cState)
 {
     bool ret = write_message();
     if(ret == true)

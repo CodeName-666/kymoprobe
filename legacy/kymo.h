@@ -1,11 +1,11 @@
-#ifndef PLOTTER_H
-#define PLOTTER_H
+#ifndef KYMO_H
+#define KYMO_H
 
 #include <stdio.h>
 #include "Stream.h"
 #include "SwTimer.h"
 
-namespace Plotter {
+namespace Kymo {
 
 
 #define COMMANDS_QUANTITY 3u
@@ -43,14 +43,14 @@ struct Message_t {
 #pragma pack(pop)
 
 
-class Plotter
+class Kymo
 {
     public:
         /**
-         * @brief Construct a new Plotter object
+         * @brief Construct a new Kymo object
          * 
          */
-        explicit Plotter(void);
+        explicit Kymo(void);
         /**
          * @brief 
          * 

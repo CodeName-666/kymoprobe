@@ -1,0 +1,40 @@
+name: Embedded library
+on: [push, pull_request]
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install platformio==6.1.19
+      - name: Validate archive and build its documented consumers
+        run: python3 tools/test_package.py
+
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: C99 and C++11 behavior tests
+        run: python3 tools/test_native.py
+
+  firmware:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - project: .
+            environment: nodemcu-32s
+          - project: examples/arduino/simple_analog_example
+            environment: uno
+          - project: examples/arduino/multi_sensor_example
+            environment: uno
+          - project: examples/esp32/serial_example
+            environment: esp32dev
+          - project: examples/esp32/wifi_mqtt_example
+            environment: esp32dev
+          - project: examples/stm32/uart_example
+            environment: nucleo_f401re
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install platformio==6.1.19
+      - run: pio run -d ${{ matrix.project }} -e ${{ matrix.environment }}

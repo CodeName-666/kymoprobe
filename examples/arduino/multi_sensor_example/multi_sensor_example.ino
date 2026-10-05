@@ -1,5 +1,5 @@
-#include <Arduino.h>
-#include "kymo_config.h"
+#define KYMO_EXAMPLE_MULTIDIMENSIONAL 1
+#include "../../common/arduino_serial_config.h"
 
 static KymoContext kymo;
 
@@ -8,12 +8,10 @@ static KymoContext kymo;
  ******************************************************************************/
 void setup() {
     Serial.begin(115200);
-    (void)Kymo_Init(&kymo, &kymo_config);
+    (void)Kymo_Init(&kymo, &example_config);
 }
 
 /*******************************************************************************
  * loop
  ******************************************************************************/
-void loop() {
-    (void)Kymo_Main(&kymo);
-}
+void loop() { (void)Kymo_Main(&kymo); }

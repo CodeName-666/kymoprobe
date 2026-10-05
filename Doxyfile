@@ -1,0 +1,43 @@
+PROJECT_NAME           = KymoCore
+PROJECT_BRIEF          = "Portable embedded telemetry: configuration, Init and cyclic Main"
+OUTPUT_DIRECTORY       = docs/api
+INPUT                  = docs/api.dox \
+                         lib/KymoCore/src/kymo_build_config.h \
+                         lib/KymoCore/src/kymo_features.h \
+                         lib/KymoCore/src/kymo_runtime.h \
+                         lib/KymoCore/src/kymo_protocol.h \
+                         lib/KymoCore/src/kymo.h \
+                         lib/KymoCore/src/kymo_stream.h \
+                         lib/KymoCore/src/common/embedded_bits.h \
+                         lib/KymoCore/src/common/embedded_bytes.h \
+                         lib/KymoCore/src/common/embedded_crc.h \
+                         include/kymo_config.h \
+                         examples/common/arduino_serial_config.h \
+                         examples/common/kymo_arduino.h \
+                         examples/stm32/adapters/kymo_stm32.h \
+                         examples/stm32/uart_example/src/board.h
+FILE_PATTERNS          = *.h *.dox
+RECURSIVE              = NO
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+HIDE_UNDOC_MEMBERS     = NO
+HIDE_UNDOC_CLASSES     = NO
+FULL_PATH_NAMES        = YES
+STRIP_FROM_PATH        = .
+SOURCE_BROWSER        = YES
+INLINE_SOURCES        = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+GENERATE_XML           = YES
+HAVE_DOT               = NO
+ENABLE_PREPROCESSING  = YES
+PREDEFINED            = __cplusplus DOXYGEN HAL_UART_MODULE_ENABLED KYMO_EXAMPLE_MULTIDIMENSIONAL
+QUIET                 = YES
+WARNINGS              = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = YES
+WARN_NO_PARAMDOC       = YES
+WARN_AS_ERROR          = FAIL_ON_WARNINGS
+WARN_LOGFILE           = docs/api/warnings.log
