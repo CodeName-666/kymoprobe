@@ -35,8 +35,8 @@ Testsignale durch deine eigenen Sensoren, Regelgrößen oder Zustände.
 Unter der Haube arbeitet [KymoCore](https://github.com/CodeName-666/kymocore),
 eine schlanke Library ohne Heap und ohne RTOS. Sie plant die Messungen, kodiert
 sie in 9 bis 21 Bytes und schickt sie über die Schnittstelle deiner Wahl.
-KymoProbe zeigt, wie das auf echter Hardware aussieht: per UART, USB, WLAN
-oder MQTT.
+KymoProbe zeigt, wie das auf echter Hardware aussieht: per UART, USB oder WLAN
+mit MQTT.
 
 <p align="center">
   <img src="docs/images/kymostudio-workbench.png" alt="Messwerte eines Mikrocontrollers live in KymoStudio" width="900">
