@@ -35,8 +35,8 @@ sensors, control variables or states.
 Under the hood runs [KymoCore](https://github.com/CodeName-666/kymocore), a lean
 library without heap and without RTOS. It schedules the measurements, encodes
 them into 9 to 21 bytes and sends them over the interface of your choice.
-KymoProbe shows what this looks like on real hardware: via UART, USB, Wi-Fi or
-MQTT.
+KymoProbe shows what this looks like on real hardware: via UART, USB or Wi-Fi
+with MQTT.
 
 <p align="center">
   <img src="docs/images/kymostudio-workbench.png" alt="Microcontroller measurements live in KymoStudio" width="900">
