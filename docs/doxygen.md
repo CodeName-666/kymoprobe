@@ -10,9 +10,12 @@ Die Startseite liegt anschließend unter `docs/api/html/index.html`.
 Die Konfiguration wurde mit Doxygen 1.18.0 geprüft. Graphviz und LaTeX werden
 nicht benötigt. Generierte HTML- und XML-Dateien sind von Git ausgeschlossen.
 
-Erfasst werden alle zwölf aktiven eigenen Header: C-Runtime, Protokoll,
+Erfasst werden die aktiven eigenen Header: C-Runtime, Protokoll,
 gemeinsame Bit-/Byte-/CRC-Helfer, optionale C++-Schnittstellen sowie
-Anwendungskonfiguration und Beispieladapter. Archivierter Code unter `legacy/`
+Konfigurationsversion, Instrumentierungsfassade, Anwendungskonfiguration und
+Beispieladapter. Doxygen aktiviert dafür die aktuellen Runtime-, Daten- und
+C++-Features über `PREDEFINED` und lässt noch nicht bereitgestellte Trace-APIs
+aus; dies ändert keine Firmwareeinstellungen. Archivierter Code unter `legacy/`
 und die unabhängige Fremdbibliothek `lib/Events` gehören nicht zu dieser API.
 
 Die Header gliedern Konstanten, Typen, Konfiguration, Zustand und Funktionen

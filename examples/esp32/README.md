@@ -6,3 +6,7 @@ configurable WiFi/MQTT callbacks and publishes whole binary frames. Edit its
 credentials, broker and unique client ID before use. PubSubClient reconnects
 may block; this example is not a hard real-time networking driver.
 See [example build instructions](../README.md).
+
+For testing KymoStudio's limits, the root project provides 256-channel USB/TCP
+load profiles, including full XYZ frames. See the
+[ESP32 stress-test instructions and current limits](../../docs/esp32-stress-test.md).

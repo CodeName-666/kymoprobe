@@ -8,6 +8,7 @@ pio run -d examples/arduino/simple_analog_example -e uno
 pio run -d examples/arduino/multi_sensor_example -e uno
 pio run -d examples/esp32/serial_example -e esp32dev
 pio run -d examples/esp32/wifi_mqtt_example -e esp32dev
+pio run -d examples/esp32/trace_uart -e esp32-trace
 ```
 
 Arduino and serial ESP32 examples share `common/arduino_serial_config.h` and
@@ -32,6 +33,13 @@ Serial examples: 115200 baud, 8N1, binary v6. Connect KymoStudio to the board's
 serial port. Do not share that port with a text monitor. MQTT: edit WiFi/broker
 settings, subscribe KymoStudio to `sensor/data`; one whole frame per payload.
 PubSubClient connect is synchronous even though sampling is cyclic.
+
+The separate `esp32/trace_uart` project instruments explicit scope and marker
+sites, then multiplexes canonical session metadata, its generated symbol
+dictionary and trace batches over UART v2. In KymoStudio create a Runtime trace
+chart for the timeline or select a span and open its Function flow. Its serial
+speed is 460800 baud; close other serial monitors first. Scheduler and ISR
+coverage remain disabled until a complete target adapter is verified.
 
 Optional portability examples:
 

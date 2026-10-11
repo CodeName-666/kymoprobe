@@ -20,6 +20,13 @@ jobs:
           submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
       - name: C99 and C++11 behavior tests
         run: python3 tools/test_native.py
+      - name: Checkout Studio trace decoder for the producer-to-consumer check
+        uses: actions/checkout@v4
+        with:
+          repository: CodeName-666/KymoStudio
+          path: KymoStudio
+      - name: Native KymoTrace producer and Studio reconstruction
+        run: python3 tools/test_trace_demo.py
 
   firmware:
     runs-on: ubuntu-latest
@@ -36,6 +43,8 @@ jobs:
             environment: esp32dev
           - project: examples/esp32/wifi_mqtt_example
             environment: esp32dev
+          - project: examples/esp32/trace_uart
+            environment: esp32-trace
           - project: examples/stm32/uart_example
             environment: nucleo_f401re
     steps:

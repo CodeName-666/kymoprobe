@@ -158,6 +158,8 @@ def main() -> None:
     assert legacy.returncode != 0 and "requires C++11" in legacy.stderr
     verify_header_config()
     verify_features()
+    run(sys.executable, ROOT / "lib/KymoCore/test/compile_out_test.py")
+    run(sys.executable, ROOT / "lib/KymoCore/test/trace_core_test.py")
     for crc_enabled in (False, True):
         print(f"Testing encoder CRC={crc_enabled}", flush=True)
         flags = ["-Wall", "-Wextra", "-Werror", "-pedantic", "-I" + str(LIB)]

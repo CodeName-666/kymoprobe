@@ -1,0 +1,1 @@
+{"contexts":[{"id":1,"kind":"main","name":"main"}],"generation":1,"schema_version":1,"symbols":[{"id":1,"kind":"scope","name":"main_loop"},{"id":2,"kind":"scope","name":"simulated_work"},{"id":3,"kind":"marker","name":"iteration"}]}

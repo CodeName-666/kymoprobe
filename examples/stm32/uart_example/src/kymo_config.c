@@ -3,6 +3,7 @@
 #include "board.h"
 #include <math.h>
 
+#if KYMO_EFFECTIVE_RUNTIME
 /*******************************************************************************
  * clock_ms
  ******************************************************************************/
@@ -41,3 +42,4 @@ const KymoConfig example_config = {
     channels, last_sample_ms, clock_ms, 0, sample, 0,
     uart_write, uart_busy, 0, &huart2, 2
 };
+#endif

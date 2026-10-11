@@ -82,6 +82,22 @@ Die Hauptschleife bleibt dabei winzig: Einmal `Kymo_Init()`, danach in jedem
 Durchlauf `Kymo_Main()`. KymoCore entscheidet, welcher Kanal fällig ist, und
 wartet nie auf die Schnittstelle.
 
+## Entwicklungs- und Produktionsbuilds
+
+Das PlatformIO-Hauptprojekt enthält die getrennten Umgebungen
+`nodemcu-32s-development` und `nodemcu-32s-production`. Development aktiviert
+KymoCore; Production setzt `KYMO_ENABLED=0` und entfernt Runtime-Konfiguration
+und Aufrufe bereits bei der Präprozessierung. Beide Umgebungen besitzen ein
+eigenes PlatformIO-Buildverzeichnis. Baue sie mit
+`pio run -e nodemcu-32s-development` beziehungsweise
+`pio run -e nodemcu-32s-production`; ein Profilwechsel braucht keine
+Quelltextänderung. Development ist das Standardprofil.
+
+Der Schalter gilt projektweit für Anwendungs- und KymoCore-Übersetzungseinheiten.
+`kymo_config.h` der Referenzanwendung verlangt außerdem Konfigurationsvertrag
+Version 1. Ein älteres Core-Paket wird dadurch beim Kompilieren erkannt, statt
+die Production-Einstellung stillschweigend zu ignorieren.
+
 ## Was enthalten ist
 
 | Beispiel | Hardware | Zeigt |

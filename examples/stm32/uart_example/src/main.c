@@ -2,6 +2,7 @@
  * Copyright (c) 2026 Christof Seidel */
 #include "board.h"
 
+#if KYMO_EFFECTIVE_RUNTIME
 UART_HandleTypeDef huart2;
 static KymoContext kymo;
 
@@ -41,6 +42,7 @@ static void uart_init(void) {
     HAL_NVIC_SetPriority(USART2_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
+#endif
 
 /*******************************************************************************
  * main
@@ -48,7 +50,11 @@ static void uart_init(void) {
 int main(void) {
     // Reset-default HSI clock: no external oscillator/CubeMX files required.
     HAL_Init();
+#if KYMO_EFFECTIVE_RUNTIME
     uart_init();
     if (Kymo_Init(&kymo, &example_config) != KYMO_OK) while (1) {}
     while (1) { (void)Kymo_Main(&kymo); }
+#else
+    while (1) {}
+#endif
 }

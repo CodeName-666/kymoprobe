@@ -3,6 +3,10 @@
 #include <Arduino.h>
 #include "kymo_config.h"
 
+#if (!defined(KYMO_DEMO_NETWORK_ENABLE) || !KYMO_DEMO_NETWORK_ENABLE) && \
+    (!defined(KYMO_STRESS_ENABLE) || !KYMO_STRESS_ENABLE)
+#include <kymo_generated_config.h>
+#if KYMO_EFFECTIVE_RUNTIME
 static KymoContext kymo;
 
 /*******************************************************************************
@@ -10,7 +14,7 @@ static KymoContext kymo;
  ******************************************************************************/
 void setup() {
     Serial.begin(115200);
-    (void)Kymo_Init(&kymo, &kymo_config);
+    (void)Kymo_Init(&kymo, &kymo_generated_config);
 }
 
 /*******************************************************************************
@@ -19,3 +23,17 @@ void setup() {
 void loop() {
     (void)Kymo_Main(&kymo);
 }
+#endif
+#endif
+
+#if !KYMO_EFFECTIVE_RUNTIME
+/*******************************************************************************
+ * setup
+ ******************************************************************************/
+void setup() {}
+
+/*******************************************************************************
+ * loop
+ ******************************************************************************/
+void loop() {}
+#endif

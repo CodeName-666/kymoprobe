@@ -81,6 +81,21 @@ static const KymoChannel channels[] = {
 The main loop stays tiny: call `Kymo_Init()` once, then `Kymo_Main()` on every
 pass. KymoCore decides which channel is due and never waits for the interface.
 
+## Development and production builds
+
+The main PlatformIO project has separate `nodemcu-32s-development` and
+`nodemcu-32s-production` environments. Development enables KymoCore; production
+sets `KYMO_ENABLED=0`, which removes the runtime configuration and calls during
+preprocessing. Each environment has its own PlatformIO build directory. Build
+either with `pio run -e nodemcu-32s-development` or
+`pio run -e nodemcu-32s-production`; switching profiles does not require source
+edits. The default environment is development.
+
+The profile switch is project-wide and must reach both application and KymoCore
+translation units. The probe application's `kymo_config.h` also requires
+configuration contract version 1, so an older Core package fails at compile
+time instead of silently ignoring the production setting.
+
 ## What is included
 
 | Example | Hardware | Shows |
@@ -93,8 +108,26 @@ pass. KymoCore decides which channel is due and never waits for the interface.
 | [stm32/uart_example](examples/stm32/uart_example/) | Nucleo F401RE, F411RE, Blue Pill | UART with the STM32 HAL |
 | [stm32/usb_cdc_example](examples/stm32/usb_cdc_example/) | Blue Pill F103C8 | virtual COM port over USB CDC |
 | [native](examples/native/) | PC | generate frames without hardware |
+| [ESP32 trace demo](examples/esp32/trace_uart/) | ESP32 NodeMCU-32S | bounded KymoTrace events over UART v2 |
 
 All examples have been built and checked; CI builds the most important ones automatically on every push.
+
+## Runtime traces
+
+The ESP32 trace demo sends recorder events as Kymotrace v2 frames over the same
+UART used by KymoStudio. In Studio, add a **Runtime trace** chart for the live
+timeline or a **Function flow** chart to inspect the selected call subtree.
+Choose the connected serial source as the trace session, then use the trace
+toolbar to capture to a file, pause/replay a capture, or export CSV/Chrome trace.
+Use **Ablauf dieses Aufrufs** on a selected span to create a flow chart for it.
+
+Trace support is opt-in and has a separate development profile. The demo reports
+its actual clock domain and recorder capabilities in session metadata. It does
+not install FreeRTOS scheduler hooks or instrument arbitrary ISRs; scheduler,
+ISR and core-state coverage must not be inferred from the ESP32 having those
+facilities. Add instrumentation only at call sites you own, and keep callbacks
+bounded. See [trace firmware notes](docs/trace.md) for build, capture and
+capability details.
 
 ## What it is used for
 

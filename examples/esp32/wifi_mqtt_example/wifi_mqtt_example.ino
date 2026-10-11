@@ -6,6 +6,7 @@
 #include <math.h>
 #include <kymo_runtime.h>
 
+#if KYMO_EFFECTIVE_RUNTIME
 // Edit credentials, endpoint and channels here. Do not commit real secrets.
 static const char *WIFI_SSID = "YourWiFiSSID";
 static const char *WIFI_PASSWORD = "YourWiFiPassword";
@@ -80,3 +81,14 @@ void setup() {
  * loop
  ******************************************************************************/
 void loop() { (void)Kymo_Main(&kymo); }
+#else
+/*******************************************************************************
+ * setup
+ ******************************************************************************/
+void setup() {}
+
+/*******************************************************************************
+ * loop
+ ******************************************************************************/
+void loop() {}
+#endif

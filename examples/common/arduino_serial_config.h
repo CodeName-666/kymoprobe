@@ -26,13 +26,20 @@
 #include <Arduino.h>
 #include <math.h>
 #include <kymo_runtime.h>
+#include <kymo_version.h>
+#if KYMO_CONFIG_API_VERSION != 1
+#error "KymoProbe Arduino examples require KymoCore configuration API version 1"
+#endif
 
-#if !KYMO_ENABLE_RUNTIME || !KYMO_ENABLE_TIMESTAMP
+#if KYMO_ENABLED && (!KYMO_ENABLE_RUNTIME || !KYMO_ENABLE_TIMESTAMP)
 #error "This example requires KYMO_ENABLE_RUNTIME=1 and KYMO_ENABLE_TIMESTAMP=1"
 #endif
-#if defined(KYMO_EXAMPLE_MULTIDIMENSIONAL) && (!KYMO_ENABLE_X || !KYMO_ENABLE_Z)
+#if KYMO_ENABLED && defined(KYMO_EXAMPLE_MULTIDIMENSIONAL) && \
+    (!KYMO_ENABLE_X || !KYMO_ENABLE_Z)
 #error "The multidimensional example requires KYMO_ENABLE_X=1 and KYMO_ENABLE_Z=1"
 #endif
+
+#if KYMO_EFFECTIVE_RUNTIME
 
 /**
  * @brief Read the Arduino millisecond counter as a portable uint32 value.
@@ -133,6 +140,7 @@ static const KymoConfig example_config = {
     nullptr, example_write, nullptr, nullptr, nullptr,
     sizeof(example_channels) / sizeof(example_channels[0])
 };
+#endif /* KYMO_EFFECTIVE_RUNTIME */
 
 /** @} */
 #endif /* EXAMPLE_ARDUINO_SERIAL_CONFIG_H */

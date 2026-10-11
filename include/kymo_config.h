@@ -3,8 +3,8 @@
 /**
  * @brief Application-owned configuration for the ESP32 demo.
  *
- * @details This header exposes application configuration, not platform code in KymoCore.
- * The implementation in src/kymo_config.cpp binds clock, sample and Serial callbacks.
+ * @details This header verifies that the selected Core supports the generated configuration
+ * contract and loads the runtime types used by the application.
  * @file kymo_config.h
  * @defgroup application_config Application configuration
  * @{
@@ -21,17 +21,12 @@
  */
 #define APPLICATION_KYMO_CONFIG_H
 
-#include <kymo_runtime.h>
+#include <kymo_version.h>
+#if KYMO_CONFIG_API_VERSION != 1
+#error "KymoProbe requires KymoCore configuration API version 1"
+#endif
 
-/**
- * @brief Persistent configuration used by the main application.
- *
- * @details Read-only input to Kymo_Init. Its callbacks provide hardware access; its referenced
- * scheduling array is writable runtime storage. Both outlive the global KymoContext.
- * @par Usage
- * Kymo_Init(&kymo, &kymo_config);
- */
-extern const KymoConfig kymo_config;
+#include <kymo_runtime.h>
 
 /** @} */
 #endif /* APPLICATION_KYMO_CONFIG_H */
