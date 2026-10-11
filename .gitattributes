@@ -1,0 +1,3 @@
+# Generated snapshots contain byte-level hashes and must retain their original bytes.
+generated/** -text
+examples/**/generated/** -text

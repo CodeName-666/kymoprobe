@@ -20,11 +20,22 @@ jobs:
           submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
       - name: C99 and C++11 behavior tests
         run: python3 tools/test_native.py
-      - name: Checkout Studio trace decoder for the producer-to-consumer check
-        uses: actions/checkout@v4
-        with:
-          repository: CodeName-666/KymoStudio
-          path: KymoStudio
+      - name: Configuration and stress contracts
+        run: |
+          python3 tools/test_probe_config.py
+          python3 tools/test_stress_demo.py
+      - name: Fetch released Studio decoder for the producer-to-consumer check
+        run: |
+          curl --fail --location --retry 3 --output studio-sources.zip https://kymotrace.de/downloads/v2.1.1/KymoStudio_2.1.1_Sources.zip
+          echo '68278e1f831cf79279ff7e8641119c406a6fcea130098bf8298730db06dc2473  studio-sources.zip' | sha256sum --check
+          python3 - <<'PY'
+          import io
+          import zipfile
+          with zipfile.ZipFile('studio-sources.zip') as release:
+              source = release.read('legal/sources/KymoStudio-application-source.zip')
+          with zipfile.ZipFile(io.BytesIO(source)) as application:
+              application.extractall('.')
+          PY
       - name: Native KymoTrace producer and Studio reconstruction
         run: python3 tools/test_trace_demo.py
 
@@ -35,6 +46,10 @@ jobs:
         include:
           - project: .
             environment: nodemcu-32s
+          - project: .
+            environment: nodemcu-32s-development
+          - project: .
+            environment: nodemcu-32s-production
           - project: examples/arduino/simple_analog_example
             environment: uno
           - project: examples/arduino/multi_sensor_example
