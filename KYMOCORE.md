@@ -1,7 +1,7 @@
 # KymoCore dependency
 
 Library development lives in the separate `../KymoCore` repository.
-This project consumes official KymoCore **6.3.1**, tag `v6.3.1`, through the
+This project consumes official KymoCore **6.3.2**, tag `v6.3.2`, through the
 Git submodule `lib/KymoCore`. PlatformIO links that pinned consumer checkout;
 it does not link the sibling development directory.
 
@@ -25,5 +25,5 @@ Do not make library edits inside the submodule. Make and test them in
 Standalone PlatformIO projects can instead install the exact registry version:
 
 ```ini
-lib_deps = codename666/KymoCore @ 6.3.1
+lib_deps = codename666/KymoCore @ 6.3.2
 ```
