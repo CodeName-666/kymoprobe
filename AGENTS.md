@@ -43,3 +43,7 @@ Applies to active first-party C/C++ code, including examples and native tests.
   Develop KymoCore in the separate `../KymoCore` repository, publish a release there,
   then fetch that official tag and update the submodule pointer here.
   Keep the consumer checkout clean and detached at the selected release.
+- Maintain the larger UART, MQTT, TCP, maximum-performance and feature demos
+  in this application repository, selectable through `src/main.cpp`.
+  KymoCore contains only a few small reference examples; library changes still
+  belong exclusively to its separate development repository.

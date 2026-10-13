@@ -9,6 +9,7 @@
  * may block under backpressure. This SDK adapter is not a hard real-time driver.
  */
 #include <kymo_features.h>
+#include "demo_selection.h"
 #include <kymo_version.h>
 #if KYMO_CONFIG_API_VERSION != 1
 #error "KymoProbe stress demo requires KymoCore configuration API version 1"
@@ -237,9 +238,9 @@ static void serviceStressNetwork()
 
 /** @brief Initialize the channel table and selected SDK transport. */
 /*******************************************************************************
- * setup
+ * demoStressInit
  ******************************************************************************/
-void setup()
+void demoStressInit()
 {
     for (uint16_t channelIndex = 0u; channelIndex < KYMO_STRESS_CHANNEL_COUNT; ++channelIndex) {
         s_channels[channelIndex].id = static_cast<uint8_t>(channelIndex);
@@ -267,9 +268,9 @@ void setup()
 
 /** @brief Advance a bounded number of round-robin samples and yield to the SDK. */
 /*******************************************************************************
- * loop
+ * demoStressMain
  ******************************************************************************/
-void loop()
+void demoStressMain()
 {
     bool canSend = s_isReady;
     KymoStatus status = KYMO_OK;

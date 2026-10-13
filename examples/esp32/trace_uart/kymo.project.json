@@ -128,6 +128,60 @@
           "mode": "dedicated_trace"
         }
       }
+    },
+    "flow": {
+      "enabled": true,
+      "features": {
+        "cpp": false,
+        "crc": false,
+        "decoder": false,
+        "runtime": false,
+        "timestamp": false,
+        "x": false,
+        "z": false
+      },
+      "trace": {
+        "bindings": {
+          "clock": "traceClockTicks",
+          "core_id": "traceCoreId",
+          "critical_enter": "traceCriticalEnter",
+          "critical_exit": "traceCriticalExit",
+          "current_context": "traceCurrentContext",
+          "session_id": "kymo_trace_session_id",
+          "trace_write": "traceWriteFrame"
+        },
+        "buffer": {
+          "events_per_core": 64,
+          "max_contexts": 16,
+          "max_depth": 16,
+          "max_isr_nesting": 4
+        },
+        "clock": {
+          "counter_bits": 64,
+          "domain_id": 1,
+          "frequency_hz": 1000000,
+          "reset_rule": "new_session",
+          "smp_synchronized": true
+        },
+        "enabled": true,
+        "flow": true,
+        "isr": false,
+        "port": {
+          "core_count": 2,
+          "kind": "esp32_freertos"
+        },
+        "scheduler": false,
+        "session": {
+          "callback": "kymo_trace_session_id"
+        },
+        "transport": {
+          "drain_bytes": 256,
+          "drain_events": 8,
+          "max_flush_latency_ms": 10,
+          "max_frame_bytes": 128,
+          "mode": "dedicated_trace"
+        }
+      }
     }
   },
   "project_name": "KymoProbeTraceDemo",
@@ -151,6 +205,16 @@
       "id": 3,
       "kind": "marker",
       "name": "iteration"
+    },
+    {
+      "id": 4,
+      "kind": "scope",
+      "name": "flow_producer"
+    },
+    {
+      "id": 5,
+      "kind": "scope",
+      "name": "flow_consumer"
     }
   ]
 }

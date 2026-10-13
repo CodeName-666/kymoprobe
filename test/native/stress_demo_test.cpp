@@ -62,11 +62,11 @@ static uint32_t verifyCapturedFrames()
 int32_t main()
 {
     uint32_t sampledWhileBlocked = 0u;
-    setup();
+    demoStressInit();
     assert(s_isReady);
     assert(Serial.m_baud == KYMO_STRESS_BAUD);
     for (uint16_t iteration = 0u; iteration < 1000u; ++iteration) {
-        loop();
+        demoStressMain();
         assert(s_outputLength <= OUTPUT_CAPACITY);
     }
     assert(testWire.empty());
@@ -76,7 +76,7 @@ int32_t main()
     assert(sampledWhileBlocked <= OUTPUT_CAPACITY / 13u);
     for (uint16_t iteration = 0u; iteration < 16000u; ++iteration) {
         testIsBlocked = iteration % 3u == 0u;
-        loop();
+        demoStressMain();
     }
     testIsBlocked = false;
     while (s_outputLength > 0u) {
@@ -86,13 +86,13 @@ int32_t main()
 
     // Start a new session after discarding a partially transmitted batch.
     for (uint16_t iteration = 0u; (iteration < 10u) && (s_outputOffset == 0u); ++iteration) {
-        loop();
+        demoStressMain();
     }
     assert(s_outputOffset > 0u);
     resetStressStream();
     testWire.clear();
     for (uint16_t iteration = 0u; iteration < 2000u; ++iteration) {
-        loop();
+        demoStressMain();
     }
     while (s_outputLength > 0u) {
         flushStressOutput();

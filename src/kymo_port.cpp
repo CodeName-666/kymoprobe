@@ -3,8 +3,9 @@
 #include <Arduino.h>
 #include <math.h>
 #include <kymo_features.h>
+#include "demo_selection.h"
 
-#if KYMO_EFFECTIVE_RUNTIME
+#if (KYMO_DEMO_MODE == KYMO_DEMO_GENERATED) && KYMO_EFFECTIVE_RUNTIME
 #include <kymo_runtime.h>
 
 /*******************************************************************************

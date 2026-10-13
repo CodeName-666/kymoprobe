@@ -26,7 +26,8 @@ def main() -> None:
                  f"-DKYMO_STRESS_XYZ_ENABLE={xyz}", f"-DKYMO_STRESS_PERIOD_MS={period}",
                  "-DKYMO_ENABLE_TIMESTAMP=1", "-DKYMO_ENABLE_X=1", "-DKYMO_ENABLE_Z=1",
                  "-DKYMO_ENABLE_DECODER=1", "-DKYMO_ENABLE_CRC=0", "-DKYMO_ENABLE_RUNTIME=1",
-                 "-I" + str(ROOT / "test/stress_stub"), "-I" + str(LIB)]
+                 "-I" + str(ROOT / "test/stress_stub"), "-I" + str(LIB),
+                 "-I" + str(ROOT / "include")]
         subprocess.run(["g++", *flags, str(ROOT / "test/native/stress_demo_test.cpp"),
                         str(LIB / "kymo_runtime.cpp"), str(LIB / "kymo_protocol.cpp"),
                         "-o", str(executable)], cwd=ROOT, check=True)
@@ -38,6 +39,7 @@ def main() -> None:
                                  "-DKYMO_STRESS_ENABLE=1", "-DKYMO_ENABLE_TIMESTAMP=1",
                                  f"-DKYMO_STRESS_CHANNEL_COUNT={channels}",
                                  "-I" + str(ROOT / "test/stress_stub"), "-I" + str(LIB),
+                                 "-I" + str(ROOT / "include"),
                                  str(ROOT / "src/stress_demo.cpp")],
                                 cwd=ROOT, capture_output=True, text=True)
         assert result.returncode != 0 and "must be 1..256" in result.stderr

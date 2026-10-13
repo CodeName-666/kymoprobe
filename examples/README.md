@@ -1,10 +1,9 @@
-# KymoCore examples
+# KymoProbe examples
 
-For numeric live-analysis tests use [ESP32 measurement signals](esp32/measurement_signals/README.md):
-two timestamped sine/sawtooth channels with known FFT frequencies and measurement
-values. The previous running task/ISR/pipeline firmware is preserved separately as
-[task trace example](esp32/task_trace_example/RESTORE.md), including its active
-generated configuration and source checksums.
+The larger transport, maximum-throughput and feature applications are selected
+by the repository's central `src/main.cpp`. See [demo modes](../docs/demo-modes.md).
+The standalone board examples below remain available in KymoProbe. KymoCore
+contains only a few small portable/Arduino reference examples.
 
 Primary examples (run from repository root):
 
@@ -15,7 +14,15 @@ pio run -d examples/arduino/multi_sensor_example -e uno
 pio run -d examples/esp32/serial_example -e esp32dev
 pio run -d examples/esp32/wifi_mqtt_example -e esp32dev
 pio run -d examples/esp32/trace_uart -e esp32-trace
+pio run -d examples/esp32/measurement_signals
+pio run -d examples/esp32/task_trace_example -e esp32-runtime-test
 ```
+
+For numeric live-analysis tests use [ESP32 measurement signals](esp32/measurement_signals/README.md):
+two timestamped sine/sawtooth channels with known FFT frequencies and measurement
+values. The previous running task/ISR/pipeline firmware is preserved separately as
+[task trace example](esp32/task_trace_example/RESTORE.md), including its active
+generated configuration and source checksums.
 
 Arduino and serial ESP32 examples share `common/arduino_serial_config.h` and
 send deterministic waveforms through the C Init/Main API. Modify the sample

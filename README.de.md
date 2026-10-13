@@ -84,6 +84,11 @@ wartet nie auf die Schnittstelle.
 
 ## Entwicklungs- und Produktionsbuilds
 
+Die zentrale `src/main.cpp` schaltet zwischen UART, MQTT, TCP, kombiniertem
+Netzwerk, maximaler Datenrate und Feature-/Trace-Demos um. Wähle
+`KYMO_DEMO_MODE` in `include/demo_selection.h` oder ein benanntes PlatformIO-Profil.
+Alle Modi und Build-Befehle stehen in der [Demo-Anleitung](docs/demo-modes.md).
+
 Das PlatformIO-Hauptprojekt enthält die getrennten Umgebungen
 `nodemcu-32s-development` und `nodemcu-32s-production`. Development aktiviert
 KymoCore; Production setzt `KYMO_ENABLED=0` und entfernt Runtime-Konfiguration
@@ -91,7 +96,7 @@ und Aufrufe bereits bei der Präprozessierung. Beide Umgebungen besitzen ein
 eigenes PlatformIO-Buildverzeichnis. Baue sie mit
 `pio run -e nodemcu-32s-development` beziehungsweise
 `pio run -e nodemcu-32s-production`; ein Profilwechsel braucht keine
-Quelltextänderung. Development ist das Standardprofil.
+Quelltextänderung. Das Standardprofil `nodemcu-32s` wählt die UART-Signaldemo.
 
 Der Schalter gilt projektweit für Anwendungs- und KymoCore-Übersetzungseinheiten.
 `kymo_config.h` der Referenzanwendung verlangt außerdem Konfigurationsvertrag

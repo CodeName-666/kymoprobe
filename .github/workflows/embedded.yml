@@ -24,6 +24,7 @@ jobs:
         run: |
           python3 tools/test_probe_config.py
           python3 tools/test_stress_demo.py
+          python3 tools/test_features_demo.py
       - name: Fetch released Studio decoder for the producer-to-consumer check
         run: |
           curl --fail --location --retry 3 --output studio-sources.zip https://kymotrace.de/downloads/v2.1.1/KymoStudio_2.1.1_Sources.zip
@@ -50,6 +51,26 @@ jobs:
             environment: nodemcu-32s-development
           - project: .
             environment: nodemcu-32s-production
+          - project: .
+            environment: nodemcu-32s-mqtt
+          - project: .
+            environment: nodemcu-32s-tcp
+          - project: .
+            environment: nodemcu-32s-network
+          - project: .
+            environment: nodemcu-32s-stress-usb
+          - project: .
+            environment: nodemcu-32s-stress-tcp
+          - project: .
+            environment: nodemcu-32s-stress-tcp-xyz
+          - project: .
+            environment: nodemcu-32s-features
+          - project: .
+            environment: nodemcu-32s-trace
+          - project: .
+            environment: nodemcu-32s-trace-production
+          - project: .
+            environment: nodemcu-32s-trace-flow
           - project: examples/arduino/simple_analog_example
             environment: uno
           - project: examples/arduino/multi_sensor_example
@@ -67,4 +88,6 @@ jobs:
         with:
           submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
       - run: pip install platformio==6.1.19
+      - name: Provide placeholder network credentials for compilation
+        run: cp include/network_secrets.h.example include/network_secrets.h
       - run: pio run -d ${{ matrix.project }} -e ${{ matrix.environment }}

@@ -83,13 +83,18 @@ pass. KymoCore decides which channel is due and never waits for the interface.
 
 ## Development and production builds
 
+The central `src/main.cpp` selects UART, MQTT, TCP, combined networking,
+maximum-throughput or feature/trace applications. Select `KYMO_DEMO_MODE` in
+`include/demo_selection.h` or choose a named PlatformIO environment.
+See [all demo modes and build commands](docs/demo-modes.md).
+
 The main PlatformIO project has separate `nodemcu-32s-development` and
 `nodemcu-32s-production` environments. Development enables KymoCore; production
 sets `KYMO_ENABLED=0`, which removes the runtime configuration and calls during
 preprocessing. Each environment has its own PlatformIO build directory. Build
 either with `pio run -e nodemcu-32s-development` or
 `pio run -e nodemcu-32s-production`; switching profiles does not require source
-edits. The default environment is development.
+edits. The default `nodemcu-32s` environment selects the UART waveform demo.
 
 The profile switch is project-wide and must reach both application and KymoCore
 translation units. The probe application's `kymo_config.h` also requires
