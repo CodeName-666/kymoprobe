@@ -16,6 +16,9 @@ INPUT                  = docs/api.dox \
                          include/kymo_config.h \
                          examples/common/arduino_serial_config.h \
                          examples/common/kymo_arduino.h \
+                         examples/esp32/measurement_signals/include/Config.h \
+                         examples/esp32/measurement_signals/include/Types.h \
+                         examples/esp32/measurement_signals/include/Waveforms.h \
                          examples/esp32/trace_uart/src/kymo_freertos_trace_adapter.h \
                          examples/esp32/trace_uart/src/kymo_freertos_trace_hooks.h \
                          examples/stm32/adapters/kymo_stm32.h \

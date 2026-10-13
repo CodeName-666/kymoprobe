@@ -1,5 +1,11 @@
 # KymoCore examples
 
+For numeric live-analysis tests use [ESP32 measurement signals](esp32/measurement_signals/README.md):
+two timestamped sine/sawtooth channels with known FFT frequencies and measurement
+values. The previous running task/ISR/pipeline firmware is preserved separately as
+[task trace example](esp32/task_trace_example/RESTORE.md), including its active
+generated configuration and source checksums.
+
 Primary examples (run from repository root):
 
 ```sh

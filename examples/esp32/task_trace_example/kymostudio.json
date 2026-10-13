@@ -1,0 +1,113 @@
+{
+  "imports": [
+    "../../qml",
+    "../../qml/imports",
+    "../../qml/content",
+    "../../qml/content/Settings"
+  ],
+  "interfaces": [
+    {
+      "type": "Serial",
+      "default": {
+        "port": "COM4",
+        "baud": 460800,
+        "size": "8Bit",
+        "parity": "None",
+        "stop_bits": "1Bit"
+      }
+    },
+    {
+      "type": "Telnet",
+      "default": {
+        "host": "localhost",
+        "port": 23
+      }
+    },
+    {
+      "type": "MQTT",
+      "default": {
+        "host": "",
+        "port": "",
+        "rx_topic": "",
+        "tx_topic": ""
+      }
+    },
+    {
+      "type": "Test",
+      "default": {
+        "name": "Multi Test",
+        "color": "#ff4444",
+        "type": "Multi",
+        "use_timestamp": true,
+        "sample_ms": 50
+      }
+    },
+    {
+      "type": "CAN",
+      "default": {
+        "interface": "virtual",
+        "channel": "kymo",
+        "bitrate": 500000,
+        "value_format": "auto",
+        "scale": 1.0,
+        "offset": 0.0
+      }
+    }
+  ],
+  "qml": {
+    "interfaces": [
+      "Serial",
+      "Telnet",
+      "MQTT",
+      "CAN",
+      "Test"
+    ]
+  },
+  "logging": {
+    "enabled": true,
+    "console_log": false,
+    "name": "kymostudio.log",
+    "level": "INFO"
+  },
+  "performance": {
+    "frame_interval_ms": 33,
+    "display_points_per_signal": 10000,
+    "downsample_enabled": false,
+    "downsample_target_hz": 1000.0,
+    "retained_samples_per_signal": 300000,
+    "retained_samples_total": 1000000
+  },
+  "saved_connections": [
+    {
+      "id": "esp32_runtime",
+      "type": "Serial",
+      "name": "ESP32 Runtime / FreeRTOS + ISR (COM4)",
+      "settings": {
+        "port": "COM4",
+        "baud": 460800,
+        "size": "8Bit",
+        "parity": "None",
+        "stop_bits": "1Bit"
+      },
+      "created_at": 0.0
+    }
+  ],
+  "workspace": {
+    "assignments": [],
+    "charts": [
+      {
+        "chartId": "esp32_runtime_trace",
+        "chartTitle": "ESP32 FreeRTOS + Timer ISR",
+        "chartType": "runtime_trace",
+        "maximized": false,
+        "minimized": false,
+        "windowHeight": 1025,
+        "windowWidth": 1225,
+        "xPos": 6.0,
+        "yPos": 6.0
+      }
+    ],
+    "signals": [],
+    "version": 2
+  }
+}
