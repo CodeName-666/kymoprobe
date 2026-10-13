@@ -1,5 +1,10 @@
 # ESP32
 
+- [Measurement signals](measurement_signals/README.md): sine and sawtooth for live
+  cursors, statistics, FFT, filters and triggers in KymoStudio.
+- [Saved task trace example](task_trace_example/RESTORE.md): the previous ESP32
+  FreeRTOS/ISR/pipeline example, independently rebuildable and uploadable.
+
 The repository root is the main NodeMCU-32S example. `serial_example` supports
 ESP32 DevKit/S3/C3 through the same C Init/Main API. `wifi_mqtt_example` uses
 configurable WiFi/MQTT callbacks and publishes whole binary frames. Edit its
