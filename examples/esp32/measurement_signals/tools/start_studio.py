@@ -1,5 +1,6 @@
 """Open the sibling development Studio with an isolated numeric demo workspace."""
 import os
+import argparse
 from pathlib import Path
 import shutil
 import sys
@@ -33,4 +34,7 @@ def load_and_open_analysis(studio):
 
 KymoStudio.load_app = load_and_open_analysis
 if __name__ == '__main__':
-    sys.exit(main(['--config', str(SESSION/'config.json'), '--start']))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--no-connect', action='store_true', help='Open the workspace while leaving the board port free')
+    options = parser.parse_args()
+    sys.exit(main(['--config', str(SESSION/'config.json'), *([] if options.no_connect else ['--start'])]))
