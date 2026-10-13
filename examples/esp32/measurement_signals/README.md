@@ -27,6 +27,12 @@ pio run -d examples/esp32/measurement_signals
 pio run -d examples/esp32/measurement_signals -t upload --upload-port COM4
 ```
 
+Falls der automatische Bootloader-Wechsel scheitert, BOOT beim
+Verbindungsversuch gedrückt halten, EN/RESET kurz drücken und BOOT erst nach
+erkannter Verbindung loslassen. Auf dem geprüften Board war ein manueller
+Bootloader-Wechsel erforderlich; das Aufspielen gelang mit 115200 Baud und
+ohne Flasher-Stub. Nach dem Upload läuft die Datenverbindung mit 460800 Baud.
+
 Den seriellen Monitor geschlossen halten. KymoStudio mit 460800 Baud verbinden,
 beide Signale einem Zeitdiagramm zuordnen und **Analyse** öffnen.
 
@@ -76,3 +82,21 @@ pio run -d examples/esp32/task_trace_example -e esp32-runtime-test -t upload --u
 Danach Studio wieder mit 460800 Baud verbinden und Runtime-/Function-Flow-
 Diagramme verwenden. Das gesicherte Beispiel behält seine dokumentierten Grenzen,
 einschließlich der noch offenen Bewertung initialer Trace-Lücken.
+
+## Geprüfter Stand vom 13. Oktober 2026
+
+- Beide Beispiele für NodeMCU-32S erfolgreich gebaut; der gesicherte Task-Snapshot
+  stimmt auch als Git-Dateiinhalt mit allen 24 dokumentierten Prüfsummen überein.
+- Native KymoCore-/Studio-Protokollprüfungen und C/C++-Strukturprüfung bestanden.
+- 2048 Frames des tatsächlichen C++-Generators/Codecs von Studio dekodiert:
+  Sinus-FFT-Peak 6,25 Hz / 0,99999999, Sägezahnfrequenz 1,5625 Hz.
+- Neue Firmware auf ESP32-D0WD-V3, Revision 3, COM4 aufgespielt; alle vier
+  Flash-Blöcke vom Uploader per Hash geprüft.
+- Echte KymoStudio-Oberfläche empfängt die beiden numerischen Signale mit etwa
+  400 Werten/s; die Live-Analyse berechnet Bereichskennzahlen und Frequenz.
+
+Der separate serielle Rohdatencheck konnte während der bereits gestarteten
+Studio-Verbindung nicht exklusiv auf COM4 zugreifen. Eine vollständige Aussage
+über Zeitstempel-Lücken im Hardware-Dauerlauf ist damit noch nicht belegt.
+Für diesen Check die Studio-Erfassung vorher stoppen. Doxygen ist lokal nicht
+installiert; die neuen Header sind in dessen Eingaben aufgenommen.
