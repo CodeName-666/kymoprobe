@@ -1,6 +1,7 @@
 # ESP32
 
-- [Measurement signals](measurement_signals/README.md): sine and sawtooth for live
+- [Measurement signals](measurement_signals/README.md): four 1-kHz signals (sine, sawtooth,
+  multi-tone, noisy square) for live
   cursors, statistics, FFT, filters and triggers in KymoStudio.
 - [Saved task trace example](task_trace_example/RESTORE.md): the previous ESP32
   FreeRTOS/ISR/pipeline example, independently rebuildable and uploadable.

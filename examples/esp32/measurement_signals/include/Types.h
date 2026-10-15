@@ -1,15 +1,14 @@
 /* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
  * Copyright (c) 2026 Christof Seidel */
-/** @file Types.h @brief One coherent synthetic measurement pair.
+/** @file Types.h @brief One coherent set of synthetic measurements.
  * @par Usage Pass by reference; values are dimensionless and share a timestamp. */
 #pragma once
 #include <stdint.h>
-/** @brief Sine and sawtooth values at one logical test-signal instant. */
-struct MeasurementPair_T {
+#include "Config.h"
+/** @brief All channel values at one logical test-signal instant. */
+struct MeasurementSet_T {
     /** @brief Logical generator time in milliseconds since initialization. */
     uint32_t timestampMs;
-    /** @brief Sine value in the range [-1, 1]. */
-    float sine;
-    /** @brief Sawtooth value in the range [-1, 0.984375]. */
-    float sawtooth;
+    /** @brief Values indexed by channel ID: sine, sawtooth, multi-tone, noisy square. */
+    float values[MEASUREMENT_CHANNEL_COUNT];
 };

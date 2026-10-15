@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
  * Copyright (c) 2026 Christof Seidel */
-/** @file main.cpp @brief Two numeric signals for live KymoStudio measurements.
+/** @file main.cpp @brief Four 1-kHz numeric signals for live KymoStudio load tests.
  * @details Arduino SDK calls are confined to this board adapter. Fixed transmit
  * storage retains partial writes. Late generator slots are skipped with time
  * gaps; no artificial backlog is replayed. No text shares the binary UART.
@@ -9,37 +9,34 @@
 #include <kymo_protocol.h>
 #include "Waveforms.h"
 
-static uint8_t transmitBytes[2u * KYMO_FRAME_MAX_SIZE] = {};
+static uint8_t transmitBytes[MEASUREMENT_CHANNEL_COUNT * KYMO_FRAME_MAX_SIZE] = {};
 static size_t transmitLength = 0u;
 static size_t transmitOffset = 0u;
 static uint32_t epochMs = 0u;
 static uint32_t lastGeneratorMs = 0u;
 
-/** @brief Encode both channels into owned static transmit storage.
- * @param[in] pair Synthetic signal values with a shared logical timestamp.
- * @return True if both frames were successfully encoded. */
+/** @brief Encode all channels into owned static transmit storage.
+ * @param[in] set Synthetic signal values with a shared logical timestamp.
+ * @return True if all frames were successfully encoded. */
 /*******************************************************************************
  * prepareMeasurementFrames
  ******************************************************************************/
-static bool prepareMeasurementFrames(const MeasurementPair_T &pair)
+static bool prepareMeasurementFrames(const MeasurementSet_T &set)
 {
     KymoDataPoint point = {};
-    size_t firstLength = 0u;
-    size_t secondLength = 0u;
-    bool isEncoded = false;
+    size_t length = 0u;
+    size_t frameLength = 0u;
+    bool isEncoded = true;
     point.flags = KYMO_FLAG_TIMESTAMP;
-    point.timestamp_ms = pair.timestampMs;
-    point.id = 0u;
-    point.value = pair.sine;
-    firstLength = kymo_encode_data(&point, transmitBytes, sizeof(transmitBytes));
-    if (firstLength != 0u) {
-        point.id = 1u;
-        point.value = pair.sawtooth;
-        secondLength = kymo_encode_data(&point, transmitBytes + firstLength,
-                                       sizeof(transmitBytes) - firstLength);
-        isEncoded = secondLength != 0u;
+    point.timestamp_ms = set.timestampMs;
+    for (uint32_t channel = 0u; (channel < MEASUREMENT_CHANNEL_COUNT) && isEncoded; ++channel) {
+        point.id = static_cast<uint8_t>(channel);
+        point.value = set.values[channel];
+        frameLength = kymo_encode_data(&point, transmitBytes + length, sizeof(transmitBytes) - length);
+        isEncoded = frameLength != 0u;
+        length += frameLength;
     }
-    transmitLength = isEncoded ? firstLength + secondLength : 0u;
+    transmitLength = isEncoded ? length : 0u;
     transmitOffset = 0u;
     return isEncoded;
 }
@@ -70,12 +67,13 @@ static void flushMeasurementFrames(void)
  ******************************************************************************/
 void setup(void)
 {
+    Serial.setTxBufferSize(MEASUREMENT_TX_BUFFER);
     Serial.begin(MEASUREMENT_BAUD);
     epochMs = millis();
     lastGeneratorMs = 0u;
 }
 
-/** @brief Generate at most one pair per pass, then progress its transmission.
+/** @brief Generate at most one set per pass, then progress its transmission.
  * @details Timestamps name the logical synthetic grid, not ADC sample times.
  * Missed grid intervals remain visible as timestamp gaps in Studio. */
 /*******************************************************************************
@@ -85,13 +83,13 @@ void loop(void)
 {
     const uint32_t elapsedMs = millis() - epochMs;
     const uint32_t dueMs = elapsedMs - lastGeneratorMs;
-    MeasurementPair_T pair = {};
+    MeasurementSet_T set = {};
     bool isPrepared = false;
     flushMeasurementFrames();
     if ((transmitOffset == transmitLength) && (dueMs >= SAMPLE_PERIOD_MS)) {
         lastGeneratorMs += (dueMs / SAMPLE_PERIOD_MS) * SAMPLE_PERIOD_MS;
-        pair = calculateMeasurementPair(lastGeneratorMs);
-        isPrepared = prepareMeasurementFrames(pair);
+        set = calculateMeasurementSet(lastGeneratorMs);
+        isPrepared = prepareMeasurementFrames(set);
         if (isPrepared) {
             flushMeasurementFrames();
         }

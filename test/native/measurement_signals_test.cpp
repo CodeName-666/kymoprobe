@@ -7,7 +7,7 @@
 #include <kymo_protocol.h>
 #include "Waveforms.h"
 
-/** @brief Generate exactly 1024 paired sample instants.
+/** @brief Generate exactly 2048 sample instants of all channels.
  * @param[in] argc Argument count. @param[in] argv Output filename in argv[1].
  * @return Zero on success, one for file or codec errors. */
 /*******************************************************************************
@@ -25,13 +25,13 @@ int32_t main(int32_t argc, char **argv)
         output = fopen(argv[1], "wb");
     }
     if (output != nullptr) {
-        for (uint32_t sampleIndex = 0u; sampleIndex < 1024u; ++sampleIndex) {
-            const MeasurementPair_T pair = calculateMeasurementPair(sampleIndex * SAMPLE_PERIOD_MS);
+        for (uint32_t sampleIndex = 0u; sampleIndex < 2048u; ++sampleIndex) {
+            const MeasurementSet_T set = calculateMeasurementSet(sampleIndex * SAMPLE_PERIOD_MS);
             point.flags = KYMO_FLAG_TIMESTAMP;
-            point.timestamp_ms = pair.timestampMs;
-            for (uint8_t channel = 0u; channel < 2u; ++channel) {
-                point.id = channel;
-                point.value = channel == 0u ? pair.sine : pair.sawtooth;
+            point.timestamp_ms = set.timestampMs;
+            for (uint32_t channel = 0u; channel < MEASUREMENT_CHANNEL_COUNT; ++channel) {
+                point.id = static_cast<uint8_t>(channel);
+                point.value = set.values[channel];
                 length = kymo_encode_data(&point, bytes, sizeof(bytes));
                 isValid = (length != 0u) && isValid;
                 isValid = (fwrite(bytes, 1u, length, output) == length) && isValid;
