@@ -201,6 +201,9 @@ static void validation_and_failures(void) {
     assert(Kymo_Init(&ctx, &invalid) == KYMO_BAD_CONFIG);
     channels[0].flags = 0x80;
     assert(Kymo_Init(&ctx, &c) == KYMO_BAD_CONFIG);
+    /* The runtime clock is milliseconds; microsecond channels are rejected. */
+    channels[0].flags = KYMO_FLAG_TIMESTAMP | KYMO_FLAG_TIMESTAMP_US;
+    assert(Kymo_Init(&ctx, &c) == KYMO_BAD_CONFIG);
     channels[0].flags = 0;
     channels[0].period_ms = UINT32_MAX;
     assert(Kymo_Init(&ctx, &c) == KYMO_BAD_CONFIG);

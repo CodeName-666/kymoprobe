@@ -17,7 +17,9 @@ int main(void) {
     for (descriptor = 0; descriptor < 256; ++descriptor) {
         size_t expected = 0;
         for (flags = 0; flags < 8; ++flags)
-            if ((descriptor & 0xfeu) == 0x40u + 2u * flags) expected = sizes[flags];
+            if (((descriptor & 0xfeu) == 0x40u + 2u * flags) ||
+                (((flags & 1u) != 0u) && ((descriptor & 0xfeu) == 0x50u + 2u * flags)))
+                expected = sizes[flags];
         assert(kymo_frame_length((uint8_t)descriptor) == expected);
     }
     for (flags = 0; flags < 8; ++flags) {
