@@ -16,6 +16,20 @@
 #include <kymo_trace_ids.h>
 #include <kymo_trace_metadata.h>
 
+/** Pause per loop in ms. A loop records five events, sent as two batch frames
+ *  (~340 bytes); 100 loops/s (~34 KB/s) fit UART 460800 (~46 KB/s). Without
+ *  it the loop outruns the link and the recorder drops most records. */
+#ifndef TRACE_DEMO_LOOP_DELAY_MS
+#define TRACE_DEMO_LOOP_DELAY_MS 10u
+#endif
+
+/** Serial TX buffer in bytes. The default (UART FIFO, ~128 bytes) holds less
+ *  than one batch frame, so the trace service could send only one frame per
+ *  loop and the ring overflowed. */
+#ifndef TRACE_DEMO_TX_BUFFER_BYTES
+#define TRACE_DEMO_TX_BUFFER_BYTES 1024u
+#endif
+
 portMUX_TYPE traceMuxLock = portMUX_INITIALIZER_UNLOCKED;
 uint64_t traceSessionId = 0u;
 uint32_t loopCounter = 0u;
@@ -167,6 +181,7 @@ extern "C" uint64_t kymo_trace_session_id(void)
  ******************************************************************************/
 void demoTraceInit(void)
 {
+    (void)Serial.setTxBufferSize(TRACE_DEMO_TX_BUFFER_BYTES); /* before begin */
     Serial.begin(460800u);
     traceSessionId = (static_cast<uint64_t>(esp_random()) << 32u) |
         static_cast<uint64_t>(esp_random());
@@ -180,6 +195,7 @@ void demoTraceInit(void)
  ******************************************************************************/
 void demoTraceMain(void)
 {
+    delay(TRACE_DEMO_LOOP_DELAY_MS); /* outside the scope: not loop run time */
     KYMO_TRACE_SCOPE(&kymo_generated_trace_recorder, KYMO_CONTEXT_MAIN,
                      KYMO_SYMBOL_MAIN_LOOP);
     traceInstrumentedWork(loopCounter++);
