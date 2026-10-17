@@ -28,7 +28,7 @@
 
 KymoProbe is the fastest way from a microcontroller to **live measurement
 curves**. Flash the board, connect in
-[KymoStudio](https://github.com/CodeName-666/kymostudio), and within minutes the
+[KymoStudio](https://kymotrace.de/#download), and within minutes the
 data scrolls across your screen. Then replace the test signals with your own
 sensors, control variables or states.
 
@@ -150,7 +150,7 @@ capability details.
 |---|---|
 | [KymoCore](https://github.com/CodeName-666/kymocore) | library: schedules, encodes and sends measurements (here as submodule `lib/KymoCore`) |
 | **[KymoProbe](https://github.com/CodeName-666/kymoprobe)** | this repository: firmware and hardware examples |
-| [KymoStudio](https://github.com/CodeName-666/kymostudio) | desktop app: receive, display, analyse, export |
+| [KymoStudio](https://kymotrace.de/#download) | desktop app: receive, display, analyse, export |
 
 ## Documentation
 

@@ -28,7 +28,7 @@
 
 KymoProbe ist der schnellste Weg von einem Mikrocontroller zu **live
 sichtbaren Messkurven**. Board flashen, in
-[KymoStudio](https://github.com/CodeName-666/kymostudio) verbinden, und nach
+[KymoStudio](https://kymotrace.de/#download) verbinden, und nach
 wenigen Minuten laufen die Daten über den Bildschirm. Danach ersetzt du die
 Testsignale durch deine eigenen Sensoren, Regelgrößen oder Zustände.
 
@@ -134,7 +134,7 @@ Alle Beispiele sind gebaut und geprüft; die wichtigsten baut die CI bei jedem P
 |---|---|
 | [KymoCore](https://github.com/CodeName-666/kymocore) | Library: Messwerte planen, kodieren, senden (hier als Submodul `lib/KymoCore`) |
 | **[KymoProbe](https://github.com/CodeName-666/kymoprobe)** | dieses Repository: Firmware und Hardwarebeispiele |
-| [KymoStudio](https://github.com/CodeName-666/kymostudio) | Desktop-App: empfangen, darstellen, analysieren, exportieren |
+| [KymoStudio](https://kymotrace.de/#download) | Desktop-App: empfangen, darstellen, analysieren, exportieren |
 
 ## Dokumentation
 
