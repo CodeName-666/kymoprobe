@@ -37,5 +37,8 @@ except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
 
 env["KYMO_PROFILE"] = profile
 env["KYMO_SNAPSHOT_DIR"] = str(snapshot)
+# SCons ignores include paths when deciding what to rebuild and cannot see the
+# macro-included config header; naming the snapshot forces a full rebuild on change.
+env.AppendUnique(CPPDEFINES=[("KYMO_CONFIG_SNAPSHOT", "kymo_" + snapshot.name.replace("-", "_"))])
 env.SConscript(str(snapshot / "kymo_build_export.py"),
                exports={"env": env})
