@@ -3,7 +3,7 @@
 /* Real cyclic C sender, all 256 IDs and all eight optional-field layouts. */
 #include <assert.h>
 #include <stdio.h>
-#include "kymo_runtime.h"
+#include <KymoCore.h>
 static uint32_t now;
 
 /*******************************************************************************
@@ -36,10 +36,14 @@ static uint8_t emit(void *user, const uint8_t *bytes, uint8_t length) {
  ******************************************************************************/
 int main(void) {
     KymoChannel channels[256];
-    uint32_t last[256];
     KymoContext ctx;
-    KymoConfig config = {channels, last, clock_ms, NULL, sample, NULL,
-                            emit, NULL, NULL, NULL, 256};
+    KymoConfig config = {
+        .channels = channels,
+        .channel_count = 256,
+        .clock_ms = clock_ms,
+        .sample = sample,
+        .write = emit
+    };
     unsigned i;
     for (i = 0; i < 256; ++i) {
         channels[i].id = (uint8_t)i;

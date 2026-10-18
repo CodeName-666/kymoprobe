@@ -104,7 +104,7 @@ int main(void)
     config.current_context = mockContext;
     config.critical_enter = mockLock;
     config.critical_exit = mockUnlock;
-    if (KymoTrace_Init(&recorder, &config) == 0u) {
+    if (KymoTrace_Init(&recorder, &config) != KYMO_OK) {
         result = 1;
     }
     if ((result == 0) && (KymoFreeRtosTrace_Init(&kymoFreeRtosTraceAdapter, &recorder,
@@ -126,13 +126,13 @@ int main(void)
             KymoFreeRtosTrace_TaskCreate(&kymoFreeRtosTraceAdapter, &taskReused);
         result |= check(recycledHandleContext > second,
                         "task context ID was recycled after deletion");
-        result |= check(KymoTrace_Pop(&recorder, &event) != 0u,
+        result |= check(KymoTrace_Pop(&recorder, &event) == KYMO_OK,
                         "task create event was not emitted");
         result |= check(event.event_type == KYMO_TRACE_EVENT_TASK_CREATE,
                         "first event was not TASK_CREATE");
-        result |= check(KymoTrace_Pop(&recorder, &event) != 0u,
+        result |= check(KymoTrace_Pop(&recorder, &event) == KYMO_OK,
                         "second task create event was not emitted");
-        result |= check(KymoTrace_Pop(&recorder, &event) != 0u,
+        result |= check(KymoTrace_Pop(&recorder, &event) == KYMO_OK,
                         "scheduler transition was not emitted");
         result |= check(event.event_type == KYMO_TRACE_EVENT_TASK_SWITCH,
                         "scheduler event was not TASK_SWITCH");

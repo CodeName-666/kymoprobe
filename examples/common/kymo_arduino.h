@@ -9,7 +9,7 @@
  * @defgroup example_arduino_stream Arduino Print integration
  * @{
  * @par Usage
- * PrintStream serial(Serial); Kymo sender(serial);
+ * PrintStream serial(Serial); KymoSender sender(serial);
  */
 #ifndef EXAMPLE_KYMO_ARDUINO_H
 /**
@@ -22,7 +22,7 @@
 #define EXAMPLE_KYMO_ARDUINO_H
 
 #include <Print.h>
-#include <kymo_stream.h>
+#include <KymoCore.h>
 
 /**
  * @brief Borrow an Arduino Print object through the generic stream interface.
@@ -30,7 +30,7 @@
  * @details The Print object must outlive this wrapper. Default busy() is inherited and returns
  * false, so write must copy/consume the supplied data before returning.
  * @par Usage
- * Initialize Serial, construct PrintStream serial(Serial), then pass serial to Kymo.
+ * Initialize Serial, construct PrintStream serial(Serial), then pass serial to KymoSender.
  */
 class PrintStream : public KymoStream {
 private:
@@ -66,7 +66,7 @@ public:
     /**
      * @brief Replace the borrowed Print object.
      *
-     * @details Does not reset a Kymo sender using this stream. Only rebind while its frame
+     * @details Does not reset a KymoSender using this stream. Only rebind while its frame
      * is fully accepted and no transfer retains data.
      * @param[in,out] p New persistent Print instance.
      * @par Usage
@@ -83,7 +83,7 @@ public:
      * @param[in] length Requested number of bytes.
      * @return Number accepted by Print, or zero when unattached.
      * @par Usage
-     * Called by Kymo; use send/flush to handle short writes.
+     * Called by KymoSender; use send/flush to handle short writes.
      */
     size_t write(const uint8_t* data, size_t length) override {
         return printObj ? printObj->write(data, length) : 0;

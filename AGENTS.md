@@ -18,9 +18,9 @@ Applies to active first-party C/C++ code, including examples and native tests.
 - Preserve bounded execution, no heap in the core, and explicit transport
   buffer ownership. Do not claim safety-standard compliance from style checks.
 - Keep optional KymoCore features behind documented platform-independent
-  build switches in kymo_build_config.h, disabled by default. Load and validate
-  them through kymo_features.h; explicit compiler definitions may override
-  the internal settings. The default core
+  build switches in kymo_config.h (with KYMO_PROFILE presets), disabled by
+  default. Include KymoCore.h; explicit compiler definitions or
+  KYMO_USER_CONFIG_HEADER override the defaults. The default core
   is scalar C++11 encoding with a C-compatible API plus Init/Main scheduling and bounded transport handling.
   Compile disabled implementations out, reject unsupported requests explicitly,
   and test minimal and enabled builds. Examples opt into required features.

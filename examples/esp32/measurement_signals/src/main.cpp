@@ -6,7 +6,7 @@
  * gaps; no artificial backlog is replayed. No text shares the binary UART.
  * @note Arduino allocates SDK resources during Serial initialization only. */
 #include <Arduino.h>
-#include <kymo_protocol.h>
+#include <KymoCore.h>
 #include "Waveforms.h"
 
 static uint8_t transmitBytes[MEASUREMENT_CHANNEL_COUNT * KYMO_FRAME_MAX_SIZE] = {};
@@ -32,7 +32,7 @@ static bool prepareMeasurementFrames(const MeasurementSet_T &set)
     for (uint32_t channel = 0u; (channel < MEASUREMENT_CHANNEL_COUNT) && isEncoded; ++channel) {
         point.id = static_cast<uint8_t>(channel);
         point.value = set.values[channel];
-        frameLength = kymo_encode_data(&point, transmitBytes + length, sizeof(transmitBytes) - length);
+        frameLength = KymoProtocol_Encode(&point, transmitBytes + length, sizeof(transmitBytes) - length);
         isEncoded = frameLength != 0u;
         length += frameLength;
     }

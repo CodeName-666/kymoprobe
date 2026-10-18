@@ -24,7 +24,7 @@ try:
     if hashlib.sha256(manifest_bytes).hexdigest() != selector.get("manifest_sha256"):
         raise ValueError("selected generation manifest hash does not match selector")
     manifest = json.loads(manifest_bytes)
-    if manifest.get("profile") != profile or manifest.get("core_config_api_version") != 1:
+    if manifest.get("profile") != profile or manifest.get("core_config_api_version") != 2:
         raise ValueError("selected generation profile or Core contract version is invalid")
     for name, digest in manifest.get("files", {}).items():
         if not isinstance(name, str) or Path(name).name != name:

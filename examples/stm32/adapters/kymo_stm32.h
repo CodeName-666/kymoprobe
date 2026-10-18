@@ -10,7 +10,7 @@
  * @defgroup example_stm32_stream STM32 stream integration
  * @{
  * @par Usage
- * Configure peripherals/IRQs first, construct an adapter, then bind it to Kymo.
+ * Configure peripherals/IRQs first, construct an adapter, then bind it to KymoSender.
  */
 #ifndef KYMO_STM32_H
 /**
@@ -22,7 +22,7 @@
  */
 #define KYMO_STM32_H
 
-#include "kymo_stream.h"
+#include <KymoCore.h>
 
 #if defined(HAL_UART_MODULE_ENABLED)
 /**
@@ -31,7 +31,7 @@
  * @details Requires a configured handle and enabled UART IRQ forwarding to HAL_UART_IRQHandler.
  * One producer must own the UART; the adapter does not configure or shut down hardware.
  * @par Usage
- * UARTStream uart(&huart2); Kymo sender(uart);
+ * UARTStream uart(&huart2); KymoSender sender(uart);
  */
 class UARTStream : public KymoStream {
     /**
@@ -59,7 +59,7 @@ public:
      * HAL IRQ processing must update state after completion.
      * @return True when unavailable/in flight; false when ready.
      * @par Usage
-     * Called by Kymo before encoding or advancing writes.
+     * Called by KymoSender before encoding or advancing writes.
      */
     bool busy() const override {
         return !handle || handle->gState != HAL_UART_STATE_READY;
@@ -74,7 +74,7 @@ public:
      * @return length when HAL accepts the transfer; zero when busy, oversized or HAL rejects it.
      * @pre UART IRQ forwarding is enabled and the span is valid for length bytes.
      * @par Usage
-     * Call through Kymo so its persistent member buffer remains protected.
+     * Call through KymoSender so its persistent member buffer remains protected.
      */
     size_t write(const uint8_t *data, size_t length) override {
         size_t written = 0;
@@ -96,7 +96,7 @@ public:
  * USB is unconfigured/disconnected or CDC TxState is nonzero. Only one producer may
  * use the CDC endpoint; both function pointers are required for a usable adapter.
  * @par Usage
- * CDCStream usb(CDC_Transmit_FS, application_usb_busy); Kymo sender(usb);
+ * CDCStream usb(CDC_Transmit_FS, application_usb_busy); KymoSender sender(usb);
  */
 class CDCStream : public KymoStream {
 public:
@@ -139,7 +139,7 @@ public:
      * @details Missing callbacks are treated as unavailable without dereferencing them.
      * @return True if either callback is missing or the application reports busy.
      * @par Usage
-     * Called by Kymo before reusing the frame buffer.
+     * Called by KymoSender before reusing the frame buffer.
      */
     bool busy() const override { return !transmit || !isBusy || isBusy(); }
     /**
@@ -151,7 +151,7 @@ public:
      * @param[in] length Byte count; values greater than UINT16_MAX are rejected.
      * @return length on accepted transfer; zero for busy, oversized or rejected transfer.
      * @par Usage
-     * Use through Kymo to retain the frame while USB is transmitting.
+     * Use through KymoSender to retain the frame while USB is transmitting.
      */
     size_t write(const uint8_t *data, size_t length) override {
         size_t written = 0;

@@ -2,7 +2,7 @@
  * Copyright (c) 2026 Christof Seidel */
 #include <Arduino.h>
 #include "demo_selection.h"
-#include <kymo_features.h>
+#include <KymoCore.h>
 
 /** @file main.cpp @brief Central entrypoint for the selected KymoProbe demo.
  * @details Select KYMO_DEMO_MODE in demo_selection.h or a PlatformIO profile.

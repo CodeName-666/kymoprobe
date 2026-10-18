@@ -5,12 +5,10 @@
  * Fixed buffers remain application-owned. Arduino Serial uses SDK heap at init.
  */
 #include "demo_selection.h"
-#include <kymo_features.h>
+#include <KymoCore.h>
 #if (KYMO_DEMO_MODE == KYMO_DEMO_FEATURES) && KYMO_ENABLED
 #include <Arduino.h>
 #include <math.h>
-#include <kymo.h>
-#include <kymo_protocol.h>
 
 /** @brief Copy-only UART adapter for the polymorphic KymoStream interface.
  * @details Virtual dispatch is required by the library's transport contract.
@@ -38,17 +36,18 @@ public:
     }
 };
 static FeatureSerialStream featureStream;
-static Kymo featureSender;
+static KymoSender featureSender;
 static uint32_t lastSampleMs = 0u;
 static uint8_t nextChannel = 0u;
 static bool isDecoderValid = false;
 
-/** @brief Read the SDK millisecond clock. @return Tick modulo 2^32. */
+/** @brief Read the SDK millisecond clock. @param[in] user Unused. @return Tick modulo 2^32. */
 /*******************************************************************************
  * featureClockMs
  ******************************************************************************/
-static uint32_t featureClockMs(void)
+static uint32_t featureClockMs(void *user)
 {
+    (void)user;
     return millis();
 }
 
@@ -70,16 +69,16 @@ static bool verifyFeatureDecoder(void)
     point.value = -0.5f;
     point.z = 0.25f;
     point.timestamp_ms = 1234u;
-    length = kymo_encode_data(&point, frame, sizeof(frame));
+    length = KymoProtocol_Encode(&point, frame, sizeof(frame));
     if (length != 0u) {
-        isValid = (kymo_decode_data(frame, length, &decoded) != 0) &&
+        isValid = (KymoProtocol_Decode(frame, length, &decoded) == KYMO_OK) &&
             (decoded.id == point.id) && (decoded.flags == point.flags) &&
             (decoded.timestamp_ms == point.timestamp_ms) &&
             (fabsf(decoded.x - point.x) < 0.0001f) &&
             (fabsf(decoded.value - point.value) < 0.0001f) &&
             (fabsf(decoded.z - point.z) < 0.0001f);
         frame[length - 1u] ^= 0x01u;
-        isValid = (kymo_decode_data(frame, length, &decoded) == 0) && isValid;
+        isValid = (KymoProtocol_Decode(frame, length, &decoded) != KYMO_OK) && isValid;
     }
     return isValid;
 }
@@ -92,7 +91,7 @@ void demoFeaturesInit(void)
 {
     Serial.begin(115200u);
     featureSender.begin(featureStream, true);
-    featureSender.setMillisecondCallback(featureClockMs);
+    featureSender.setClock(featureClockMs);
     isDecoderValid = verifyFeatureDecoder();
     lastSampleMs = millis();
     nextChannel = 0u;
@@ -108,20 +107,20 @@ void demoFeaturesMain(void)
     const float phase = static_cast<float>(nowMs % 2000u) / 2000.0f;
     const float sine = sinf(phase * 6.283185307f);
     bool isAccepted = false;
-    const bool canSend = featureSender.flush();
+    const bool canSend = featureSender.flush() == KYMO_OK;
     if (canSend && (nowMs - lastSampleMs >= 20u)) {
         switch (nextChannel) {
         case 0u:
-            isAccepted = featureSender.send(0u, sine, true);
+            isAccepted = featureSender.send(0u, sine, true) == KYMO_OK;
             break;
         case 1u:
-            isAccepted = featureSender.send2D(1u, phase, sine, true);
+            isAccepted = featureSender.send2D(1u, phase, sine, true) == KYMO_OK;
             break;
         case 2u:
-            isAccepted = featureSender.send3D(2u, phase, sine, 1.0f - phase, true);
+            isAccepted = featureSender.send3D(2u, phase, sine, 1.0f - phase, true) == KYMO_OK;
             break;
         default:
-            isAccepted = featureSender.send(3u, isDecoderValid ? 1.0f : 0.0f, true);
+            isAccepted = featureSender.send(3u, isDecoderValid ? 1.0f : 0.0f, true) == KYMO_OK;
             break;
         }
         if (isAccepted) {

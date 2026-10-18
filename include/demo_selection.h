@@ -61,6 +61,14 @@
 #define KYMO_ENABLE_Z 1
 #endif
 #endif
+#if (KYMO_DEMO_MODE == KYMO_DEMO_MAX_USB) || \
+    (KYMO_DEMO_MODE == KYMO_DEMO_MAX_TCP) || \
+    (KYMO_DEMO_MODE == KYMO_DEMO_MAX_XYZ)
+#ifndef KYMO_MAX_CHANNELS
+/** @brief Size the runtime schedule for all 256 stress channels. */
+#define KYMO_MAX_CHANNELS 256u
+#endif
+#endif
 #if KYMO_DEMO_MODE == KYMO_DEMO_FEATURES
 #ifndef KYMO_ENABLE_CRC
 /** @brief Enable CRC in the feature demonstration. */

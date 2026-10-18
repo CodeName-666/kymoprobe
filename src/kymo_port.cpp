@@ -2,11 +2,10 @@
  * Copyright (c) 2026 Christof Seidel */
 #include <Arduino.h>
 #include <math.h>
-#include <kymo_features.h>
+#include <KymoCore.h>
 #include "demo_selection.h"
 
 #if (KYMO_DEMO_MODE == KYMO_DEMO_GENERATED) && KYMO_EFFECTIVE_RUNTIME
-#include <kymo_runtime.h>
 
 /*******************************************************************************
  * kymo_port_clock_ms

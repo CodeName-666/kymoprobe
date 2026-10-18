@@ -4,7 +4,7 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <math.h>
-#include <kymo_runtime.h>
+#include <KymoCore.h>
 
 #if KYMO_EFFECTIVE_RUNTIME
 // Edit credentials, endpoint and channels here. Do not commit real secrets.
@@ -60,11 +60,19 @@ static uint8_t write_frame(void *, const uint8_t *bytes, uint8_t length) {
 static const KymoChannel channels[] = {
     {100, 0, KYMO_FLAG_TIMESTAMP}, {100, 1, KYMO_FLAG_TIMESTAMP}
 };
-static uint32_t last_sample_ms[2];
-static const KymoConfig config = {
-    channels, last_sample_ms, clock_ms, nullptr, sample, nullptr,
-    write_frame, busy, service, nullptr, 2
-};
+static KymoConfig make_config()
+{
+    KymoConfig config = {};
+    config.channels = channels;
+    config.channel_count = 2;
+    config.clock_ms = clock_ms;
+    config.sample = sample;
+    config.write = write_frame;
+    config.busy = busy;
+    config.service = service;
+    return config;
+}
+static const KymoConfig config = make_config();
 
 /*******************************************************************************
  * setup

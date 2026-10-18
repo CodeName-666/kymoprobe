@@ -7,8 +7,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/portmacro.h>
 #include <freertos/task.h>
-#include <kymo_instrumentation.h>
-#include <kymo_transport_mux.h>
+#include <KymoCore.h>
 #include <kymo_generated_config.h>
 #include <kymo_trace_ids.h>
 #include <kymo_trace_metadata.h>
@@ -111,25 +110,25 @@ void traceInstrumentedWork(uint32_t iteration)
  ******************************************************************************/
 void traceQueueMetadata(void)
 {
-    uint8_t queued = 0u;
+    KymoStatus queued = KYMO_REJECTED;
     if ((metadataStage == 0u) &&
         ((traceClockTicks(nullptr) - metadataCycleStartTicks) >= 5000000u)) {
         if (kymo_generated_trace_mux.admin_pending == 0u) {
-            queued = KymoTraceMux_QueueAdmin(&kymo_generated_trace_mux,
+            queued = KymoMux_QueueAdmin(&kymo_generated_trace_mux,
                 KYMO_TRACE_PAYLOAD_SESSION_META,
                 1u, kymo_trace_session_metadata,
                 kymo_trace_session_metadata_length);
-            if (queued != 0u) {
+            if (queued == KYMO_OK) {
                 metadataStage = 1u;
             }
         }
     } else if ((metadataStage == 1u) &&
                (kymo_generated_trace_mux.admin_pending == 0u)) {
-        queued = KymoTraceMux_QueueAdmin(&kymo_generated_trace_mux,
+        queued = KymoMux_QueueAdmin(&kymo_generated_trace_mux,
             KYMO_TRACE_PAYLOAD_DICTIONARY,
             1u, kymo_trace_dictionary,
             kymo_trace_dictionary_length);
-        if (queued != 0u) {
+        if (queued == KYMO_OK) {
             metadataStage = 2u;
         }
     } else if ((metadataStage == 2u) &&

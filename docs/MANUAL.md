@@ -77,9 +77,10 @@ sent directly.
 The default build contains only the scalar C sender and the Init/Main runtime.
 X, Z, timestamps, CRC, the MCU decoder and the C++ wrapper are enabled via the
 `KYMO_ENABLE_*` switches in
-[`kymo_build_config.h`](https://github.com/CodeName-666/kymocore/blob/main/src/kymo_build_config.h):
-set `0` for off or `1` for on directly in the header and rebuild completely.
-Existing build flags take precedence over the header values. The runtime can
+[`kymo_config.h`](https://github.com/CodeName-666/kymocore/blob/main/src/kymo_config.h):
+set `0` for off or `1` for on as build flags, or pick a preset with
+`KYMO_PROFILE` (`KYMO_PROFILE_MINIMAL`, `KYMO_PROFILE_XYZ`, `KYMO_PROFILE_TRACE`).
+Explicit switches take precedence over the profile. The runtime can
 also be disabled for codec-only use. The complete switch table is in the
 [KymoCore guide](https://github.com/CodeName-666/kymocore/blob/main/docs/GUIDE.md#minimal-build-and-optional-features).
 The example projects enable the extras they need explicitly.
@@ -138,10 +139,9 @@ individual values; it does not transmit memory images of structures.
 ```mermaid
 flowchart TB
     App["Application owns all objects<br/>lifetime at least until end of use"]
-    Context["KymoContext<br/>config, start_ms, next_channel<br/>tx, tx_length, tx_offset, fault"]
+    Context["KymoContext<br/>config copy, last_sample_ms[KYMO_MAX_CHANNELS]<br/>start_ms, next_channel, tx, fault"]
     Config["const KymoConfig<br/>channel count, references and function pointers"]
     Channels["const KymoChannel channels[N]<br/>period_ms, id, flags"]
-    Times["uint32_t last_sample_ms[N]<br/>mutable state per channel"]
     Clock["clock_ms(clock_user)<br/>returns uint32 milliseconds"]
     Sample["sample(sample_user, id, out)<br/>fills KymoSample: value, x, z<br/>0 = skip; non-zero = measurement"]
     Write["write(transport_user, bytes, length)<br/>returns number of accepted bytes"]
@@ -149,9 +149,8 @@ flowchart TB
     Service["service(transport_user), optional<br/>serve connection / driver cyclically"]
     App --> Context
     App --> Config
-    Context -->|"reference, no copy"| Config
+    Context -->|"copied by Kymo_Init"| Config
     Config --> Channels
-    Config --> Times
     Config -.->|function pointer| Clock
     Config -.->|function pointer| Sample
     Config -.->|function pointer| Write
@@ -162,8 +161,9 @@ flowchart TB
 `clock_user`, `sample_user` and `transport_user` carry your own application
 state or driver handles as `void *`. That way the library needs no
 CPU-specific types. The C structures use **no inheritance**. Each runtime
-instance needs its own `KymoContext` and its own `last_sample_ms` array.
-Configuration and channel table stay constant after Init.
+instance needs its own `KymoContext`; it holds the schedule, sized by
+`KYMO_MAX_CHANNELS` (default 16, up to 256). `Kymo_Init` copies the
+configuration, so it may be local; the channel table stays constant after Init.
 
 | Interface | Application's job | Library's job |
 | --- | --- | --- |
@@ -224,13 +224,13 @@ measurements.
 
 ### Usage: using the existing ESP32 configuration
 
-This example uses the already defined `kymo_config` from
-[src/kymo_config.cpp](../src/kymo_config.cpp). Your own channels, measurement
-access and transport callbacks are adapted there.
+This example uses `kymo_generated_config` from the configurator snapshot
+(`generated/kymo/<profile>`). Channels are edited in `kymo.project.json`; the
+measurement and transport callbacks live in [src/kymo_port.cpp](../src/kymo_port.cpp).
 
 ```cpp
 #include <Arduino.h>
-#include "kymo_config.h"
+#include <kymo_generated_config.h>
 
 static KymoContext context;
 static KymoStatus init_status = KYMO_BAD_CONFIG;
@@ -239,7 +239,7 @@ static KymoStatus last_status = KYMO_IDLE;
 void setup()
 {
     Serial.begin(115200);
-    init_status = Kymo_Init(&context, &kymo_config);
+    init_status = Kymo_Init(&context, &kymo_generated_config);
 }
 
 void loop()
@@ -261,15 +261,15 @@ simultaneously from interrupts or several threads.
 
 ```mermaid
 classDiagram
-    class Kymo {
+    class KymoSender {
         -KymoStream* stream
         -uint8_t buffer[21]
         +begin(outputStream, enableTimestamp)
-        +setMillisecondCallback(callback)
-        +send(channelId, yValue, includeTimestamp) bool
-        +send2D(channelId, xValue, yValue, includeTimestamp) bool
-        +send3D(channelId, xValue, yValue, zValue, includeTimestamp) bool
-        +flush() bool
+        +setClock(clock, user)
+        +send(channelId, yValue, includeTimestamp) KymoStatus
+        +send2D(channelId, xValue, yValue, includeTimestamp) KymoStatus
+        +send3D(channelId, xValue, yValue, zValue, includeTimestamp) KymoStatus
+        +flush() KymoStatus
     }
     class KymoStream {
         <<abstract>>
@@ -297,14 +297,14 @@ classDiagram
         +write(data, length) size_t
         +busy() bool
     }
-    Kymo --> KymoStream : uses, does not own
+    KymoSender --> KymoStream : uses, does not own
     KymoStream <|-- PrintStream
     KymoStream <|-- UARTStream
     KymoStream <|-- CDCStream
     KymoStream <|-- ApplicationStream
 ```
 
-Arrows with a hollow triangle show inheritance. `Kymo` holds a pointer to
+Arrows with a hollow triangle show inheritance. `KymoSender` holds a pointer to
 `KymoStream`; it does not inherit from it and does not delete the stream.
 `ApplicationStream` is a possible implementation of your own, not an existing
 project class. The method list shows the essential interfaces; the headers
@@ -314,12 +314,12 @@ document all overloads.
 returning `false`; asynchronous adapters must override it appropriately.
 `PrintStream` lives in `examples/common/kymo_arduino.h`, the STM32 example
 adapters in `examples/stm32/adapters/kymo_stm32.h`. Only the application and
-adapters include SDKs; `Kymo` and `KymoStream` remain platform-independent.
+adapters include SDKs; `KymoSender` and `KymoStream` remain platform-independent.
 
 ```mermaid
 sequenceDiagram
     participant A as Application
-    participant P as Kymo
+    participant P as KymoSender
     participant S as KymoStream adapter
     A->>P: send / send2D / send3D
     P->>S: busy()
@@ -327,9 +327,9 @@ sequenceDiagram
         P->>P: Encode frame and try first flush
         P->>S: write(bytes, length)
         S-->>P: number of accepted bytes
-        P-->>A: true, unless the write contract is violated
+        P-->>A: KYMO_OK, unless the write contract is violated
     else Data still pending, busy or invalid measurement
-        P-->>A: false
+        P-->>A: KYMO_BUSY / KYMO_SKIPPED
     end
     loop In later application cycles
         A->>P: flush()
@@ -338,14 +338,14 @@ sequenceDiagram
             P->>S: write(remaining bytes)
             S-->>P: number of accepted bytes
         end
-        P-->>A: true if ready and nothing pending, otherwise false
+        P-->>A: KYMO_OK if nothing is pending, otherwise KYMO_BUSY
     end
 ```
 
-With this API the application does the sampling schedule. A successful
-`send*()` means the frame was taken into the send buffer; short writes are
+With this API the application does the sampling schedule. A `send*()` returning
+`KYMO_OK` means the frame was taken into the send buffer; short writes are
 completed by later `flush()` calls. The overloads without `includeTimestamp`
-send without timestamp. For timestamps, a millisecond callback must be set in
+send without timestamp. For timestamps, a clock must be set with `setClock()` in
 addition to the enabled timestamp option. The C++ API uses the same codec as
 the C runtime but calls neither `Kymo_Init` nor `Kymo_Main`.
 

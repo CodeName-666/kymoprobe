@@ -12,8 +12,7 @@
 #include <esp_timer.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <kymo_instrumentation.h>
-#include <kymo_transport_mux.h>
+#include <KymoCore.h>
 #include <kymo_generated_config.h>
 #include <kymo_trace_ids.h>
 #include <kymo_trace_metadata.h>
@@ -505,14 +504,14 @@ static void queueMetadata(void)
     }
     if (kymo_generated_trace_mux.admin_pending == 0u) {
         if ((sMetadataStage == 0u) &&
-            (KymoTraceMux_QueueAdmin(&kymo_generated_trace_mux,
+            (KymoMux_QueueAdmin(&kymo_generated_trace_mux,
                 KYMO_TRACE_PAYLOAD_SESSION_META, 1u, kymo_trace_session_metadata,
-                kymo_trace_session_metadata_length) != 0u)) {
+                kymo_trace_session_metadata_length) == KYMO_OK)) {
             sMetadataStage = 1u;
         } else if ((sMetadataStage == 1u) &&
-            (KymoTraceMux_QueueAdmin(&kymo_generated_trace_mux,
+            (KymoMux_QueueAdmin(&kymo_generated_trace_mux,
                 KYMO_TRACE_PAYLOAD_DICTIONARY, 1u, kymo_trace_dictionary,
-                kymo_trace_dictionary_length) != 0u)) {
+                kymo_trace_dictionary_length) == KYMO_OK)) {
             sMetadataStage = 2u;
             sMetadataTicks = nowTicks;
         }

@@ -4,7 +4,7 @@
  */
 #include <assert.h>
 #include <Arduino.h>
-#include <kymo_protocol.h>
+#include <KymoCore.h>
 
 uint32_t testClockMs = UINT32_MAX - 5u;
 bool testIsBlocked = true;
@@ -39,13 +39,13 @@ int main(void)
         ++testClockMs;
         loop();
     }
-    while (!featureSender.flush()) {
+    while (featureSender.flush() != KYMO_OK) {
     }
     while (position < testWire.size()) {
         assert(testWire.size() - position >= 3u);
-        length = kymo_frame_length(testWire[position + 2u]);
+        length = KymoProtocol_FrameLength(testWire[position + 2u]);
         assert(length > 0u && position + length <= testWire.size());
-        assert(kymo_decode_data(&testWire[position], length, &point) != 0);
+        assert(KymoProtocol_Decode(&testWire[position], length, &point) == KYMO_OK);
         assert(point.id == frameCount % 4u);
         assert((point.flags & KYMO_FLAG_TIMESTAMP) != 0u);
         assert((testWire[position + 2u] & KYMO_DESCRIPTOR_NO_CRC) == 0u);

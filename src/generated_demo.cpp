@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial */
 /** @file generated_demo.cpp @brief Configurator-driven UART demonstration. */
 #include "demo_selection.h"
-#include <kymo_features.h>
+#include <KymoCore.h>
 #if (KYMO_DEMO_MODE == KYMO_DEMO_GENERATED) && KYMO_EFFECTIVE_RUNTIME
 #include <Arduino.h>
 #include <kymo_generated_config.h>

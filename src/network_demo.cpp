@@ -7,12 +7,11 @@
  * Connections, DNS and writes can block; this adapter is not hard real time.
  */
 #include "demo_selection.h"
-#include <kymo_features.h>
+#include <KymoCore.h>
 #if KYMO_DEMO_NETWORK_ENABLE && KYMO_EFFECTIVE_RUNTIME
 #include <Arduino.h>
 #include <WiFi.h>
 #include <math.h>
-#include <kymo_runtime.h>
 #include "network_secrets.h"
 #if KYMO_DEMO_MQTT_ENABLE
 #include <PubSubClient.h>
@@ -22,7 +21,6 @@ static const char MQTT_CLIENT_ID[] = "kymo-7c92e4a83f16-board";
 static WiFiClient mqttSocket;
 static PubSubClient mqtt(mqttSocket);
 static KymoContext mqttContext;
-static uint32_t mqttLastSampleMs[1];
 static uint32_t lastMqttAttemptMs;
 #endif
 #if KYMO_DEMO_TCP_ENABLE
@@ -30,7 +28,6 @@ static const uint16_t TCP_PORT = 2323u;
 static WiFiServer tcpServer(TCP_PORT);
 static WiFiClient tcpClient;
 static KymoContext tcpContext;
-static uint32_t tcpLastSampleMs[1];
 #endif
 static uint32_t lastStatusMs;
 static bool wasWifiConnected = false;
@@ -82,10 +79,17 @@ static uint8_t writeTcp(void *user, const uint8_t *bytes, uint8_t length)
     return written;
 }
 static const KymoChannel tcpChannels[] = {{100u, 2u, KYMO_FLAG_TIMESTAMP}};
-static const KymoConfig tcpConfig = {
-    tcpChannels, tcpLastSampleMs, readClockMs, nullptr, readSample, nullptr,
-    writeTcp, nullptr, nullptr, nullptr, 1u
-};
+static KymoConfig makeTcpConfig()
+{
+    KymoConfig config = {};
+    config.channels = tcpChannels;
+    config.channel_count = 1u;
+    config.clock_ms = readClockMs;
+    config.sample = readSample;
+    config.write = writeTcp;
+    return config;
+}
+static const KymoConfig tcpConfig = makeTcpConfig();
 
 /** @brief Accept one client and reset new streams to a complete frame. */
 /*******************************************************************************
@@ -128,10 +132,17 @@ static uint8_t writeMqtt(void *user, const uint8_t *bytes, uint8_t length)
     return written;
 }
 static const KymoChannel mqttChannels[] = {{100u, 3u, KYMO_FLAG_TIMESTAMP}};
-static const KymoConfig mqttConfig = {
-    mqttChannels, mqttLastSampleMs, readClockMs, nullptr, readSample, nullptr,
-    writeMqtt, nullptr, nullptr, nullptr, 1u
-};
+static KymoConfig makeMqttConfig()
+{
+    KymoConfig config = {};
+    config.channels = mqttChannels;
+    config.channel_count = 1u;
+    config.clock_ms = readClockMs;
+    config.sample = readSample;
+    config.write = writeMqtt;
+    return config;
+}
+static const KymoConfig mqttConfig = makeMqttConfig();
 
 /** @brief Retry MQTT every five seconds and service its connection. */
 /*******************************************************************************

@@ -37,9 +37,13 @@ static uint8_t sample(void *user, uint8_t id, KymoSample *out) {
 static const KymoChannel channels[] = {
     {20, 0, KYMO_FLAG_TIMESTAMP}, {20, 1, KYMO_FLAG_TIMESTAMP}
 };
-static uint32_t last_sample_ms[2];
 const KymoConfig example_config = {
-    channels, last_sample_ms, clock_ms, 0, sample, 0,
-    uart_write, uart_busy, 0, &huart2, 2
+    .channels = channels,
+    .channel_count = 2,
+    .clock_ms = clock_ms,
+    .sample = sample,
+    .write = uart_write,
+    .busy = uart_busy,
+    .transport_user = &huart2
 };
 #endif

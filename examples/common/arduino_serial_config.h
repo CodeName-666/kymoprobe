@@ -25,10 +25,9 @@
 
 #include <Arduino.h>
 #include <math.h>
-#include <kymo_runtime.h>
-#include <kymo_version.h>
-#if KYMO_CONFIG_API_VERSION != 1
-#error "KymoProbe Arduino examples require KymoCore configuration API version 1"
+#include <KymoCore.h>
+#if KYMO_CONFIG_API_VERSION != 2
+#error "KymoProbe Arduino examples require KymoCore configuration API version 2"
 #endif
 
 #if KYMO_ENABLED && (!KYMO_ENABLE_RUNTIME || !KYMO_ENABLE_TIMESTAMP)
@@ -119,27 +118,29 @@ static const KymoChannel example_channels[] = {
 #endif
 };
 /**
- * @brief Per-channel scheduling timestamps owned by this example.
+ * @brief Build the Serial/clock/sample wiring by field name.
  *
- * @details Output of Init and input/output of Main. Array length follows example_channels.
- * Static storage ensures it outlives the runtime; applications must not edit it while active.
- * @par Usage
- * Referenced by example_config.last_sample_ms.
+ * @details No busy callback is needed because Serial writes copy data. No service callback
+ * or opaque context is used. Kymo_Init copies the configuration.
+ * @return Complete runtime configuration for example_channels.
  */
-static uint32_t example_last[sizeof(example_channels) / sizeof(example_channels[0])];
+static KymoConfig example_make_config() {
+    KymoConfig config = {};
+    config.channels = example_channels;
+    config.channel_count = KYMO_COUNT_OF(example_channels);
+    config.clock_ms = example_clock;
+    config.sample = example_sample;
+    config.write = example_write;
+    return config;
+}
 /**
- * @brief Complete persistent Serial/clock/sample wiring for the example.
+ * @brief Complete Serial/clock/sample wiring for the example.
  *
- * @details Input to Init; hardware is initialized separately. No busy callback is needed because
- * Serial writes copy data. No service callback or opaque context is used.
+ * @details Input to Init; hardware is initialized separately.
  * @par Usage
  * Kymo_Init(&kymo, &example_config);
  */
-static const KymoConfig example_config = {
-    example_channels, example_last, example_clock, nullptr, example_sample,
-    nullptr, example_write, nullptr, nullptr, nullptr,
-    sizeof(example_channels) / sizeof(example_channels[0])
-};
+static const KymoConfig example_config = example_make_config();
 #endif /* KYMO_EFFECTIVE_RUNTIME */
 
 /** @} */

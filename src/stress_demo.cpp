@@ -8,16 +8,14 @@
  * @warning The Arduino Serial/WiFi adapters allocate internally; TCP writes
  * may block under backpressure. This SDK adapter is not a hard real-time driver.
  */
-#include <kymo_features.h>
+#include <KymoCore.h>
 #include "demo_selection.h"
-#include <kymo_version.h>
-#if KYMO_CONFIG_API_VERSION != 1
-#error "KymoProbe stress demo requires KymoCore configuration API version 1"
+#if KYMO_CONFIG_API_VERSION != 2
+#error "KymoProbe stress demo requires KymoCore configuration API version 2"
 #endif
 #if defined(KYMO_STRESS_ENABLE) && KYMO_STRESS_ENABLE && KYMO_EFFECTIVE_RUNTIME
 #include <Arduino.h>
 #include <string.h>
-#include <kymo_runtime.h>
 
 #ifndef KYMO_STRESS_CHANNEL_COUNT
 /** @brief Number of unique wire IDs, 1..256; override with a build definition. */
@@ -42,6 +40,9 @@
 
 #if (KYMO_STRESS_CHANNEL_COUNT < 1) || (KYMO_STRESS_CHANNEL_COUNT > 256)
 #error "KYMO_STRESS_CHANNEL_COUNT must be 1..256"
+#endif
+#if KYMO_STRESS_CHANNEL_COUNT > KYMO_MAX_CHANNELS
+#error "Set KYMO_MAX_CHANNELS to at least KYMO_STRESS_CHANNEL_COUNT"
 #endif
 #if (KYMO_STRESS_PERIOD_MS < 0) || (KYMO_STRESS_PERIOD_MS > 2147483647)
 #error "KYMO_STRESS_PERIOD_MS must be 0..INT32_MAX"
@@ -75,7 +76,6 @@ static const uint16_t OUTPUT_CAPACITY = 4096u;
 static const uint16_t MAIN_CALLS_PER_LOOP = 512u;
 static KymoContext s_context;
 static KymoChannel s_channels[KYMO_STRESS_CHANNEL_COUNT];
-static uint32_t s_lastSampleMs[KYMO_STRESS_CHANNEL_COUNT];
 static uint32_t s_sampleCounts[KYMO_STRESS_CHANNEL_COUNT];
 static uint8_t s_output[OUTPUT_CAPACITY];
 static uint16_t s_outputLength = 0u;
@@ -151,10 +151,18 @@ static uint8_t isStressOutputBusy(void *user)
     return static_cast<uint8_t>(static_cast<uint16_t>(OUTPUT_CAPACITY - s_outputLength) < KYMO_FRAME_MAX_SIZE);
 }
 
-static const KymoConfig STRESS_CONFIG = {
-    s_channels, s_lastSampleMs, readStressClockMs, nullptr, readStressSample, nullptr,
-    enqueueStressFrame, isStressOutputBusy, nullptr, nullptr, KYMO_STRESS_CHANNEL_COUNT
-};
+static KymoConfig makeStressConfig()
+{
+    KymoConfig config = {};
+    config.channels = s_channels;
+    config.channel_count = KYMO_STRESS_CHANNEL_COUNT;
+    config.clock_ms = readStressClockMs;
+    config.sample = readStressSample;
+    config.write = enqueueStressFrame;
+    config.busy = isStressOutputBusy;
+    return config;
+}
+static const KymoConfig STRESS_CONFIG = makeStressConfig();
 
 /** @brief Restart at a frame boundary, discarding stale data after reconnect. */
 /*******************************************************************************

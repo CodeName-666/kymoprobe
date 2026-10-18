@@ -27,10 +27,9 @@
 #else
 #include "stm32f4xx_hal.h"
 #endif
-#include <kymo_runtime.h>
-#include <kymo_version.h>
-#if KYMO_CONFIG_API_VERSION != 1
-#error "KymoProbe STM32 example requires KymoCore configuration API version 1"
+#include <KymoCore.h>
+#if KYMO_CONFIG_API_VERSION != 2
+#error "KymoProbe STM32 example requires KymoCore configuration API version 2"
 #endif
 
 /**

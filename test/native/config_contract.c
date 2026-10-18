@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
  * Copyright (c) 2026 Christof Seidel */
-#include "kymo_config.h"
+#include <kymo_config.h>
 
 #ifndef KYMO_EXPECTED_ENABLED
 #error "The profile test must define KYMO_EXPECTED_ENABLED"

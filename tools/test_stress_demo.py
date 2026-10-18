@@ -21,7 +21,7 @@ def main() -> None:
     for channels, xyz, period in ((256, 0, 0), (256, 1, 0), (3, 0, 5), (1, 1, 1)):
         executable = BUILD / f"stress_{channels}_{xyz}_{period}.exe"
         flags = ["-std=c++11", "-Wall", "-Wextra", "-Werror", "-pedantic",
-                 "-fno-exceptions", "-fno-rtti", "-DKYMO_STRESS_ENABLE=1",
+                 "-fno-exceptions", "-fno-rtti", "-DKYMO_STRESS_ENABLE=1", "-DKYMO_MAX_CHANNELS=256",
                  f"-DKYMO_STRESS_CHANNEL_COUNT={channels}",
                  f"-DKYMO_STRESS_XYZ_ENABLE={xyz}", f"-DKYMO_STRESS_PERIOD_MS={period}",
                  "-DKYMO_ENABLE_TIMESTAMP=1", "-DKYMO_ENABLE_X=1", "-DKYMO_ENABLE_Z=1",
@@ -29,7 +29,7 @@ def main() -> None:
                  "-I" + str(ROOT / "test/stress_stub"), "-I" + str(LIB),
                  "-I" + str(ROOT / "include")]
         subprocess.run(["g++", *flags, str(ROOT / "test/native/stress_demo_test.cpp"),
-                        str(LIB / "kymo_runtime.cpp"), str(LIB / "kymo_protocol.cpp"),
+                        str(LIB / "telemetry/kymo_runtime.cpp"), str(LIB / "telemetry/kymo_protocol.cpp"),
                         "-o", str(executable)], cwd=ROOT, check=True)
         subprocess.run([str(executable)], cwd=ROOT, check=True)
         print(f"Passed: {channels} channels, XYZ={xyz}, period={period} ms", flush=True)

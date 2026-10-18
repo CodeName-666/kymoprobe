@@ -38,11 +38,11 @@ def compile_demo(executable: Path, snapshot: Path) -> None:
         "g++", "-std=c++11", "-Wall", "-Wextra", "-Werror", "-pedantic",
         "-fno-exceptions", "-fno-rtti", "-I" + str(CORE),
         "-I" + str(snapshot),
-        "-include", str(snapshot / "kymo_user_config.h"),
+        "-DKYMO_USER_CONFIG_HEADER=\"kymo_user_config.h\"",
         str(ROOT / "test/native/trace_demo.cpp"),
-        str(CORE / "kymo_trace.cpp"),
-        str(CORE / "kymo_trace_protocol.cpp"),
-        str(CORE / "kymo_transport_mux.cpp"), "-o", str(executable),
+        str(CORE / "trace/kymo_trace.cpp"),
+        str(CORE / "trace/kymo_trace_protocol.cpp"),
+        str(CORE / "transport/kymo_mux.cpp"), "-o", str(executable),
     ]
     subprocess.run(command, cwd=ROOT, check=True)
 
@@ -55,10 +55,10 @@ def compile_adapter_test(executable: Path, snapshot: Path) -> None:
         "-DKYMO_ENABLE_TRACE_SCHEDULER=1", "-I" + str(CORE),
         "-I" + str(snapshot),
         "-I" + str(ROOT / "examples/esp32/trace_uart/src"),
-        "-include", str(snapshot / "kymo_user_config.h"),
+        "-DKYMO_USER_CONFIG_HEADER=\"kymo_user_config.h\"",
         str(ROOT / "test/native/freertos_adapter_test.cpp"),
         str(ROOT / "examples/esp32/trace_uart/src/kymo_freertos_trace_adapter.cpp"),
-        str(CORE / "kymo_trace.cpp"), "-o", str(executable),
+        str(CORE / "trace/kymo_trace.cpp"), "-o", str(executable),
     ]
     subprocess.run(command, cwd=ROOT, check=True)
 

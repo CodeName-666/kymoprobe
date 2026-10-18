@@ -20,8 +20,8 @@ def main():
                "-include", str(ROOT / "include/demo_selection.h"),
                "-I" + str(ROOT / "include"), "-I" + str(ROOT / "test/stress_stub"),
                "-I" + str(core), str(ROOT / "test/native/features_demo_test.cpp"),
-               str(core / "kymo.cpp"), str(core / "kymo_protocol.cpp"),
-               str(core / "kymo_runtime.cpp"), "-o", str(executable)]
+               str(core / "telemetry/kymo_sender.cpp"), str(core / "telemetry/kymo_protocol.cpp"),
+               str(core / "telemetry/kymo_runtime.cpp"), "-o", str(executable)]
     subprocess.run(command, cwd=ROOT, check=True)
     subprocess.run([str(executable)], cwd=ROOT, check=True)
     print("Feature firmware passed: central dispatch, XYZ/time, CRC rejection, "

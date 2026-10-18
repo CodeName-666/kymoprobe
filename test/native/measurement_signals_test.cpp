@@ -4,7 +4,7 @@
  * @details Cross-language test: the Studio decoder consumes the output file. */
 #include <stdio.h>
 #include <stdint.h>
-#include <kymo_protocol.h>
+#include <KymoCore.h>
 #include "Waveforms.h"
 
 /** @brief Generate exactly 2048 sample instants of all channels.
@@ -32,7 +32,7 @@ int32_t main(int32_t argc, char **argv)
             for (uint32_t channel = 0u; channel < MEASUREMENT_CHANNEL_COUNT; ++channel) {
                 point.id = static_cast<uint8_t>(channel);
                 point.value = set.values[channel];
-                length = kymo_encode_data(&point, bytes, sizeof(bytes));
+                length = KymoProtocol_Encode(&point, bytes, sizeof(bytes));
                 isValid = (length != 0u) && isValid;
                 isValid = (fwrite(bytes, 1u, length, output) == length) && isValid;
             }

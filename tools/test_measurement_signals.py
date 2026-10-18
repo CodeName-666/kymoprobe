@@ -24,7 +24,7 @@ def main():
                     '-DKYMO_ENABLE_TIMESTAMP=1', '-DKYMO_ENABLE_CRC=1',
                     '-I'+str(library), '-I'+str(ROOT/'examples/esp32/measurement_signals/include'),
                     str(ROOT/'test/native/measurement_signals_test.cpp'),
-                    str(library/'kymo_protocol.cpp'), '-o', str(exe)], check=True)
+                    str(library/'telemetry/kymo_protocol.cpp'), '-o', str(exe)], check=True)
     raw = build/'signals.bin'
     environment = {**os.environ, 'PATH': str(Path(compiler).parent)+os.pathsep+os.environ['PATH']}
     subprocess.run([str(exe), str(raw)], check=True, env=environment)

@@ -8,8 +8,7 @@
 #include <fcntl.h>
 #include <io.h>
 #endif
-#include <kymo_instrumentation.h>
-#include <kymo_transport_mux.h>
+#include <KymoCore.h>
 #include <kymo_trace_ids.h>
 #include <kymo_trace_metadata.h>
 
@@ -17,7 +16,7 @@ namespace {
 constexpr uint16_t kClockDomain = 1u;
 constexpr uint16_t kMaxFrameBytes = 128u;
 KymoTraceRecorder traceRecorder;
-KymoTraceMux transportMux;
+KymoMux transportMux;
 uint64_t traceSessionId = 0u;
 uint8_t metadataStage = 0u;
 uint64_t metadataCycleStartTicks = 0u;
@@ -111,22 +110,22 @@ void traceInstrumentedWork(uint32_t iteration)
  ******************************************************************************/
 void traceQueueMetadata(void)
 {
-    uint8_t queued = 0u;
+    KymoStatus queued = KYMO_REJECTED;
     if (metadataStage == 0u) {
-        queued = KymoTraceMux_QueueAdmin(&transportMux,
+        queued = KymoMux_QueueAdmin(&transportMux,
             KYMO_TRACE_PAYLOAD_SESSION_META, 1u,
             kymo_trace_session_metadata,
             kymo_trace_session_metadata_length);
-        if (queued != 0u) {
+        if (queued == KYMO_OK) {
             metadataStage = 1u;
         }
     } else if ((metadataStage == 1u) &&
                (transportMux.admin_pending == 0u)) {
-        queued = KymoTraceMux_QueueAdmin(&transportMux,
+        queued = KymoMux_QueueAdmin(&transportMux,
             KYMO_TRACE_PAYLOAD_DICTIONARY, 1u,
             kymo_trace_dictionary,
             kymo_trace_dictionary_length);
-        if (queued != 0u) {
+        if (queued == KYMO_OK) {
             metadataStage = 2u;
         }
     } else if ((metadataStage == 2u) &&
@@ -147,8 +146,8 @@ void traceQueueMetadata(void)
 int main(void)
 {
     KymoTraceConfig recorderConfig = {};
-    KymoTraceMuxConfig muxConfig = {};
-    uint8_t result = 0u;
+    KymoMuxConfig muxConfig = {};
+    KymoStatus result = KYMO_REJECTED;
     configureBinaryOutput();
     traceSessionId = traceClockTicks(nullptr);
     recorderConfig.clock_ticks = traceClockTicks;
@@ -158,26 +157,25 @@ int main(void)
     recorderConfig.clock_domain_id = kClockDomain;
     result = KymoTrace_Init(&traceRecorder, &recorderConfig);
     muxConfig.recorder = &traceRecorder;
-    muxConfig.write_frame = traceWriteFrame;
-    muxConfig.is_busy = traceIsBusy;
+    muxConfig.write = traceWriteFrame;
+    muxConfig.busy = traceIsBusy;
     muxConfig.max_frame_size = kMaxFrameBytes;
     muxConfig.health_period_ticks = 0u;
-    result = (result != 0u) ? KymoTraceMux_Init(&transportMux, &muxConfig) : 0u;
-    if (result != 0u) {
+    result = (result == KYMO_OK) ? KymoMux_Init(&transportMux, &muxConfig) : result;
+    if (result == KYMO_OK) {
         for (uint32_t iteration = 0u; iteration < 128u; ++iteration) {
             KYMO_TRACE_SCOPE(&traceRecorder, KYMO_CONTEXT_MAIN,
                              KYMO_SYMBOL_MAIN_LOOP);
             traceInstrumentedWork(iteration);
             for (uint8_t servicePass = 0u; servicePass < 8u; ++servicePass) {
-                (void)KymoTraceMux_Service(&transportMux);
+                (void)KymoMux_Service(&transportMux);
             }
             traceQueueMetadata();
         }
         for (uint16_t servicePass = 0u; servicePass < 512u; ++servicePass) {
-            (void)KymoTraceMux_Service(&transportMux);
+            (void)KymoMux_Service(&transportMux);
             traceQueueMetadata();
         }
     }
-    result = (result != 0u) ? 0u : 1u;
-    return static_cast<int>(result);
+    return (result == KYMO_OK) ? 0 : 1;
 }

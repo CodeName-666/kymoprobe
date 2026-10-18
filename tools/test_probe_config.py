@@ -21,7 +21,7 @@ def run(*args: object) -> None:
 
 def resolved_features(compiler: str, language: str, flags: list[str]) -> dict[str, int]:
     """Ask the compiler to evaluate effective gates under one TU's flags."""
-    probe = ['#include <kymo_features.h>']
+    probe = ['#include <kymo_config.h>']
     for feature in EFFECTIVE_FEATURES:
         probe.extend((f"#if KYMO_EFFECTIVE_{feature}",
                       f"PROBE_{feature} 1", "#else",
@@ -55,8 +55,8 @@ def verify_profile(name: str, enabled: int) -> None:
     assert app_features["RUNTIME"] == enabled, (name, app_features)
     assert all(value == enabled for value in app_features.values()), (name, app_features)
     objects = []
-    for source in ("kymo_protocol.cpp", "kymo_runtime.cpp", "kymo.cpp"):
-        obj = build / (source + ".o")
+    for source in ("telemetry/kymo_protocol.cpp", "telemetry/kymo_runtime.cpp", "telemetry/kymo_sender.cpp"):
+        obj = build / (Path(source).name + ".o")
         run("g++", "-std=c++11", "-Wall", "-Wextra", "-Werror", "-pedantic",
             "-fno-exceptions", "-fno-rtti", *flags, "-c", CORE / source,
             "-o", obj)

@@ -24,13 +24,13 @@ static uint32_t verifyCapturedFrames()
     uint32_t previousTimestamp = 0u;
     uint32_t counts[KYMO_STRESS_CHANNEL_COUNT] = {};
     while (position < testWire.size()) {
-        const size_t frameLength = kymo_frame_length(testWire[position + 2u]);
+        const size_t frameLength = KymoProtocol_FrameLength(testWire[position + 2u]);
         KymoDataPoint point = {};
         uint32_t phase = 0u;
         float expected = 0.0f;
         assert(frameLength == (KYMO_STRESS_XYZ_ENABLE ? 21u : 13u));
         assert(position + frameLength <= testWire.size());
-        assert(kymo_decode_data(testWire.data() + position, frameLength, &point) != 0);
+        assert(KymoProtocol_Decode(testWire.data() + position, frameLength, &point) == KYMO_OK);
         assert(point.id == frames % KYMO_STRESS_CHANNEL_COUNT);
         phase = (counts[point.id] + static_cast<uint32_t>(point.id) * 17u) % 2048u;
         expected = static_cast<float>(phase) / 1023.5f - 1.0f;

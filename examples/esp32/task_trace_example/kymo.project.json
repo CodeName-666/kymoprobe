@@ -18,61 +18,61 @@
   "contexts": [
     {
       "id": 1,
-      "name": "main",
-      "kind": "main"
+      "kind": "main",
+      "name": "main"
     },
     {
       "id": 2,
-      "name": "fast_worker",
-      "kind": "task"
+      "kind": "task",
+      "name": "fast_worker"
     },
     {
       "id": 3,
-      "name": "slow_worker",
-      "kind": "task"
+      "kind": "task",
+      "name": "slow_worker"
     },
     {
       "id": 4,
-      "name": "background_worker",
-      "kind": "task"
+      "kind": "task",
+      "name": "background_worker"
     },
     {
       "id": 5,
-      "name": "alarm_producer",
-      "kind": "task"
+      "kind": "task",
+      "name": "alarm_producer"
     },
     {
       "id": 6,
-      "name": "irq_consumer",
-      "kind": "task"
+      "kind": "task",
+      "name": "irq_consumer"
     },
     {
       "id": 7,
-      "name": "timer_fast",
-      "kind": "isr"
+      "kind": "isr",
+      "name": "timer_fast"
     },
     {
       "id": 8,
-      "name": "timer_slow",
-      "kind": "isr"
+      "kind": "isr",
+      "name": "timer_slow"
     },
     {
       "id": 9,
-      "name": "pipeline",
-      "kind": "task"
+      "kind": "task",
+      "name": "pipeline"
     },
     {
       "id": 10,
-      "name": "compute_low",
-      "kind": "task"
+      "kind": "task",
+      "name": "compute_low"
     },
     {
       "id": 11,
-      "name": "control_high",
-      "kind": "task"
+      "kind": "task",
+      "name": "control_high"
     }
   ],
-  "core_config_api_version": 1,
+  "core_config_api_version": 2,
   "port": {
     "capabilities_verified": false,
     "core_count": 2,
@@ -90,6 +90,7 @@
         "x": false,
         "z": false
       },
+      "preset": "custom",
       "trace": {
         "bindings": {
           "clock": "traceClockTicks",
@@ -139,127 +140,127 @@
     "ram_budget_bytes": null,
     "transport_bytes_per_second": null
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "symbols": [
     {
       "id": 1,
-      "name": "worker_cycle",
-      "kind": "scope"
+      "kind": "scope",
+      "name": "worker_cycle"
     },
     {
       "id": 2,
-      "name": "busy_work",
-      "kind": "function"
+      "kind": "function",
+      "name": "busy_work"
     },
     {
       "id": 3,
-      "name": "requested_us",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "requested_us"
     },
     {
       "id": 4,
-      "name": "arm_alarms",
-      "kind": "scope"
+      "kind": "scope",
+      "name": "arm_alarms"
     },
     {
       "id": 5,
-      "name": "alarm_ok",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "alarm_ok"
     },
     {
       "id": 6,
-      "name": "irq_work",
-      "kind": "scope"
+      "kind": "scope",
+      "name": "irq_work"
     },
     {
       "id": 7,
-      "name": "irq_count",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "irq_count"
     },
     {
       "id": 8,
-      "name": "startup_ok",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "startup_ok"
     },
     {
       "id": 9,
-      "name": "recorder_drops",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "recorder_drops"
     },
     {
       "id": 10,
-      "name": "recorder_errors",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "recorder_errors"
     },
     {
       "id": 11,
-      "name": "process_frame",
-      "kind": "scope"
+      "kind": "scope",
+      "name": "process_frame"
     },
     {
       "id": 12,
-      "name": "decode_header",
-      "kind": "function"
+      "kind": "function",
+      "name": "decode_header"
     },
     {
       "id": 13,
-      "name": "parse_payload",
-      "kind": "function"
+      "kind": "function",
+      "name": "parse_payload"
     },
     {
       "id": 14,
-      "name": "checksum",
-      "kind": "function"
+      "kind": "function",
+      "name": "checksum"
     },
     {
       "id": 15,
-      "name": "decompress",
-      "kind": "function"
+      "kind": "function",
+      "name": "decompress"
     },
     {
       "id": 16,
-      "name": "inflate_block",
-      "kind": "function"
+      "kind": "function",
+      "name": "inflate_block"
     },
     {
       "id": 17,
-      "name": "apply_result",
-      "kind": "function"
+      "kind": "function",
+      "name": "apply_result"
     },
     {
       "id": 18,
-      "name": "frame_index",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "frame_index"
     },
     {
       "id": 19,
-      "name": "payload_bytes",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "payload_bytes"
     },
     {
       "id": 20,
-      "name": "long_compute",
-      "kind": "scope"
+      "kind": "scope",
+      "name": "long_compute"
     },
     {
       "id": 21,
-      "name": "matrix_step",
-      "kind": "function"
+      "kind": "function",
+      "name": "matrix_step"
     },
     {
       "id": 22,
-      "name": "compute_round",
-      "kind": "marker"
+      "kind": "marker",
+      "name": "compute_round"
     },
     {
       "id": 23,
-      "name": "control_loop",
-      "kind": "scope"
+      "kind": "scope",
+      "name": "control_loop"
     },
     {
       "id": 24,
-      "name": "update_control",
-      "kind": "function"
+      "kind": "function",
+      "name": "update_control"
     }
   ]
 }

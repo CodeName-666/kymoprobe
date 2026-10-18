@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
  * Copyright (c) 2026 Christof Seidel */
-#include <kymo_features.h>
+#include <KymoCore.h>
 
 #if KYMO_EFFECTIVE_RUNTIME
 // Expose active dependencies to PlatformIO LDF, which does not recurse into .ino.

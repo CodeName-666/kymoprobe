@@ -3,7 +3,7 @@
 #define KYMO_FREERTOS_TRACE_ADAPTER_H
 
 #include <stdint.h>
-#include <kymo_trace.h>
+#include <KymoCore.h>
 
 /** @brief Fixed storage for explicit FreeRTOS trace hook integration.
  * @details Task handles are opaque tokens and are never dereferenced. IDs are
