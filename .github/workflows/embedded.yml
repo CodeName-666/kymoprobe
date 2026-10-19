@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
-      - run: pip install platformio==6.1.19
+      - run: pip install platformio==6.2.0
       - name: Validate archive and build its documented consumers
         run: python3 tools/test_package.py
 
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
-      - run: pip install platformio==6.1.19
+      - run: pip install platformio==6.2.0
       - name: Provide placeholder network credentials for compilation
         run: |
           cp include/network_secrets.h.example include/network_secrets.h
