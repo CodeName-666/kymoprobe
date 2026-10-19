@@ -3,6 +3,8 @@
 - [Measurement signals](measurement_signals/README.md): four 1-kHz signals (sine, sawtooth,
   multi-tone, noisy square) for live
   cursors, statistics, FFT, filters and triggers in KymoStudio.
+- [Text signals](text_signals/README.md): two 100-Hz JSON text lines without timestamps,
+  for KymoStudio's reception-time path (test case P2).
 - [Saved task trace example](task_trace_example/RESTORE.md): the previous ESP32
   FreeRTOS/ISR/pipeline example, independently rebuildable and uploadable.
 
