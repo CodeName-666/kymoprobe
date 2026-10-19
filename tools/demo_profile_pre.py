@@ -13,8 +13,8 @@ flag_text = flags if isinstance(flags, str) else " ".join(str(flag) for flag in 
 overrides = re.findall(r"-DKYMO_DEMO_MODE=(\w+)", flag_text)
 selection = overrides[-1] if overrides else default.group(1) if default else ""
 mode_text = constants.get(selection, selection)
-if not mode_text.isdigit() or int(mode_text) not in range(11):
-    raise RuntimeError("Select a named KYMO_DEMO_MODE or an integer from 0 to 10")
+if not mode_text.isdigit() or int(mode_text) not in range(12):
+    raise RuntimeError("Select a named KYMO_DEMO_MODE or an integer from 0 to 11")
 env["KYMO_SELECTED_DEMO"] = int(mode_text)
 if int(mode_text) == 8:
     env.SConscript(str(project_root / "tools/kymo_profile_pre.py"), exports={"env": env})

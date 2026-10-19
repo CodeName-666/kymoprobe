@@ -33,12 +33,14 @@
 #define KYMO_DEMO_TRACE 9
 /** @brief Generated trace with explicit send/receive flow correlation. */
 #define KYMO_DEMO_TRACE_FLOW 10
+/** @brief 256-channel load over UDP datagrams, without backpressure. */
+#define KYMO_DEMO_MAX_UDP 11
 
 #ifndef KYMO_DEMO_MODE
 /** @brief Default application; override via a named PlatformIO environment. */
 #define KYMO_DEMO_MODE KYMO_DEMO_UART
 #endif
-#if (KYMO_DEMO_MODE < KYMO_DEMO_UART) || (KYMO_DEMO_MODE > KYMO_DEMO_TRACE_FLOW)
+#if (KYMO_DEMO_MODE < KYMO_DEMO_UART) || (KYMO_DEMO_MODE > KYMO_DEMO_MAX_UDP)
 #error "Unknown KYMO_DEMO_MODE"
 #endif
 
@@ -63,7 +65,8 @@
 #endif
 #if (KYMO_DEMO_MODE == KYMO_DEMO_MAX_USB) || \
     (KYMO_DEMO_MODE == KYMO_DEMO_MAX_TCP) || \
-    (KYMO_DEMO_MODE == KYMO_DEMO_MAX_XYZ)
+    (KYMO_DEMO_MODE == KYMO_DEMO_MAX_XYZ) || \
+    (KYMO_DEMO_MODE == KYMO_DEMO_MAX_UDP)
 #ifndef KYMO_MAX_CHANNELS
 /** @brief Size the runtime schedule for all 256 stress channels. */
 #define KYMO_MAX_CHANNELS 256u
@@ -99,12 +102,17 @@
 #ifndef KYMO_STRESS_ENABLE
 /** @brief Compile the maximum-throughput application. */
 #define KYMO_STRESS_ENABLE ((KYMO_DEMO_MODE == KYMO_DEMO_MAX_USB) || \
-    (KYMO_DEMO_MODE == KYMO_DEMO_MAX_TCP) || (KYMO_DEMO_MODE == KYMO_DEMO_MAX_XYZ))
+    (KYMO_DEMO_MODE == KYMO_DEMO_MAX_TCP) || (KYMO_DEMO_MODE == KYMO_DEMO_MAX_XYZ) || \
+    (KYMO_DEMO_MODE == KYMO_DEMO_MAX_UDP))
 #endif
 #ifndef KYMO_STRESS_TCP_ENABLE
 /** @brief Select TCP for the TCP maximum-throughput profiles. */
 #define KYMO_STRESS_TCP_ENABLE ((KYMO_DEMO_MODE == KYMO_DEMO_MAX_TCP) || \
     (KYMO_DEMO_MODE == KYMO_DEMO_MAX_XYZ))
+#endif
+#ifndef KYMO_STRESS_UDP_ENABLE
+/** @brief Select UDP datagrams for the UDP maximum-throughput profile. */
+#define KYMO_STRESS_UDP_ENABLE (KYMO_DEMO_MODE == KYMO_DEMO_MAX_UDP)
 #endif
 #ifndef KYMO_STRESS_XYZ_ENABLE
 /** @brief Select the largest DATA layout in the XYZ load profile. */

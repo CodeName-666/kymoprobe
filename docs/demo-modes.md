@@ -29,6 +29,7 @@ beim Build.
 | `KYMO_DEMO_MAX_USB` | `nodemcu-32s-stress-usb` | 256 Kanäle ohne Ratenbegrenzung, UART 2000000 |
 | `KYMO_DEMO_MAX_TCP` | `nodemcu-32s-stress-tcp` | 256 Kanäle ohne Ratenbegrenzung, TCP 2323 |
 | `KYMO_DEMO_MAX_XYZ` | `nodemcu-32s-stress-tcp-xyz` | TCP-Lasttest mit XYZ/Zeit, 21-Byte-Frames |
+| `KYMO_DEMO_MAX_UDP` | `nodemcu-32s-stress-udp` | 256 Kanäle über UDP an Port 2324 des Studio-PCs, ohne Gegendruck |
 | `KYMO_DEMO_FEATURES` | `nodemcu-32s-features` | C++-Sender, Y/XY/XYZ, Zeit, CRC und Decoder |
 | `KYMO_DEMO_GENERATED` | `nodemcu-32s-development` | UART-Konfiguration aus dem Configurator |
 | `KYMO_DEMO_TRACE` | `nodemcu-32s-trace` | Scope/Marker, Metadaten, Dictionary, UART v2 460800 |

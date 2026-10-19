@@ -12,6 +12,7 @@ benoetigt. Kein Stresstest-Profil publiziert MQTT-Nachrichten.
 | `nodemcu-32s-stress-usb` | USB/UART, 2.000.000 Baud, 8N1 | Y + Zeitstempel | 13 Byte |
 | `nodemcu-32s-stress-tcp` | WLAN/TCP, Port 2323 | Y + Zeitstempel | 13 Byte |
 | `nodemcu-32s-stress-tcp-xyz` | WLAN/TCP, Port 2323 | X/Y/Z + Zeitstempel | 21 Byte |
+| `nodemcu-32s-stress-udp` | WLAN/UDP an den Studio-PC, Port 2324 | Y + Zeitstempel | 13 Byte |
 
 Die Anwendung buendelt vollstaendige Binaerframes in einem festen 4-KiB-Puffer.
 Teilweise angenommene Uebertragungen werden fortgesetzt. Ein voller Puffer haelt
@@ -34,6 +35,13 @@ Arduino-Treiber verwenden intern Heap; synchrone TCP-Writes koennen blockieren.
    im USB-Monitor bei 115200 Baud die ausgegebene `KYMO_STRESS_IP` ablesen.
    In KymoStudio die Board-IP in `config/esp32-stress-tcp.json` aktualisieren
    und `start_esp32_stress_tcp.bat` starten. USB liefert dabei nur Startdiagnosen.
+5. UDP: in `include/network_secrets.h` zusätzlich `KYMO_STRESS_UDP_HOST` auf die
+   IPv4-Adresse des KymoStudio-PCs setzen und `nodemcu-32s-stress-udp` flashen.
+   In KymoStudio `config/esp32-stress-udp.json` laden; die UDP-Quelle lauscht auf
+   Port 2324. Jedes Datagramm trägt höchstens 1400 Byte ganzer Frames. UDP hat keinen
+   Gegendruck: Überlast erscheint in KymoStudio als `ingressDropped`, statt den Sender
+   zu bremsen wie TCP. Datagramme, die schon das Board oder das Netz verwirft, zählt
+   kein Zähler; sie zeigen sich als Sprünge in den Rampen.
 
 Beide Studio-Konfigurationen enthalten 256 benannte Signale und vier Diagramme
 mit je 64 Kurven. Die Erfassung startet durch Aktivieren der gespeicherten

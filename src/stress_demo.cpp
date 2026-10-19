@@ -6,7 +6,9 @@
  * supports ESP32 variants without an FPU. The application owns the output batch
  * and copies borrowed core bytes before returning. No application heap usage.
  * @warning The Arduino Serial/WiFi adapters allocate internally; TCP writes
- * may block under backpressure. This SDK adapter is not a hard real-time driver.
+ * may block under backpressure. UDP has none: undeliverable datagrams are
+ * dropped on the board, unseen by KymoStudio's counters (check ramp gaps).
+ * This SDK adapter is not a hard real-time driver.
  */
 #include <KymoCore.h>
 #include "demo_selection.h"
@@ -33,6 +35,14 @@
 /** @brief Select TCP (1) or USB UART (0). */
 #define KYMO_STRESS_TCP_ENABLE 0
 #endif
+#ifndef KYMO_STRESS_UDP_ENABLE
+/** @brief Send UDP datagrams (1) instead of USB UART or TCP. */
+#define KYMO_STRESS_UDP_ENABLE 0
+#endif
+#ifndef KYMO_STRESS_UDP_PORT
+/** @brief UDP port KymoStudio listens on. */
+#define KYMO_STRESS_UDP_PORT 2324
+#endif
 #ifndef KYMO_STRESS_XYZ_ENABLE
 /** @brief Include X and Z in addition to Y and the millisecond timestamp. */
 #define KYMO_STRESS_XYZ_ENABLE 0
@@ -51,9 +61,15 @@
 #error "KYMO_STRESS_BAUD must be positive"
 #endif
 #if ((KYMO_STRESS_TCP_ENABLE != 0) && (KYMO_STRESS_TCP_ENABLE != 1)) || \
-    ((KYMO_STRESS_XYZ_ENABLE != 0) && (KYMO_STRESS_XYZ_ENABLE != 1))
+    ((KYMO_STRESS_XYZ_ENABLE != 0) && (KYMO_STRESS_XYZ_ENABLE != 1)) || \
+    ((KYMO_STRESS_UDP_ENABLE != 0) && (KYMO_STRESS_UDP_ENABLE != 1))
 #error "Stress feature switches must be 0 or 1"
 #endif
+#if KYMO_STRESS_TCP_ENABLE && KYMO_STRESS_UDP_ENABLE
+#error "Select either the TCP or the UDP stress transport"
+#endif
+/** @brief WiFi is needed by both network transports. */
+#define KYMO_STRESS_WIFI (KYMO_STRESS_TCP_ENABLE || KYMO_STRESS_UDP_ENABLE)
 #if !KYMO_ENABLE_RUNTIME || !KYMO_ENABLE_TIMESTAMP
 #error "Stress demo requires KYMO_ENABLE_RUNTIME=1 and KYMO_ENABLE_TIMESTAMP=1"
 #endif
@@ -64,15 +80,26 @@
 #error "Select either the network demo or the stress demo"
 #endif
 
-#if KYMO_STRESS_TCP_ENABLE
+#if KYMO_STRESS_WIFI
 #include <WiFi.h>
 #include "network_secrets.h"
-static WiFiServer s_tcpServer(2323u);
-static WiFiClient s_tcpClient;
 static bool s_wasWifiConnected = false;
 #endif
-
+#if KYMO_STRESS_TCP_ENABLE
+static WiFiServer s_tcpServer(2323u);
+static WiFiClient s_tcpClient;
+#endif
+#if KYMO_STRESS_UDP_ENABLE
+#include <WiFiUdp.h>
+#ifndef KYMO_STRESS_UDP_HOST
+#error "Define KYMO_STRESS_UDP_HOST (the KymoStudio PC's IPv4 address) in network_secrets.h"
+#endif
+static WiFiUDP s_udp;
+/* One datagram holds whole frames only: Studio decodes each datagram on its own. */
+static const uint16_t OUTPUT_CAPACITY = 1400u;
+#else
 static const uint16_t OUTPUT_CAPACITY = 4096u;
+#endif
 static const uint16_t MAIN_CALLS_PER_LOOP = 512u;
 static KymoContext s_context;
 static KymoChannel s_channels[KYMO_STRESS_CHANNEL_COUNT];
@@ -185,7 +212,7 @@ static void flushStressOutput()
 {
     uint16_t remaining = static_cast<uint16_t>(s_outputLength - s_outputOffset);
     uint16_t written = 0u;
-#if !KYMO_STRESS_TCP_ENABLE
+#if !KYMO_STRESS_WIFI
     int32_t available = static_cast<int32_t>(Serial.availableForWrite());
 #endif
     if (remaining > 0u) {
@@ -193,6 +220,14 @@ static void flushStressOutput()
         if (s_tcpClient.connected()) {
             written = static_cast<uint16_t>(s_tcpClient.write(s_output + s_outputOffset, remaining));
         }
+#elif KYMO_STRESS_UDP_ENABLE
+        /* No backpressure by design: a datagram the stack cannot take is dropped,
+         * so overload shows up in Studio instead of slowing the sender. */
+        if (s_udp.beginPacket(KYMO_STRESS_UDP_HOST, KYMO_STRESS_UDP_PORT) != 0) {
+            (void)s_udp.write(s_output + s_outputOffset, remaining);
+            (void)s_udp.endPacket();
+        }
+        written = remaining;
 #else
         if (available > 0) {
             if (static_cast<uint32_t>(available) < remaining) {
@@ -208,6 +243,25 @@ static void flushStressOutput()
         }
     }
 }
+
+#if KYMO_STRESS_UDP_ENABLE
+/** @brief Restart the stream at a frame boundary after each WiFi (re)connect. */
+/*******************************************************************************
+ * serviceStressNetwork
+ ******************************************************************************/
+static void serviceStressNetwork()
+{
+    const bool isWifiConnected = WiFi.status() == WL_CONNECTED;
+    if (isWifiConnected != s_wasWifiConnected) {
+        resetStressStream();
+        if (isWifiConnected) {
+            (void)Serial.print("KYMO_STRESS_IP=");
+            (void)Serial.println(WiFi.localIP());
+        }
+        s_wasWifiConnected = isWifiConnected;
+    }
+}
+#endif
 
 #if KYMO_STRESS_TCP_ENABLE
 /** @brief Accept one TCP client; reset the stream after WiFi or TCP reconnect. */
@@ -258,14 +312,19 @@ void demoStressInit()
         s_channels[channelIndex].flags = KYMO_FLAG_TIMESTAMP | KYMO_FLAG_X | KYMO_FLAG_Z;
 #endif
     }
-#if KYMO_STRESS_TCP_ENABLE
+#if KYMO_STRESS_WIFI
     Serial.begin(115200u);
     WiFi.persistent(false);
     (void)WiFi.mode(WIFI_STA);
     (void)WiFi.setAutoReconnect(true);
     (void)WiFi.setSleep(false);
     (void)WiFi.begin(KYMO_WIFI_SSID, KYMO_WIFI_PASSWORD);
+#if KYMO_STRESS_TCP_ENABLE
     (void)Serial.println("KYMO_STRESS_TCP_PORT=2323");
+#else
+    (void)Serial.print("KYMO_STRESS_UDP_TARGET=");
+    (void)Serial.println(KYMO_STRESS_UDP_HOST);
+#endif
 #else
     // Allocate the SDK UART TX ring only at startup; no text on the binary port.
     (void)Serial.setTxBufferSize(8192u);
@@ -285,6 +344,9 @@ void demoStressMain()
 #if KYMO_STRESS_TCP_ENABLE
     serviceStressNetwork();
     canSend = s_isReady && s_wasWifiConnected && s_tcpClient.connected();
+#elif KYMO_STRESS_UDP_ENABLE
+    serviceStressNetwork();
+    canSend = s_isReady && s_wasWifiConnected;
 #endif
     if (canSend) {
         flushStressOutput();

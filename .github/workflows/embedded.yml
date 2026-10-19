@@ -64,6 +64,8 @@ jobs:
           - project: .
             environment: nodemcu-32s-stress-tcp-xyz
           - project: .
+            environment: nodemcu-32s-stress-udp
+          - project: .
             environment: nodemcu-32s-features
           - project: .
             environment: nodemcu-32s-trace
@@ -79,6 +81,8 @@ jobs:
             environment: esp32dev
           - project: examples/esp32/wifi_mqtt_example
             environment: esp32dev
+          - project: examples/esp32/text_signals
+            environment: esp32-text-signals
           - project: examples/esp32/trace_uart
             environment: esp32-trace
           - project: examples/stm32/uart_example
@@ -89,5 +93,7 @@ jobs:
           submodules: true  # lib/KymoCore kommt aus CodeName-666/kymocore
       - run: pip install platformio==6.1.19
       - name: Provide placeholder network credentials for compilation
-        run: cp include/network_secrets.h.example include/network_secrets.h
+        run: |
+          cp include/network_secrets.h.example include/network_secrets.h
+          echo '#define KYMO_STRESS_UDP_HOST "192.0.2.1"' >> include/network_secrets.h
       - run: pio run -d ${{ matrix.project }} -e ${{ matrix.environment }}
