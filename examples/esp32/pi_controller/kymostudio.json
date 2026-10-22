@@ -1,0 +1,179 @@
+{
+  "imports": [
+    "../../qml",
+    "../../qml/imports",
+    "../../qml/content",
+    "../../qml/content/Settings"
+  ],
+  "interfaces": [
+    {
+      "type": "Serial",
+      "default": {
+        "port": "COM4",
+        "baud": 921600,
+        "size": "8Bit",
+        "parity": "None",
+        "stop_bits": "1Bit"
+      }
+    },
+    {
+      "type": "Telnet",
+      "default": {
+        "host": "localhost",
+        "port": 23
+      }
+    },
+    {
+      "type": "MQTT",
+      "default": {
+        "host": "",
+        "port": "",
+        "rx_topic": "",
+        "tx_topic": ""
+      }
+    },
+    {
+      "type": "Test",
+      "default": {
+        "name": "Multi Test",
+        "color": "#ff4444",
+        "type": "Multi",
+        "use_timestamp": true,
+        "sample_ms": 50
+      }
+    },
+    {
+      "type": "CAN",
+      "default": {
+        "interface": "virtual",
+        "channel": "kymo",
+        "bitrate": 500000,
+        "value_format": "auto",
+        "scale": 1.0,
+        "offset": 0.0
+      }
+    }
+  ],
+  "qml": {
+    "interfaces": [
+      "Serial",
+      "Telnet",
+      "MQTT",
+      "CAN",
+      "Test"
+    ]
+  },
+  "logging": {
+    "enabled": true,
+    "console_log": false,
+    "name": "kymostudio.log",
+    "level": "INFO"
+  },
+  "performance": {
+    "frame_interval_ms": 33,
+    "display_points_per_signal": 20000,
+    "downsample_enabled": false,
+    "downsample_target_hz": 1000,
+    "retained_samples_per_signal": 300000,
+    "retained_samples_total": 1200000
+  },
+  "saved_connections": [
+    {
+      "id": "esp32_pi",
+      "type": "Serial",
+      "name": "ESP32 - PI-Regler",
+      "settings": {
+        "port": "COM4",
+        "baud": 115200,
+        "size": "8Bit",
+        "parity": "None",
+        "stop_bits": "1Bit"
+      },
+      "created_at": 0.0
+    }
+  ],
+  "workspace": {
+    "version": 2,
+    "activeChartId": "pi_loop",
+    "charts": [
+      {
+        "chartId": "pi_loop",
+        "chartTitle": "ESP32 · PI-Regler",
+        "chartType": "time_series",
+        "maximized": false,
+        "minimized": false,
+        "windowWidth": 900,
+        "windowHeight": 580,
+        "xPos": 0,
+        "yPos": 0
+      },
+      {
+        "chartId": "pi_heater",
+        "chartTitle": "Heizleistung und Rückkanal",
+        "chartType": "time_series",
+        "maximized": false,
+        "minimized": false,
+        "windowWidth": 900,
+        "windowHeight": 580,
+        "xPos": 0,
+        "yPos": 600
+      }
+    ],
+    "signals": [
+      {
+        "uniqueId": "esp32_pi_0",
+        "displayName": "Temperatur (°C)",
+        "color": "#5EC2FF",
+        "interfaceType": "Serial",
+        "dataId": 0
+      },
+      {
+        "uniqueId": "esp32_pi_1",
+        "displayName": "Heizleistung (0…1)",
+        "color": "#F2A65A",
+        "interfaceType": "Serial",
+        "dataId": 1
+      },
+      {
+        "uniqueId": "esp32_pi_2",
+        "displayName": "Sollwert (°C)",
+        "color": "#E78AB8",
+        "interfaceType": "Serial",
+        "dataId": 2
+      },
+      {
+        "uniqueId": "esp32_pi_3",
+        "displayName": "Rückkanal max. µs",
+        "color": "#8FA3BF",
+        "interfaceType": "Serial",
+        "dataId": 3
+      }
+    ],
+    "assignments": [
+      {
+        "uniqueId": "esp32_pi_0",
+        "chartId": "pi_loop",
+        "valueField": "y",
+        "visible": true
+      },
+      {
+        "uniqueId": "esp32_pi_1",
+        "chartId": "pi_heater",
+        "valueField": "y",
+        "visible": true
+      },
+      {
+        "uniqueId": "esp32_pi_2",
+        "chartId": "pi_loop",
+        "valueField": "y",
+        "visible": true
+      },
+      {
+        "uniqueId": "esp32_pi_3",
+        "chartId": "pi_heater",
+        "valueField": "y",
+        "visible": true
+      }
+    ]
+  }
+}

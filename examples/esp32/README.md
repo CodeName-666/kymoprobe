@@ -5,6 +5,8 @@
   cursors, statistics, FFT, filters and triggers in KymoStudio.
 - [Text signals](text_signals/README.md): two 100-Hz JSON text lines without timestamps,
   for KymoStudio's reception-time path (test case P2).
+- [PI controller](pi_controller/README.md): simulated heater whose `kp`, `ki` and
+  setpoint KymoStudio tunes live over the KymoCore back channel (needs KymoCore 7.1).
 - [Saved task trace example](task_trace_example/RESTORE.md): the previous ESP32
   FreeRTOS/ISR/pipeline example, independently rebuildable and uploadable.
 
