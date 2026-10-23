@@ -5,6 +5,9 @@
   cursors, statistics, FFT, filters and triggers in KymoStudio.
 - [Text signals](text_signals/README.md): two 100-Hz JSON text lines without timestamps,
   for KymoStudio's reception-time path (test case P2).
+- [Stack reserve](stack_reserve/README.md): free stack bytes of three FreeRTOS tasks
+  (`uxTaskGetStackHighWaterMark()`) as normal measurement signals, one task with
+  stack use that grows in steps.
 - [Saved task trace example](task_trace_example/RESTORE.md): the previous ESP32
   FreeRTOS/ISR/pipeline example, independently rebuildable and uploadable.
 
