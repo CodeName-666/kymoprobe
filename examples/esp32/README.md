@@ -8,6 +8,8 @@
 - [Stack reserve](stack_reserve/README.md): free stack bytes of three FreeRTOS tasks
   (`uxTaskGetStackHighWaterMark()`) as normal measurement signals, one task with
   stack use that grows in steps.
+- [PI controller](pi_controller/README.md): simulated heater whose `kp`, `ki` and
+  setpoint KymoStudio tunes live over the KymoCore back channel (needs KymoCore 7.1).
 - [Saved task trace example](task_trace_example/RESTORE.md): the previous ESP32
   FreeRTOS/ISR/pipeline example, independently rebuildable and uploadable.
 
