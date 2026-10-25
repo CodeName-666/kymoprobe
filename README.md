@@ -18,7 +18,7 @@
 
 <p align="center">
   <img alt="License GPLv3 or commercial" src="https://img.shields.io/badge/License-GPLv3%20%7C%20commercial-15123A">
-  <img alt="KymoCore 7.0.0" src="https://img.shields.io/badge/KymoCore-7.0.0-7C5CFF">
+  <img alt="KymoCore 7.1.0" src="https://img.shields.io/badge/KymoCore-7.1.0-7C5CFF">
   <img alt="PlatformIO" src="https://img.shields.io/badge/PlatformIO-ESP32%20%C2%B7%20AVR%20%C2%B7%20STM32-FDE047">
 </p>
 

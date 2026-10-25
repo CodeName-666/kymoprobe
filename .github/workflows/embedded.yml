@@ -85,6 +85,8 @@ jobs:
             environment: esp32-text-signals
           - project: examples/esp32/stack_reserve
             environment: esp32-stack-reserve
+          - project: examples/esp32/pi_controller
+            environment: esp32-pi-controller
           - project: examples/esp32/trace_uart
             environment: esp32-trace
           - project: examples/stm32/uart_example

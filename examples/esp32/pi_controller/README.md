@@ -42,9 +42,7 @@ Das Gerät behält dann den alten Wert und meldet ihn zurück, Studio zeigt „a
 
 ## Bauen und ausprobieren
 
-Der Rückkanal kommt mit KymoCore 7.1. Bis dieser Stand getaggt ist und das Submodul
-`lib/KymoCore` nachzieht, baut das Beispiel gegen den Entwicklungs-Checkout
-`../KymoCore` neben KymoProbe. Deshalb ist es noch nicht in der CI.
+Der Rückkanal braucht KymoCore 7.1; das Beispiel baut gegen das Submodul `lib/KymoCore`.
 
 ```bash
 pio run -d examples/esp32/pi_controller -t upload --upload-port COM4
