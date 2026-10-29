@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+/* SPDX-License-Identifier: MIT
  * Copyright (c) 2026 Christof Seidel */
 /** @file main.cpp @brief Four 1-kHz numeric signals for live KymoStudio load tests.
  * @details Arduino SDK calls are confined to this board adapter. Fixed transmit

@@ -1,0 +1,70 @@
+Traceback (most recent call last):
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 90, in <lambda>
+    studio.live_timer.timeout.connect(lambda: inspect(studio))
+                                              ^^^^^^^^^^^^^^^
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 77, in inspect
+    (OUTPUT / 'live-report.json').write_text(json.dumps(report, indent=2, default=str)+'\n')
+  File "C:\Python\Python312\Lib\pathlib.py", line 1048, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 90, in <lambda>
+    studio.live_timer.timeout.connect(lambda: inspect(studio))
+                                              ^^^^^^^^^^^^^^^
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 77, in inspect
+    (OUTPUT / 'live-report.json').write_text(json.dumps(report, indent=2, default=str)+'\n')
+  File "C:\Python\Python312\Lib\pathlib.py", line 1048, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 90, in <lambda>
+    studio.live_timer.timeout.connect(lambda: inspect(studio))
+                                              ^^^^^^^^^^^^^^^
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 77, in inspect
+    (OUTPUT / 'live-report.json').write_text(json.dumps(report, indent=2, default=str)+'\n')
+  File "C:\Python\Python312\Lib\pathlib.py", line 1048, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 90, in <lambda>
+    studio.live_timer.timeout.connect(lambda: inspect(studio))
+                                              ^^^^^^^^^^^^^^^
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 77, in inspect
+    (OUTPUT / 'live-report.json').write_text(json.dumps(report, indent=2, default=str)+'\n')
+  File "C:\Python\Python312\Lib\pathlib.py", line 1048, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 90, in <lambda>
+    studio.live_timer.timeout.connect(lambda: inspect(studio))
+                                              ^^^^^^^^^^^^^^^
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 77, in inspect
+    (OUTPUT / 'live-report.json').write_text(json.dumps(report, indent=2, default=str)+'\n')
+  File "C:\Python\Python312\Lib\pathlib.py", line 1048, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 90, in <lambda>
+    studio.live_timer.timeout.connect(lambda: inspect(studio))
+                                              ^^^^^^^^^^^^^^^
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 77, in inspect
+    (OUTPUT / 'live-report.json').write_text(json.dumps(report, indent=2, default=str)+'\n')
+  File "C:\Python\Python312\Lib\pathlib.py", line 1048, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 90, in <lambda>
+    studio.live_timer.timeout.connect(lambda: inspect(studio))
+                                              ^^^^^^^^^^^^^^^
+  File "D:\Projekte\Python\Plotter\KymoProbe\examples\esp32\runtime_freertos\tools\check_live.py", line 77, in inspect
+    (OUTPUT / 'live-report.json').write_text(json.dumps(report, indent=2, default=str)+'\n')
+  File "C:\Python\Python312\Lib\pathlib.py", line 1048, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device

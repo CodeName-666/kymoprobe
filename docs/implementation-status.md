@@ -1,4 +1,4 @@
-<!-- SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoProbe-Commercial -->
+<!-- SPDX-License-Identifier: MIT -->
 # Entwicklungspläne: Implementierung und Nachweise
 
 Stand: 11. Oktober 2026. Zuerst wurden Compile-out und Konfigurator umgesetzt,

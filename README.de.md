@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <img alt="Lizenz GPLv3 oder kommerziell" src="https://img.shields.io/badge/Lizenz-GPLv3%20%7C%20kommerziell-15123A">
+  <img alt="Lizenz MIT" src="https://img.shields.io/badge/Lizenz-MIT-15123A">
   <img alt="KymoCore 7.1.0" src="https://img.shields.io/badge/KymoCore-7.1.0-7C5CFF">
   <img alt="PlatformIO" src="https://img.shields.io/badge/PlatformIO-ESP32%20%C2%B7%20AVR%20%C2%B7%20STM32-FDE047">
 </p>
@@ -145,9 +145,8 @@ Alle Beispiele sind gebaut und geprüft; die wichtigsten baut die CI bei jedem P
 
 ## Lizenz
 
-Copyright (c) 2026 Christof Seidel. KymoProbe und die Library KymoCore sind
-doppelt lizenziert: **GPLv3** ([LICENSE](LICENSE)), kostenlos für Hobby,
-Basteln, Lernen und Open Source, oder eine **kommerzielle Lizenz** für
-Unternehmen, die Firmware oder Geräte weitergeben, ohne ihren Quellcode
-offenzulegen. Details stehen in [COMMERCIAL.md](COMMERCIAL.de.md). `lib/Events`
+Copyright (c) 2026 Christof Seidel. KymoProbe und die Library KymoCore stehen
+unter der [MIT-Lizenz](LICENSE): frei für jede Nutzung, auch in kommerzieller
+Firmware und in Geräten. Frühere Versionen behalten die Lizenz, unter der sie
+veröffentlicht wurden. `lib/Events`
 steht unter der MIT-Lizenz.

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+/* SPDX-License-Identifier: MIT
  * Copyright (c) 2026 Christof Seidel */
 /** @file Waveforms.h @brief Host-testable signal generator, independent of SDKs.
  * @details No ADC or real sensor is sampled. Time refers to the mathematical

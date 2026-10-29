@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+/* SPDX-License-Identifier: MIT
  * Copyright (c) 2026 Christof Seidel */
 /** @file main.cpp @brief Experimental dual-core FreeRTOS and real timer ISR trace.
  * @warning Target adapter for ESP32 / Arduino 2.x (ESP-IDF 4.4). SDK drivers

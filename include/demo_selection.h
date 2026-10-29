@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial */
+/* SPDX-License-Identifier: MIT */
 /** @file demo_selection.h
  * @brief Select one application and its matching library features at build time.
  * @details This header is force-included in application and library translation

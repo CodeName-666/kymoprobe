@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial */
+/* SPDX-License-Identifier: MIT */
 /** @file features_demo.cpp
  * @brief C++ sender, Y/XY/XYZ, timestamps, CRC and decoder demonstration.
  * @details Sends channels 0..2 as scalar/XY/XYZ and channel 3 as decoder status.

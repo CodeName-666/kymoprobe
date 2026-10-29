@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <img alt="License GPLv3 or commercial" src="https://img.shields.io/badge/License-GPLv3%20%7C%20commercial-15123A">
+  <img alt="License MIT" src="https://img.shields.io/badge/License-MIT-15123A">
   <img alt="KymoCore 7.1.0" src="https://img.shields.io/badge/KymoCore-7.1.0-7C5CFF">
   <img alt="PlatformIO" src="https://img.shields.io/badge/PlatformIO-ESP32%20%C2%B7%20AVR%20%C2%B7%20STM32-FDE047">
 </p>
@@ -162,7 +162,6 @@ capability details.
 ## License
 
 Copyright (c) 2026 Christof Seidel. KymoProbe and the KymoCore library are
-dual-licensed: **GPLv3** ([LICENSE](LICENSE)), free of charge for hobby,
-tinkering, learning and open source, or a **commercial license** for companies
-that distribute firmware or devices without disclosing their source code.
-Details are in [COMMERCIAL.md](COMMERCIAL.md). `lib/Events` is MIT-licensed.
+licensed under the [MIT license](LICENSE): free for any use, including
+commercial firmware and devices. Earlier releases keep the license they were
+published with. `lib/Events` is MIT-licensed.

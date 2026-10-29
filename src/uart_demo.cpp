@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial */
+/* SPDX-License-Identifier: MIT */
 /** @file uart_demo.cpp @brief Two timestamped UART waveform channels. */
 #include "demo_selection.h"
 #include <KymoCore.h>

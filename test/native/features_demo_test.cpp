@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial */
+/* SPDX-License-Identifier: MIT */
 /** @file features_demo_test.cpp @brief Verify actual feature firmware and dispatch.
  * @details Host-only capture uses heap; application/Core retain fixed storage.
  */

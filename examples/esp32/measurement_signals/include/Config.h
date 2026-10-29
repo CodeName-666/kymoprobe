@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+/* SPDX-License-Identifier: MIT
  * Copyright (c) 2026 Christof Seidel */
 /** @file Config.h @brief Fixed bounds for the ESP32 numeric measurement fixture.
  * @details Classic ESP32, single-precision FPU; synthetic signals in a mainloop.

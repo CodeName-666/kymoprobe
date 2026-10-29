@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial */
+/* SPDX-License-Identifier: MIT */
 /*
  * Source-built FreeRTOS hook adapter. Include the macro bindings in the
  * FreeRTOSConfig.h used to compile the kernel; do not install these macros

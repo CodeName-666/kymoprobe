@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+/* SPDX-License-Identifier: MIT
  * Copyright (c) 2026 Christof Seidel */
 /** @file Types.h @brief One coherent set of synthetic measurements.
  * @par Usage Pass by reference; values are dimensionless and share a timestamp. */

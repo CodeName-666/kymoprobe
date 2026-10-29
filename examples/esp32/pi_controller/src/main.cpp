@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+/* SPDX-License-Identifier: MIT
  * Copyright (c) 2026 Christof Seidel */
 /** @file main.cpp @brief PI temperature controller whose gains and setpoint KymoStudio tunes live.
  * @details A simulated heater (first-order thermal model) is controlled by a PI

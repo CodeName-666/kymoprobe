@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+/* SPDX-License-Identifier: MIT
  * Copyright (c) 2026 Christof Seidel */
 /** @file measurement_signals_test.cpp @brief Emit actual fixture codec frames.
  * @details Cross-language test: the Studio decoder consumes the output file. */

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial */
+/* SPDX-License-Identifier: MIT */
 #ifndef KYMO_FREERTOS_TRACE_ADAPTER_H
 #define KYMO_FREERTOS_TRACE_ADAPTER_H
 

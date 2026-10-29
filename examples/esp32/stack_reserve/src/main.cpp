@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KymoCore-Commercial
+/* SPDX-License-Identifier: MIT
  * Copyright (c) 2026 Christof Seidel */
 /** @file main.cpp @brief Stack reserve of three FreeRTOS tasks as normal measurement signals.
  * @details Every 500 ms the Arduino loop task reads uxTaskGetStackHighWaterMark()
