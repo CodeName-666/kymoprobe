@@ -32,10 +32,10 @@ pio run -e nodemcu-32s
 pio run -e nodemcu-32s -t upload
 ```
 
-`src/main.cpp` initialises Serial at **115200 baud** and calls Init/Main.
-`src/kymo_config.cpp` contains channels, sampling intervals, the measurement
+`src/uart_demo.cpp` initialises Serial at **115200 baud** and calls Init/Main.
+`examples/common/arduino_serial_config.h` contains channels, sampling intervals, the measurement
 function and the transport. In the example, channels 0 and 1 send sine/sawtooth
-at 50 Hz each with timestamps. Your own measurements go into the `sample`
+at 50 Hz each with timestamps. Your own measurements go into the `example_sample`
 callback.
 
 In KymoStudio, open a serial connection to the board with **115200, 8N1**. The

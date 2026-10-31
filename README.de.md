@@ -61,18 +61,18 @@ PlatformIO vorher schließen.
 
 ## Eigene Messwerte senden
 
-Alles, was du anpassen musst, steht in einer Datei:
-[`src/kymo_config.cpp`](src/kymo_config.cpp). Dort legst du Kanäle und
+Für das Standardprojekt `nodemcu-32s` steht alles, was du anpassen musst, in einer Datei:
+[`examples/common/arduino_serial_config.h`](examples/common/arduino_serial_config.h). Dort legst du Kanäle und
 Abtastintervalle fest und lieferst den Messwert:
 
 ```cpp
-static uint8_t sample(void *, uint8_t id, KymoSample *out)
+static uint8_t example_sample(void *user, uint8_t id, KymoSample *out)
 {
     out->value = id == 0 ? readTemperature() : readPressure();  // deine Sensoren
     return 1;
 }
 
-static const KymoChannel channels[] = {
+static const KymoChannel example_channels[] = {
     {20, 0, 0},   // Kanal 0 alle 20 ms
     {100, 1, 0}   // Kanal 1 alle 100 ms
 };

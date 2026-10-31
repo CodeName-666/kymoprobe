@@ -31,10 +31,10 @@ pio run -e nodemcu-32s
 pio run -e nodemcu-32s -t upload
 ```
 
-`src/main.cpp` initialisiert Serial mit **115200 Baud** und ruft Init/Main auf.
-`src/kymo_config.cpp` enthält Kanäle, Abtastintervalle, Messwertfunktion und
+`src/uart_demo.cpp` initialisiert Serial mit **115200 Baud** und ruft Init/Main auf.
+`examples/common/arduino_serial_config.h` enthält Kanäle, Abtastintervalle, Messwertfunktion und
 Transport. Im Beispiel senden Kanal 0 und 1 Sinus/Sägezahn mit je 50 Hz und
-Zeitstempeln. Eigene Messwerte werden im `sample`-Callback übernommen.
+Zeitstempeln. Eigene Messwerte werden im `example_sample`-Callback übernommen.
 
 In KymoStudio eine serielle Verbindung zum Board mit **115200, 8N1** öffnen.
 Die App erkennt die Binärframes automatisch. Die Datenbytes sind kein Text;

@@ -61,18 +61,18 @@ monitor first.
 
 ## Sending your own measurements
 
-Everything you need to adapt is in one file:
-[`src/kymo_config.cpp`](src/kymo_config.cpp). There you define channels and
+For the default `nodemcu-32s` project, everything you need to adapt is in one file:
+[`examples/common/arduino_serial_config.h`](examples/common/arduino_serial_config.h). There you define channels and
 sampling intervals and provide the measured value:
 
 ```cpp
-static uint8_t sample(void *, uint8_t id, KymoSample *out)
+static uint8_t example_sample(void *user, uint8_t id, KymoSample *out)
 {
     out->value = id == 0 ? readTemperature() : readPressure();  // your sensors
     return 1;
 }
 
-static const KymoChannel channels[] = {
+static const KymoChannel example_channels[] = {
     {20, 0, 0},   // channel 0 every 20 ms
     {100, 1, 0}   // channel 1 every 100 ms
 };
